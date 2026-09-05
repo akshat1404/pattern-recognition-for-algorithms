@@ -1,8 +1,8 @@
 # Pattern Recognition for Algorithms
 
-I started this from a specific annoyance. I would look at a problem on NeetCode 250, and even after solving it, I couldn't always say why that particular technique was the right one to reach for. The solution worked, but the reasoning that got me there stayed fuzzy.
+This guide starts from two questions I want answered for every problem on NeetCode 250. First, given a problem, how do I map it to the algorithm it actually needs, which means understanding when that algorithm is useful in the first place, not just what it does. Second, once I know which algorithm fits, what shape does the code for it usually take.
 
-So this guide is built backward from that gap. For every pattern, hashing, two pointers, sliding window, whatever comes next, I am not just recording the code that solves a category of problems. I am trying to write down the specific signal in a problem statement that should make a pattern come to mind before any code gets written.
+So for every pattern, hashing, two pointers, sliding window, whatever comes next, I am not just recording the code that solves a category of problems. I am trying to write down the specific signal in a problem statement that should make a pattern come to mind before any code gets written.
 
 Each pattern gets split into three files, and the split maps onto three separate questions.
 
