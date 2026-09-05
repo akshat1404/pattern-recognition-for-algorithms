@@ -1,0 +1,9 @@
+[book]
+title = "Pattern Recognition for Algorithms"
+authors = ["Akshat Tiwari"]
+description = "A pattern-by-pattern guide to recognizing which DSA technique to reach for, and why."
+language = "en"
+src = "src"
+
+[output.html]
+git-repository-url = "https://github.com/akshat1404/pattern-recognition-for-algorithms"
