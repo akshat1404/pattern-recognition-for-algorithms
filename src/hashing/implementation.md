@@ -1,43 +1,60 @@
 # Implementation
 
-## Walkthrough: Contains Duplicate
+Once a problem is recognized as one of the four buckets from the intuition chapter, the code follows a fixed shape. These are the four skeletons, one per bucket, worth knowing from memory rather than re-derived each time.
 
-Take [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/description/). Given an array, tell us whether any value appears more than once.
-
-```
-nums = [1, 2, 3, 1]
-```
-
-The brute force way is to take each element and loop through the rest of the array checking for a match. That is a loop inside a loop, O(n^2), because every element pays for a full scan of the others.
-
-The hash map way avoids the second loop entirely. We walk the array once, and before moving to the next element, we ask the map one question: have I put this value in before? If yes, we have found our duplicate. If no, we mark it as seen and move on.
-
-```
-map = {}
-
-nums = [1, 2, 3, 1]
-
-step 1: value = 1, not in map -> mark it
-map = { 1: true }
-
-step 2: value = 2, not in map -> mark it
-map = { 1: true, 2: true }
-
-step 3: value = 3, not in map -> mark it
-map = { 1: true, 2: true, 3: true }
-
-step 4: value = 1, already in map -> duplicate found
-```
-
-Each step does two O(1) operations against the map, a membership check and, if needed, an insert. One pass over the array, O(n) total time. The cost we pay for skipping the second loop is space, the map can grow up to the size of the array if every element turns out to be unique. That is the trade hashing makes throughout this whole pattern: spend memory holding "have I seen this" state, so we never have to re-scan for it.
+## Seen Before
 
 ```javascript
-function containsDuplicate(nums) {
-    const seen = new Map();
-    for (const n of nums) {
-        if (seen.has(n)) return true;
-        seen.set(n, true);
+function seenBefore(items) {
+    const seen = new Set();
+    for (const item of items) {
+        if (seen.has(item)) return true; // already ran into this one
+        seen.add(item);
     }
     return false;
 }
 ```
+
+## Frequency
+
+```javascript
+function frequency(items) {
+    const counts = new Map();
+    for (const item of items) {
+        counts.set(item, (counts.get(item) || 0) + 1);
+    }
+    return counts;
+}
+```
+
+## Pairing
+
+```javascript
+function pairing(nums, target) {
+    const seen = new Map(); // value -> index
+    for (let i = 0; i < nums.length; i++) {
+        const complement = target - nums[i];
+        if (seen.has(complement)) return [seen.get(complement), i];
+        seen.set(nums[i], i);
+    }
+    return [];
+}
+```
+
+The check happens before the insert, not after. That order matters, it is what stops a value from pairing with itself.
+
+## Grouping
+
+```javascript
+function grouping(items, keyFn) {
+    const groups = new Map();
+    for (const item of items) {
+        const key = keyFn(item);
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(item);
+    }
+    return [...groups.values()];
+}
+```
+
+`keyFn` is whatever computed property decides which bucket an item belongs to, a sorted string for anagrams, a row or column index for a grid, whatever the problem defines as "belongs together."
