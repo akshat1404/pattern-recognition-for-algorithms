@@ -5,4 +5,4 @@
 - [Hashing](./hashing/intro.md)
   - [Intuition](./hashing/intuition.md)
   - [Implementation](./hashing/implementation.md)
-  - [Examples](./hashing/examples.md)
+  - [Intuition in Action](./hashing/examples.md)

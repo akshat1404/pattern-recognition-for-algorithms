@@ -1,6 +1,6 @@
-# Examples
+# Intuition in Action
 
-One worked problem per bucket from the intuition chapter, reasoning and code together.
+Worked problems from the intuition chapter, reasoning and code together, one bucket at a time.
 
 ## Seen Before
 
@@ -14,4 +14,14 @@ So the approach becomes: walk the array once, and for each value, first ask the 
 
 ```javascript
 {{#include ./examples/contains-duplicate.js}}
+```
+
+[Contains Duplicate II](https://leetcode.com/problems/contains-duplicate-ii/description/) asks the same seen-before question with one more condition attached, a repeat only counts if the two indices are within `k` of each other. So "have I seen this value" is not enough on its own anymore, we also need to know where we saw it.
+
+That changes what the map has to hold. Instead of a set that only answers yes or no, we need a map from value to the index it last appeared at. The check on each element becomes two parts, has this value shown up before, and if so, is the gap between here and there small enough to count.
+
+The map still gets written to on every element, whether or not that element triggers a match, because a value seen too far back to count now might still be close enough to count against a later index. Overwriting the last-seen index each time keeps the stored position as recent as possible, which is exactly what the distance check needs.
+
+```javascript
+{{#include ./examples/contains-duplicate-ii.js}}
 ```
