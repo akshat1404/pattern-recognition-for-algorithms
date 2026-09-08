@@ -50,7 +50,7 @@ The fix is to make each number disappear from the set the moment it gets counted
 
 [Happy Number](https://leetcode.com/problems/happy-number/description/) gives a positive integer and a rule, replace the number with the sum of the squares of its digits, then do it again to whatever comes out, and again. If this process ever reaches 1, the number is happy. Take `19`: `1^2 + 9^2 = 82`, then `8^2 + 2^2 = 68`, then `6^2 + 8^2 = 100`, then `1^2 + 0^2 + 0^2 = 1`. Reached 1, so 19 is happy.
 
-I know it is not very intuitive to know that this problem demands a map, but here's the spoiler : Loop only ends one of two ways, n reached 1, or n repeated."
+I know it is not very intuitive to know that this problem demands a map, but here's the spoiler : Loop only ends one of two ways, n reached 1, or n repeated.
 
 Not every number does become 1 at the end. Take `2`: `4, 16, 37, 58, 89, 145, 42, 20, 4`. Look at the last value, `4`, it already showed up earlier in this same sequence. From here on, applying the same rule to `4` produces the exact same sequence all over again, `16, 37, 58`, forever. It will never reach 1, but nothing in the rule itself says when to give up and answer no.
 
@@ -60,4 +60,20 @@ A repeat is exactly what we can catch with a seen-before check, just applied to 
 
 ```javascript
 {{#include ./examples/happy-number.js}}
+```
+
+## Frequency
+
+[Valid Anagram](https://leetcode.com/problems/valid-anagram/description/) gives two strings and asks whether the second is an anagram of the first, meaning it uses the exact same letters, the exact same number of times each, just arranged differently. `"anagram"` and `"nagaram"` are anagrams. `"rat"` and `"car"` are not, even though both are three letters, because the letters themselves don't match.
+
+Order plays no role in the answer at all, which is the first thing worth noticing. Whatever approach we use has to somehow throw away position and only compare, for each letter, how many times it shows up. That is a frequency question, not a seen-before question, "does the letter a show up twice in both strings" is a different thing to check than "does the letter a show up at all."
+
+One way to answer that without extra structure is to sort both strings and compare them letter by letter. Two strings with the same letters in the same quantities become identical once sorted, `"anagram"` and `"nagaram"` both sort to `"aaaagmnr"`. That works, but sorting costs O(n log n), and we are only using the sort to line up matching letters, not because order matters to the actual answer.
+
+A frequency map gets the same answer without sorting. Count how many times each letter appears in the first string. Then walk the second string, and for each letter, subtract one from that letter's count instead of adding. If the two strings really do have matching letters in matching amounts, every subtraction lands on a count that was already there waiting to be used up, and by the end every count reaches exactly zero.
+
+Two failures fall out of that same process on their own. If the second string contains a letter the first string never had, there is no count to subtract from, an immediate mismatch. If a count is left over above zero once the second string runs out, the first string had more of that letter than the second string used, also a mismatch. Deleting a letter's entry the moment its count hits zero means that at the end, an empty map is itself the proof that everything matched, nothing extra is left over on either side.
+
+```javascript
+{{#include ./examples/valid-anagram.js}}
 ```
