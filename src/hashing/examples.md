@@ -77,3 +77,15 @@ Two failures fall out of that same process on their own. If the second string co
 ```javascript
 {{#include ./examples/valid-anagram.js}}
 ```
+
+[Ransom Note](https://leetcode.com/problems/ransom-note/description/) gives a ransom note string and a magazine string, and asks whether the note can be built entirely by cutting letters out of the magazine, using each letter in the magazine at most once. If the note needs two `e`s, the magazine has to have at least two `e`s to give up.
+
+This looks close to Valid Anagram, both come down to counting letters, but the relationship between the two strings is different in a way that matters. Valid Anagram asks whether two strings have exactly matching letter counts, the same amount of everything on both sides. Ransom Note only asks whether one string's counts are enough to cover the other's, the magazine is allowed to have letters left over that the note never touches.
+
+That difference changes what the frequency map gets used for. Build it from the magazine, one count per letter available. Then walk the note, and for each letter, check whether the map still has any of it left. If it does, spend one, subtract from the count. If it doesn't, either the letter never appeared in the magazine at all or every copy of it has already been spent by an earlier letter in the note, either way the note cannot be built and we stop right there.
+
+Notice what we do not check here. Valid Anagram ends by confirming the map is completely empty, because leftover counts on either side meant a mismatch. Ransom Note never checks that, a magazine with `10` unused letters after the note is fully built is still a valid build, those letters just never got used. The only thing that fails the whole problem is running out of a letter the note still needs, which is exactly the one check the loop performs.
+
+```javascript
+{{#include ./examples/ransom-note.js}}
+```
