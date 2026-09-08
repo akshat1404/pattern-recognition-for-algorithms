@@ -47,3 +47,17 @@ The fix is to make each number disappear from the set the moment it gets counted
 ```javascript
 {{#include ./examples/longest-consecutive-sequence.js}}
 ```
+
+[Happy Number](https://leetcode.com/problems/happy-number/description/) gives a positive integer and a rule, replace the number with the sum of the squares of its digits, then do it again to whatever comes out, and again. If this process ever reaches 1, the number is happy. Take `19`: `1^2 + 9^2 = 82`, then `8^2 + 2^2 = 68`, then `6^2 + 8^2 = 100`, then `1^2 + 0^2 + 0^2 = 1`. Reached 1, so 19 is happy.
+
+I know it is not very intuitive to know that this problem demands a map, but here's the spoiler : Loop only ends one of two ways, n reached 1, or n repeated."
+
+Not every number does become 1 at the end. Take `2`: `4, 16, 37, 58, 89, 145, 42, 20, 4`. Look at the last value, `4`, it already showed up earlier in this same sequence. From here on, applying the same rule to `4` produces the exact same sequence all over again, `16, 37, 58`, forever. It will never reach 1, but nothing in the rule itself says when to give up and answer no.
+
+That is the actual problem hiding in this one. The rule only tells us how to compute the next number, it never tells us when to stop. Without some way to notice a repeat, the only way to be sure a number is not happy is to keep applying the rule forever, which is not something a program can do.
+
+A repeat is exactly what we can catch with a seen-before check, just applied to computed values instead of array elements. Keep a set of every value produced so far. Before computing the next one, check whether the current value is already in the set, if it is, the sequence has looped back on itself and will never reach 1, so we stop and answer no. If it reaches 1 first, we stop and answer yes. Either way, the seen-before check is what turns "keep going forever" into a guaranteed stopping point.
+
+```javascript
+{{#include ./examples/happy-number.js}}
+```
