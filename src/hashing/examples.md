@@ -89,3 +89,13 @@ Notice what we do not check here. Valid Anagram ends by confirming the map is co
 ```javascript
 {{#include ./examples/ransom-note.js}}
 ```
+
+[Majority Element](https://leetcode.com/problems/majority-element/description/) gives an array and asks for the value that appears more than half the time, more than `n / 2` times in an array of size `n`. The problem guarantees one always exists, so there's no case to handle where nothing qualifies.
+
+The frequency map here is the plainest version of the pattern so far, count how many times each value appears, same as every problem in this section. What's worth noticing is what the threshold itself guarantees. Since more than half the array can only ever belong to one value, at most one value can ever cross that line, there is no risk of two different values both racing past `n / 2`.
+
+That guarantee means the count doesn't need to finish before it gets used. Update a value's count on every element, and the instant one crosses the threshold, return it immediately, no second pass over the map needed to go find the winner afterward, and no need to keep counting the rest of the array once the answer is already known.
+
+```javascript
+{{#include ./examples/majority-element.js}}
+```
