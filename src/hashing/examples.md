@@ -114,6 +114,18 @@ Second, given matching character sets, the swap-the-counts operation means any c
 {{#include ./examples/determine-if-two-strings-are-close.js}}
 ```
 
+[Minimum Number of Operations to Make Array Empty](https://leetcode.com/problems/minimum-number-of-operations-to-make-array-empty/description/) is the second Medium in this bucket. One operation removes two or three copies of the same value from the array, and the question is the fewest operations needed to remove everything, or `-1` if it can't be fully emptied.
+
+An operation only ever targets copies of one value, so the only thing that matters for any value is how many copies of it exist, not where they sit in the array. That's the frequency map again, and once it's built, the problem splits into one independent question per value: given a count `c`, what's the fewest groups of 2 or 3 that sum to exactly `c`, and is that even possible.
+
+`c = 1` is the only count with no answer, no combination of 2s and 3s ever sums to 1. Every other count can be cleared, and the fewest operations comes from using as many 3s as possible. Split by `c mod 3`. `c = 3n` needs `n` groups of 3. `c = 3n + 2` needs `n` groups of 3 plus one group of 2 for what's left over. `c = 3n + 1` is the one that needs care, a leftover of 1 isn't removable on its own, so one group of 3 gets traded back, `n - 1` groups of 3, and the `3 + 1 = 4` left over becomes two groups of 2, `(n - 1) + 2` operations. Take `c = 10`, `n = 3`, remainder 1, so it's `2` groups of 3 and `2` groups of 2, `3 + 3 + 2 + 2 = 10`, four operations.
+
+Every one of those three cases lands on `n` or `n + 1` operations, which is exactly `Math.ceil(c / 3)`. So the full solution is: build the frequency map, and for every count in it, return `-1` immediately if any count is `1`, otherwise sum `Math.ceil(count / 3)` across all of them.
+
+```javascript
+{{#include ./examples/minimum-operations-to-make-array-empty.js}}
+```
+
 ## Pairing
 
 [Two Sum](https://leetcode.com/problems/two-sum/description/) gives an array and a target, and asks for the indices of the two numbers that add up to it. Exactly one valid pair exists in the input, and a number can't be paired with itself.
