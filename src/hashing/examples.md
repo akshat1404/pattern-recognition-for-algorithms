@@ -100,6 +100,20 @@ That guarantee means the count doesn't need to finish before it gets used. Updat
 {{#include ./examples/majority-element.js}}
 ```
 
+[Determine if Two Strings Are Close](https://leetcode.com/problems/determine-if-two-strings-are-close/description/) is the first Medium in this bucket, the three problems above are all Easy. Two strings are "close" if the letters and their counts can be reshuffled among each other to turn one string into the other, nothing added, nothing removed, just handed out differently. Take `word1 = "cabbba"` and `word2 = "abbccc"`. `word1` has counts `a: 2, b: 3, c: 1`. `word2` has counts `a: 1, b: 2, c: 3`. The counts attached to each letter differ, but both strings use the same three letters, `a`, `b`, `c`, and both use the same three counts, `1`, `2`, `3`, just assigned to different letters. That is exactly what makes these two close.
+
+Both operations only rearrange things among characters that already exist in the string, neither one can introduce a new character, remove one, or change how many letters the string has in total. That last part gives a free check before doing anything else, two strings of different lengths can never be close, no reshuffling changes a string's length, so a length mismatch rules out the pair immediately.
+
+Past that, the rest splits into two separate frequency checks rather than one.
+
+First, the same set of characters has to be present in both strings. Swapping counts or swapping identities never adds or removes a character, it only moves things around among what's already there, so if one string uses a character the other doesn't, no sequence of operations closes that gap.
+
+Second, given matching character sets, the swap-the-counts operation means any character's count can end up attached to any other character. So checking count against count for the same character, `a` in word1 against `a` in word2, is checking the wrong thing, since which character holds which count can move freely. What has to match is the multiset of counts overall, and rather than sorting both lists of counts to compare them, we can count how many characters share each count value, on both sides, and compare those two counts directly, a frequency map built on top of a frequency map. Word1's counts were `a: 2, b: 3, c: 1`, so its count-of-counts is `1: 1, 2: 1, 3: 1`, one character has each of the counts 1, 2, and 3. Word2's counts were `a: 1, b: 2, c: 3`, count-of-counts `1: 1, 2: 1, 3: 1`, the same. That match is what confirms the two strings are close, without sorting either list.
+
+```javascript
+{{#include ./examples/determine-if-two-strings-are-close.js}}
+```
+
 ## Pairing
 
 [Two Sum](https://leetcode.com/problems/two-sum/description/) gives an array and a target, and asks for the indices of the two numbers that add up to it. Exactly one valid pair exists in the input, and a number can't be paired with itself.
