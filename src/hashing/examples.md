@@ -99,3 +99,19 @@ That guarantee means the count doesn't need to finish before it gets used. Updat
 ```javascript
 {{#include ./examples/majority-element.js}}
 ```
+
+## Pairing
+
+[Two Sum](https://leetcode.com/problems/two-sum/description/) gives an array and a target, and asks for the indices of the two numbers that add up to it. Exactly one valid pair exists in the input, and a number can't be paired with itself.
+
+The brute force is a nested loop, for each number, check every other number to see if the two add up to the target. That works, but not for an interview, because for every element it re-scans the rest of the array looking for one specific value, the number that would complete the sum. That specific value isn't a mystery though, if the target is `9` and the current number is `4`, the number we need is exactly `5`, `target - 4`. We already know what we're looking for before we look, which means the search itself is the wasted step, not the arithmetic.
+
+If we know exactly what value would complete the pair, the only question left is whether that value showed up earlier in the array, which is a lookup, not a search, once we've been recording values as we go. So walk the array once, and at each number, first check whether its complement, `target - nums[i]`, is already in a map of values we've seen. If it is, those two indices are the answer. If it isn't, record the current value and move on.
+
+The order of that check matters. Looking up the complement has to happen before the current value gets added to the map, otherwise a number could pair with itself, the map would already contain the very value we're standing on. Checking first, inserting second, is what keeps every match built from two genuinely different positions in the array.
+
+This is Pairing, not Seen Before, even though the map calls involved, `has` then `set`, are identical to Contains Duplicate's. The difference is what gets looked up. Seen Before checks the current value against the map, asking whether this exact value showed up before. Two Sum never looks up the current value at all, it looks up `target - nums[i]`, a value computed from the current one, asking whether something else exists that would complete it. That's also why the self-pairing rule only shows up here, "does something else complete this" explicitly rules out a number completing itself, while "have I seen this" has no such restriction.
+
+```javascript
+{{#include ./examples/two-sum.js}}
+```
