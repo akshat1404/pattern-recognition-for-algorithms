@@ -141,3 +141,25 @@ This is Pairing, not Seen Before, even though the map calls involved, `has` then
 ```javascript
 {{#include ./examples/two-sum.js}}
 ```
+
+[Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/description/) gives an array and an integer `k`, and asks for the number of contiguous subarrays whose elements sum to exactly `k`. The brute force checks every possible subarray directly, re-summing overlapping ranges over and over, O(n^2) at best.
+
+Take `nums = [3, 4, -7, 1, 3, 3, 1, -4]` and `k = 7`. Walk the array keeping a running total, the sum of everything seen so far, and write it down at every step, including a `0` before the array even starts.
+
+```
+index:         -    0    1    2    3    4    5    6    7
+element:            3    4   -7    1    3    3    1   -4
+running total: 0    3    7    0    1    4    7    8    4
+```
+
+The sum of any subarray that ends at some position and starts right after an earlier position is just the running total at the end minus the running total at that earlier point. Call the ending running total `y` and an earlier one `x`, the subarray between them sums to `y - x`. We want that to equal `k`, so `y - x = k`, which rearranges to `x = y - k`. At every step, the earlier running total that would complete a subarray summing to `k` is exactly `y - k`.
+
+Two things show up walking this example that a simpler one would hide. First, at index 1 the running total is `7`, `y - k = 7 - 7 = 0`, and `0` occurred once already, before the array started, which is the subarray `[3, 4]` summing to `7`, one match. Second, at index 5 the running total is again `7`, `y - k = 0` again, but by now `0` has occurred twice, once at the start and once at index 2, so this single step contributes two matches at once, the subarrays `[3, 4, -7, 1, 3, 3]` and `[1, 3, 3]`, both ending at index 5 and both summing to `7`. That second case is exactly why the map has to store how many times each running total occurred, not just whether it occurred, a plain seen-before check would only ever report one match here, not two.
+
+That's the same pairing shape as Two Sum, checking whether something earlier completes the current value to a target, except the value being paired is a running prefix sum, not a raw array element, and the relationship is subtraction instead of addition. It also has to answer a different question than Two Sum, how many subarrays sum to `k`, not just whether one does. So the map holds how many times each prefix sum has occurred, not just whether it has, and instead of returning on the first match, we add that count to a running total and keep going.
+
+One more detail, seed the map with `{0: 1}` before the loop starts. Without it, a subarray that sums to `k` starting right at index 0 has no earlier prefix sum to pair against, since there's nothing before index 0. Seeding a prefix sum of `0` occurring once covers that case, "the sum of nothing before the array starts" is a valid starting point for a subarray.
+
+```javascript
+{{#include ./examples/subarray-sum-equals-k.js}}
+```
