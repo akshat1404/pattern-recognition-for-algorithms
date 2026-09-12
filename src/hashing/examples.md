@@ -209,3 +209,17 @@ Checking the rest of the list against that same `2, 1` key: `"wyz"` gives `2, 1`
 ```javascript
 {{#include ./examples/group-shifted-strings.js}}
 ```
+
+[Find Players With Zero or One Losses](https://leetcode.com/problems/find-players-with-zero-or-one-losses/description/) gives a list of `[winner, loser]` match results and asks for two sorted lists, every player who never lost, and every player who lost exactly once.
+
+Every group so far in this bucket has used a computed string as the key, a sorted string, a count array, a sequence of gaps. Here the key is just a number, how many losses a player has, and the two lists the problem wants are simply two of the resulting groups, the group sitting under key `0` and the group sitting under key `1`.
+
+Take `matches = [[1,3],[2,3],[3,6],[5,6],[5,7],[4,5],[4,8],[4,9],[10,4],[10,9]]`. Walk every match and update a loss count per player, incrementing the loser's count on every match. `3` loses to `1` and to `2`, ending at `2` losses. `6` loses to `3` and to `5`, `2` losses. `9` loses to `4` and to `10`, `2` losses. `7`, `5`, `8`, `4` each lose exactly once. `1`, `2`, `10` never appear as a loser anywhere in the list, `0` losses.
+
+One detail the loop has to get right, a winner needs an entry in the map even before they've lost anything, otherwise a player who only ever wins never shows up in the `0` group at all. So the first time a player appears as a winner, record them with `0` losses, but only if they aren't already in the map, a player who lost earlier and later wins a match keeps whatever loss count they already had.
+
+Once every player has a loss count, group them by it, same shape as every other grouping problem, a map from key to the list of players sharing that key. Read off the group under `0`, `[1, 2, 10]`, and the group under `1`, `[4, 5, 7, 8]`, sort each for the required output format, and those are the two lists the problem asks for.
+
+```javascript
+{{#include ./examples/find-players-with-zero-or-one-losses.js}}
+```
