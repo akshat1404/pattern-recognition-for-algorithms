@@ -57,4 +57,24 @@ function grouping(items, keyFn) {
 }
 ```
 
-`keyFn` is whatever computed property decides which bucket an item belongs to, a sorted string for anagrams, a row or column index for a grid, whatever the problem defines as "belongs together."
+`keyFn` is whatever computed property decides which bucket an item belongs to, a count of each letter for anagrams, a sequence of letter gaps for shifted strings, a plain number like a loss count, whatever the problem defines as "belongs together."
+
+Not every grouping problem fits one key per item, though. Valid Sudoku checks each item against three keys at once, its row, its column, and its box, which means checking and updating three separate group-sets per item instead of looking up one key in one map:
+
+```javascript
+function groupingMultiKey(items, keysFn) {
+    const groups = new Map(); // one Set per possible key
+
+    for (const item of items) {
+        const keys = keysFn(item); // e.g. [row, col, box] for one cell
+
+        for (const key of keys) {
+            if (!groups.has(key)) groups.set(key, new Set());
+            if (groups.get(key).has(item)) return false; // already in this group
+            groups.get(key).add(item);
+        }
+    }
+
+    return true;
+}
+```
