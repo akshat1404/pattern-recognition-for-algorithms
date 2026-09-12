@@ -195,3 +195,17 @@ That reverse mapping is exactly what makes the duplicate check possible. In tota
 ```javascript
 {{#include ./examples/valid-sudoku.js}}
 ```
+
+[Group Shifted Strings](https://www.geeksforgeeks.org/dsa/group-shifted-string/1) defines a shift operation, move every letter of a string forward one position in the alphabet, wrapping `z` back to `a`, so `"abc"` shifts to `"bcd"`. Given an array of strings, group together any strings that can reach each other through some number of shifts. Strings of length 1 are all one group together, whatever letter they hold, that part is stated directly in the problem.
+
+Take `["acd", "dfg", "wyz", "yab", "mop", "bdfh", "a", "x", "moqs"]`.
+
+Shifting every letter by the same amount moves the whole string forward, but it never changes the gap between one letter and the next inside that string, only where the letters sit in the alphabet overall. `"acd"` has gaps `2, 1` (`c` is 2 past `a`, `d` is 1 past `c`). `"dfg"` has the exact same gaps, `2, 1`. Both share a key before any shifting logic even needs to run.
+
+Checking the rest of the list against that same `2, 1` key: `"wyz"` gives `2, 1`. `"yab"` gives `2, 1` too, but only once the wraparound is handled, `a` is 2 past `y` going forward cyclically (`y -> z -> a`), and `b` is 1 past `a`. `"mop"` gives `2, 1` as well. All five, `"acd"`, `"dfg"`, `"wyz"`, `"yab"`, `"mop"`, land in the same group.
+
+`"bdfh"` has gaps `2, 2, 2`, and `"moqs"` has gaps `2, 2, 2` too, a different group from the first five, and a different length besides. `"a"` and `"x"` are both length 1, no consecutive pair of letters to take a gap from at all, so both produce an empty gap sequence, the same key, which is exactly why length-1 strings all group together regardless of which letter they are.
+
+```javascript
+{{#include ./examples/group-shifted-strings.js}}
+```
