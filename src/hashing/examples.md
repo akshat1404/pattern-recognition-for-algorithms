@@ -183,3 +183,15 @@ Computing the key this way costs O(k) per string of length k, one pass to build 
 ```javascript
 {{#include ./examples/group-anagrams.js}}
 ```
+
+[Valid Sudoku](https://leetcode.com/problems/valid-sudoku/description/) gives a 9x9 board, partially filled in, and asks whether the filled cells break any Sudoku rule, no repeated digit in the same row, column, or 3x3 box. Only the filled cells need checking, an empty cell contributes nothing to the check, and the board doesn't need to be solvable or complete, just not already broken by what's there. This is a different problem from Sudoku Solver, which fills in the empty cells by search, nothing here searches or guesses anything, just pointing out is the sudoku given is valid as of now.
+
+Every number on the board sits at a position, `(i, j)`, and that position resolves outward to three coordinates at once, which row it's in, which column, and which box. Say a `5` sits at `(2, 3)`. Row and column are handed to us directly, row `2`, column `3`. The box takes a small computation, a 9x9 grid is really a 3x3 grid of boxes, so `Math.floor(2 / 3) = 0` gives the box-row, `Math.floor(3 / 3) = 1` gives the box-column, and flattening that pair into a single index the way any 2D grid flattens into 1D gives `0 * 3 + 1 = 1`. So `(2, 3)` resolves to row `2`, column `3`, box `1`.
+
+That mapping also runs in reverse, and the reverse direction is the part that actually does the work. Once `(2, 3)` resolves to row `2`, column `3`, box `1`, the meaning of that `5` being there is that row `2` now contains a `5`, column `3` now contains a `5`, and box `1` now contains a `5`. Each of those three facts gets recorded by adding `5` to that group's set, row `2`'s set, column `3`'s set, and box `1`'s set.
+
+That reverse mapping is exactly what makes the duplicate check possible. In total there are 9 rows, 9 columns, and 9 boxes, 27 groups, one set each, 27 sets. Before adding a digit to its three sets, check whether it's already sitting in any of them. If row `2`'s set already contains a `5` when a second `5` shows up in row `2`, the board is invalid right there. If not, add the digit to all three sets and move to the next cell.
+
+```javascript
+{{#include ./examples/valid-sudoku.js}}
+```
