@@ -163,3 +163,23 @@ One more detail, seed the map with `{0: 1}` before the loop starts. Without it, 
 ```javascript
 {{#include ./examples/subarray-sum-equals-k.js}}
 ```
+
+## Grouping
+
+[Group Anagrams](https://leetcode.com/problems/group-anagrams/description/) gives an array of strings and asks to group every string together with the other strings that are anagrams of it. Take `["eat", "tea", "tan", "ate", "nat", "bat"]`, the answer groups `"eat"`, `"tea"`, `"ate"` together, `"tan"`, `"nat"` together, and leaves `"bat"` on its own.
+
+The brute force compares every string against every other string to check if the two are anagrams, which is a pairwise check repeated over every pair, well past the point of being O(n) in the number of strings.
+
+Two strings are anagrams exactly when they hold the same letters the same number of times each, so instead of comparing strings to each other, we can compute something from each string on its own that comes out identical for every member of the same group. Count the occurrences of each letter in a string, `"eat"` has one `a`, one `e`, one `t`. `"tea"` has the exact same counts, one `a`, one `e`, one `t`. `"tan"` has one `a`, one `n`, one `t`, a different set of counts entirely.
+
+That per-letter count is what becomes the map key. Since strings only ever contain lowercase English letters, build a list of 26 numbers for each string, one slot per letter of the alphabet, each slot counting how many times that letter shows up. For `"eat"` and `"tea"`, that list comes out identical, a `1` in the `a` slot, a `1` in the `e` slot, a `1` in the `t` slot, `0` everywhere else, which as an actual joined string is `"1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0"`. For `"tan"`, the list is different, `1`s in the `a`, `n`, and `t` slots, and a `0` in the `e` slot where `"eat"` had a `1`, joining to `"1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0"`, a different string entirely.
+
+A list of numbers can't be used as a map key directly, JavaScript doesn't treat two separate arrays with matching contents as equal. So the list gets turned into a single string first, joining its 26 numbers together with commas. Two strings with matching letter counts now produce that exact same joined string, and that string is the key.
+
+Walking the example: `"eat"` computes its key, the map has nothing under it yet, so a new bucket is created holding `["eat"]`. `"tea"` computes the exact same key, since it has the same letters, finds that bucket already there, and gets appended, `["eat", "tea"]`. `"tan"` computes a different key entirely, gets its own new bucket, `["tan"]`. By the end, every bucket in the map is one finished group, built without ever comparing any string directly to another, only comparing each string's own computed key against the map.
+
+Computing the key this way costs O(k) per string of length k, one pass to build the count array. Sorting the string's characters would also produce a valid key, `"eat"` and `"tea"` both sort to `"aet"`, but sorting costs O(k log k), so the count array gets to the same answer without paying for a sort.
+
+```javascript
+{{#include ./examples/group-anagrams.js}}
+```
