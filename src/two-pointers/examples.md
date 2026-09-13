@@ -31,3 +31,33 @@ Two duplicate-avoidance checks show up that Two Sum II never needed, since Two S
 ```javascript
 {{#include ./examples/three-sum.js}}
 ```
+
+[Container With Most Water](https://leetcode.com/problems/container-with-most-water/description/) gives an array of heights, and any two indices form a container, holding water up to the shorter of the two heights, over a width equal to the distance between them. Return the largest amount of water any pair can hold. This is the case from the intuition chapter where the array isn't sorted at all, order shows up purely in position, not value.
+
+Every pair of indices forms a rectangle, and finding the one with the largest area is exactly what the problem is asking, checking all of them directly is the brute force, O(n^2).
+
+Start at `left = 0`, `right = n - 1`, the widest rectangle possible, the maximum width available anywhere in the array. Every other pair has less width than this one, so the search begins at the one place width is already at its ceiling. From here, width can only go down, so the only lever left worth pulling is height.
+
+Area is width times height, and the two pointers each contribute one of those. Width comes from position, `right - left`, known for free with no lookup. Height comes from the values, `min(heights[left], heights[right])`, the shorter of the two walls, since water can never sit higher than the shorter side without spilling over it.
+
+Once height has that formula, the only question left is which direction to shrink the width from, `left++` or `right--`. The side holding the smaller height moves. `min(heights[left], heights[right])` only ever depends on whichever wall is shorter, the taller wall isn't the bottleneck at all, it could be far taller and the height would still be capped by the shorter one. So keeping the shorter wall in place and giving up width by moving the taller one buys nothing, the cap stays exactly where it was, while width, the one thing guaranteed to only shrink, has already gotten worse. Moving the shorter wall is the only move with any chance of raising the cap for the next rectangle, which is the entire safety argument this pattern needs.
+
+Take `heights = [1, 8, 6, 2, 5, 4, 8, 3, 7]`.
+
+```
+left  right  heights[left]  heights[right]  width  area  move
+0     8      1              7               8      8     left (shorter)
+1     8      8              7               7      49    right (shorter)
+1     7      8              3               6      18    right (shorter)
+1     6      8              8               5      40    right (tie, either side)
+1     5      8              4               4      16    right (shorter)
+1     4      8              5               3      15    right (shorter)
+1     3      8              2               2      4     right (shorter)
+1     2      8              6               1      6     right (shorter)
+```
+
+`left` moves exactly once, at the very first step, since after that `heights[1] = 8` stays the taller side for the rest of the run, and `right` is always the one being abandoned. The largest area found along the way is `49`, at the second step, and nothing after it beats that, so `49` is the answer.
+
+```javascript
+{{#include ./examples/container-with-most-water.js}}
+```
