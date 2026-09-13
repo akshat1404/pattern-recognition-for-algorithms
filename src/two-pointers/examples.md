@@ -19,3 +19,15 @@ Notice what never happened, at no point did the algorithm check `2` against `11`
 ```javascript
 {{#include ./examples/two-sum-ii.js}}
 ```
+
+[3Sum](https://leetcode.com/problems/3sum/description/) gives an array and asks for every unique triplet that sums to `0`, no duplicate triplets in the result. This is the case from the intuition chapter where the answer needs a third value outside the two moving pointers.
+
+The array isn't sorted to begin with, so sort it first, that's what makes converging possible at all. Once sorted, fix one value as an anchor, `sorted[i]`, and the rest of the problem becomes finding two numbers that sum to `-sorted[i]`, which is exactly Two Sum II's shape, just with a target computed from the anchor instead of given directly.
+
+Take `nums = [-1, 0, 1, 2, -1, -4]`, sorted to `[-4, -1, -1, 0, 1, 2]`. Anchor `i = 1`, value `-1`, target `1`. `left = 2` (`-1`), `right = 5` (`2`), sum `1`, a match, `[-1, -1, 2]`. Move both pointers, `left = 3` (`0`), `right = 4` (`1`), sum `1`, another match, `[-1, 0, 1]`. Move again, `left` and `right` meet, this anchor is done.
+
+Two duplicate-avoidance checks show up that Two Sum II never needed, since Two Sum II only ever wants one answer, not every unique one. First, skip an anchor equal to the previous anchor, `sorted[2] = -1` is the same as `sorted[1]`, using it again would just rediscover triplets already found with the first `-1`. Second, after a match, skip past any repeats of the values that just matched before continuing to converge, otherwise the same triplet gets recorded more than once from adjacent equal values.
+
+```javascript
+{{#include ./examples/three-sum.js}}
+```
