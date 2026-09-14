@@ -73,3 +73,40 @@ That last step is the whole safety argument. The moment a mismatch shows up, not
 ```javascript
 {{#include ./examples/valid-palindrome.js}}
 ```
+
+[Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/description/) gives an array of wall heights and asks for the total water trapped after it rains. This is the case from the intuition chapter with a small monotonic running value carried alongside the pointers, `maxLeft` and `maxRight`.
+
+Water trapped at any single position is `min(maxLeftOf(i), maxRightOf(i)) - height[i]`, the shorter of the two boundary walls decides how high the water can sit there, same idea as Container With Most Water, just asked at every position instead of between two chosen walls once.
+
+**Getting to the two-pointer version.** Start from the direct approach: build a `leftMax` array, left to right, and a `rightMax` array, right to left, then read both at every index. `leftMax[i]` only ever depends on indices before it, so building it left to right means each value is only ever needed once, right when it's produced, nothing past that point needs to look back. Storing the full array is wasted effort, a single running variable, the max so far, carries everything actually needed. The same is true of `rightMax`, walking right to left.
+
+That's the whole optimization, except for one snag: the two running variables come from walks in opposite directions, and we need both at the same index at once. Two pointers is what resolves that, `left` carrying its running max forward, `right` carrying its running max backward, both walks happening at the same time, converging toward the middle. At any moment, one side is fully settled and the other isn't yet, so the real question becomes deciding which side to resolve next, and that's what `heights[left]` versus `heights[right]` answers, cheaply, without waiting for either walk to finish.
+
+**Why the comparison is safe.** Say `heights[left] < maxLeft`, so `left` is not itself a new high point. Split on `heights[left]` against `heights[right]`. `right` sits somewhere within `[left, end]`, so `heights[right]` alone proves the true max from `left` to the end is at least `heights[right]`. When `heights[right] > heights[left]`, that's already bigger than `heights[left]`, and combined with `maxLeft` being tracked exactly, `maxLeft` is what decides the water level here, `right`'s side is provably not the bottleneck.
+
+If instead `heights[left] >= maxLeft`, there's nothing to prove at all, this position is the tallest thing seen so far on this side, it can't trap water regardless of what's on the other side, `maxLeft` just updates to `heights[left]` and the answer here is `0`.
+
+I'll be honest about the piece I'm not fully deriving here, showing that `maxLeft` is always safe to use rather than the true (unknown) max from the right relies on a subtler invariant than a single comparison, it holds, this is a standard, thoroughly checked algorithm, but a tight proof of it takes more space than fits cleanly here.
+
+Take `heights = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]`.
+
+```
+left  right  h[left]  h[right]  maxLeft  maxRight  move   water added  total
+0     11     0        1         0        0         left   0            0
+1     11     1        1         1        0         right  0            0
+1     10     1        2         1        1          left  0            0
+2     10     0        2         1        1          left  1            1
+3     10     2        2         2        1         right  0            1
+3     9      2        1         2        2         right  1            2
+3     8      2        2         2        2         right  0            2
+3     7      2        3         2        2          left  0            2
+4     7      1        3         2        2          left  1            3
+5     7      0        3         2        2          left  2            5
+6     7      1        3         2        2          left  1            6
+```
+
+`left` and `right` meet at index `7`, loop ends, total water trapped is `6`, which matches the known answer for this input.
+
+```javascript
+{{#include ./examples/trapping-rain-water.js}}
+```
