@@ -61,3 +61,15 @@ left  right  heights[left]  heights[right]  width  area  move
 ```javascript
 {{#include ./examples/container-with-most-water.js}}
 ```
+
+[Valid Palindrome](https://leetcode.com/problems/valid-palindrome/description/) gives a string and asks whether it reads the same forwards and backwards, counting only letters and digits, ignoring case, ignoring everything else. This is the case from the intuition chapter with no numeric order at all, just a fixed first character and a fixed last character to converge between.
+
+Punctuation and spaces get skipped entirely before any comparison happens, `"A man, a plan, a canal: Panama"` really means comparing just `"amanaplanacanalpanama"`, letters only, lowercased.
+
+Take `"race a car"`, which strips down to `"raceacar"`. `left = 0` (`r`), `right = 7` (`r`), match, both move inward. `left = 1` (`a`), `right = 6` (`a`), match, both move inward. `left = 2` (`c`), `right = 5` (`c`), match, both move inward. `left = 3` (`e`), `right = 4` (`a`), mismatch, stop immediately, the answer is `false`.
+
+That last step is the whole safety argument. The moment a mismatch shows up, nothing else in the string needs checking, one failed comparison already proves the string isn't a palindrome. And every match settles that pair permanently, a matched `r` at the two ends is never revisited once both pointers have moved past it, there's no scenario where re-checking it later would change anything.
+
+```javascript
+{{#include ./examples/valid-palindrome.js}}
+```
