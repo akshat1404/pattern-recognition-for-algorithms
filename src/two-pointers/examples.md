@@ -278,3 +278,25 @@ step  slow  fast  meet?
 ```javascript
 {{#include ./examples/linked-list-cycle.js}}
 ```
+
+[Linked List Cycle II](https://leetcode.com/problems/linked-list-cycle-ii/description/) asks a harder question than the last one, not just whether a cycle exists, but where it starts. Same O(1) space constraint, no set of visited nodes, no modifying the list.
+
+Phase one is identical to before, `slow` and `fast` at different speeds until they meet somewhere inside the cycle. The new part is phase two, and the reasoning behind it is worth working through rather than taking on faith.
+
+Let `a` be the distance from `head` to the cycle's start, `b` the distance from the start to wherever `slow` and `fast` meet, and `c` the rest of the way around the cycle back to the start, so the cycle's total length is `b + c`. When they meet, `slow` has traveled `a + b`. `fast` moves twice as fast in the same time, so it's traveled `2(a + b)`. `fast`'s extra distance beyond `slow`'s is entirely laps around the cycle, some whole number of them, call it `k`, so `2(a + b) - (a + b) = kL`, which simplifies to `a + b = kL`. Substituting `L = b + c` and solving for `a` gives `a = c + (k - 1)L`.
+
+That equation says `a` and `c` are the same distance, plus possibly a few extra full laps around the cycle. Extra full laps don't matter, walking an exact multiple of the cycle's length just returns to the same node. So starting one pointer at `head` and another at the meeting point, and moving both one step at a time, they're guaranteed to land on the same node after `a` steps, which is exactly the cycle's start.
+
+Take the same list as before, `A(3) -> B(2) -> C(0) -> D(-4)`, `D.next` pointing back to `B`. Phase one found `slow` and `fast` meeting at `D`. For phase two, `ptr1` resets to `A`, `ptr2` stays at `D`.
+
+```
+step  ptr1  ptr2  meet?
+0     A     D     no
+1     B     B     yes
+```
+
+Both land on `B` after one step, which is the actual start of the cycle in this list, `a = 1` (`A` to `B`), `c = 1` (`D` to `B`), matching the derivation exactly.
+
+```javascript
+{{#include ./examples/linked-list-cycle-ii.js}}
+```
