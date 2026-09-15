@@ -330,3 +330,26 @@ step  slow  fast
 ```javascript
 {{#include ./examples/middle-of-the-linked-list.js}}
 ```
+
+[Reorder List](https://leetcode.com/problems/reorder-list/description/) asks to rearrange `L0 -> L1 -> ... -> Ln` into `L0 -> Ln -> L1 -> Ln-1 -> L2 -> Ln-2 -> ...`, alternating from the front and the back, in place. A linked list can only be walked forward, so reaching "the back" repeatedly would normally mean re-walking from the head every time, or paying for an array of node references to get O(1) access from either end. Three phases, each one already covered elsewhere in this chapter, avoid both.
+
+Take `1 -> 2 -> 3 -> 4 -> 5`.
+
+**Phase 1, find the middle.** Exactly Middle of the Linked List, fast and slow. `slow` ends at `3`.
+
+**Phase 2, cut and reverse the second half.** `slow.next` gives the second half, `4 -> 5`, and `slow.next = null` cuts it away from the first half, `1 -> 2 -> 3`. Reversing `4 -> 5` in place, standard pointer reversal, gives `5 -> 4`. Reversing it is what turns "the back of the list" into something walkable front-to-back, `5` is now first, `4` is now second, in the exact order they need to be read off during the merge.
+
+**Phase 3, merge by alternating.** Walk both halves at once, `first` through `1 -> 2 -> 3`, `second` through `5 -> 4`, splicing one node from each into the result before moving both forward.
+
+```
+first  second  splice                    result so far
+1      5       1.next=5, 5.next=2        1 -> 5 -> 2 -> 3
+2      4       2.next=4, 4.next=3        1 -> 5 -> 2 -> 4 -> 3
+3      null    loop ends (second empty)  1 -> 5 -> 2 -> 4 -> 3
+```
+
+Final list, `1 -> 5 -> 2 -> 4 -> 3`, matching `L0 -> Ln -> L1 -> Ln-1 -> L2` exactly, with the middle node, `3`, left on its own at the end since the list has an odd length.
+
+```javascript
+{{#include ./examples/reorder-list.js}}
+```
