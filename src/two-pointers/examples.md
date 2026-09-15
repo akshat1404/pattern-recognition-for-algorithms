@@ -110,3 +110,28 @@ left  right  h[left]  h[right]  maxLeft  maxRight  move   water added  total
 ```javascript
 {{#include ./examples/trapping-rain-water.js}}
 ```
+
+[Squares of a Sorted Array](https://leetcode.com/problems/squares-of-a-sorted-array/description/) gives an array sorted in ascending order, possibly containing negatives, and asks for the squares of every element, sorted in ascending order. No target to match here, which makes it a different shape from every Converging problem so far.
+
+Squaring a negative number can flip its rank entirely, `-10` is the smallest value in the input but `100` is the largest square. Sorting the squares directly would mean starting over, ignoring the order the input already has, and paying `O(n log n)` for it.
+
+The input's order isn't wasted though. In a sorted array, the most negative value sits at the far left and the most positive at the far right, and the largest absolute value, the one that produces the largest square, has to be one of those two, nothing in the middle can beat both ends at once. So at every step, comparing `nums[left]` and `nums[right]` by their squares tells us which one is currently the largest square remaining, no scan needed.
+
+That flips the usual direction of filling an array. The largest square is known first, but it belongs at the last position of the sorted result, not the first. So the result array gets filled back to front, largest square placed at the highest open slot, and whichever pointer produced it moves inward for the next comparison.
+
+Take `nums = [-4, -1, 0, 3, 10]`.
+
+```
+left  right  nums[left]  nums[right]  left²  right²  placed at  value  move
+0     4      -4          10           16     100     4          100    right
+0     3      -4          3            16     9       3          16     left
+1     3      -1          3            1      9       2          9      right
+1     2      -1          0            1      0        1          1     left
+2     2      0           0            0      0        0          0     either
+```
+
+Reading the `value` column bottom to top gives the result, `[0, 1, 9, 16, 100]`, already in sorted order, without ever sorting the squares directly.
+
+```javascript
+{{#include ./examples/squares-of-a-sorted-array.js}}
+```
