@@ -208,3 +208,49 @@ Final array is `[1, 3, 12, 0, 0]`, non-zero elements in their original relative 
 ```javascript
 {{#include ./examples/move-zeroes.js}}
 ```
+
+[Remove Duplicates from Sorted Array II](https://leetcode.com/problems/remove-duplicates-from-sorted-array-ii/description/) is the same problem as before, but each value is now allowed to appear up to twice, not just once. Comparing `nums[fast]` against `nums[slow]`, the single most recently kept value, isn't enough anymore, that rule only ever lets one copy through.
+
+The fix moves the comparison back one more slot. Instead of checking against the last kept value, check against the value kept two positions before `slow`. If `nums[fast]` matches that, keeping it would make three copies of the same value in a row, since the two positions right before it already hold that value, so it gets skipped. If it doesn't match, keeping it is safe, either it's a genuinely new value, or it's a duplicate but fewer than two copies have been kept so far.
+
+Take `nums = [1, 1, 1, 2, 2, 3]`.
+
+```
+fast  nums[fast]  slow  check                    action
+0     1           0     slow < 2                 keep, slow = 1
+1     1           1     slow < 2                 keep, slow = 2
+2     1           2     1 == nums[0] (1)          skip (third copy)
+3     2           2     2 != nums[0] (1)          keep, slow = 3
+4     2           3     2 != nums[1] (1)          keep, slow = 4
+5     3           4     3 != nums[2] (2)          keep, slow = 5
+```
+
+`slow` ends at `5`, the new length, and the first five positions hold `[1, 1, 2, 2, 3]`, matching the expected result, two copies of `1`, two copies of `2`, one `3`.
+
+```javascript
+{{#include ./examples/remove-duplicates-from-sorted-array-ii.js}}
+```
+
+## Linked List
+
+[Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/description/) gives the head of a linked list and asks whether it contains a cycle, some node's `next` eventually leads back to a node already visited instead of ending at `null`. No random access here, no indices, only `.next`, which is why this bucket works mechanically differently from the other two.
+
+The direct fix is a set, record every node visited, check each new node against it, seen-before from hashing applied here. That works, but it costs O(n) space, one entry per node. Two pointers gets the same answer in O(1) space by moving at different speeds instead of remembering anything.
+
+`slow` moves one node per step, `fast` moves two. If there's no cycle, `fast` simply reaches the end first, nothing more to check. If there is a cycle, `fast` enters it before `slow` does, and every step afterward closes the gap between them by exactly one node, since `fast` gains one extra step of ground per iteration. A shrinking gap that never resets means they're guaranteed to land on the same node eventually, not just pass each other, which is what makes `slow === fast` a reliable signal.
+
+Take a list `A(3) -> B(2) -> C(0) -> D(-4)`, where `D.next` points back to `B` instead of `null`.
+
+```
+step  slow  fast  meet?
+0     A     A     no (start)
+1     B     C     no
+2     C     B     no
+3     D     D     yes
+```
+
+`fast` computed as two `.next` hops each step, `A -> B -> C` on step 1, `C -> D -> B` on step 2 (following the cycle back), `B -> C -> D` on step 3, where it lands on `D` at the same time `slow` does. They meet, a cycle exists.
+
+```javascript
+{{#include ./examples/linked-list-cycle.js}}
+```
