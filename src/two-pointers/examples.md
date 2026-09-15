@@ -300,3 +300,33 @@ Both land on `B` after one step, which is the actual start of the cycle in this 
 ```javascript
 {{#include ./examples/linked-list-cycle-ii.js}}
 ```
+
+[Middle of the Linked List](https://leetcode.com/problems/middle-of-the-linked-list/description/) gives the head of a linked list and asks for the middle node, the second of the two middle nodes if the list has an even length. A linked list has no O(1) length the way an array does, so the direct fix is two passes, one to count the nodes, one to walk to the halfway point.
+
+`fast` covers twice the ground `slow` does in the same number of steps, so by the time `fast` has walked the whole list, `slow` has walked exactly half of it, one pass instead of two.
+
+Odd length, `1 -> 2 -> 3 -> 4 -> 5`.
+
+```
+step  slow  fast
+0     1     1
+1     2     3
+2     3     5
+```
+
+`fast` reaches `5`, `fast.next` is `null`, loop stops, `slow` is at `3`, the exact middle.
+
+Even length, `1 -> 2 -> 3 -> 4`.
+
+```
+step  slow  fast
+0     1     1
+1     2     3
+2     3     null
+```
+
+`fast` becomes `null` after the second step (`3.next.next` runs past the end), loop stops, `slow` is at `3`, the second of the two middle nodes, matching what the problem asks for.
+
+```javascript
+{{#include ./examples/middle-of-the-linked-list.js}}
+```
