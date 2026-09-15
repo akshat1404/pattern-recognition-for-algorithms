@@ -231,6 +231,30 @@ fast  nums[fast]  slow  check                    action
 {{#include ./examples/remove-duplicates-from-sorted-array-ii.js}}
 ```
 
+[Sort Colors](https://leetcode.com/problems/sort-colors/description/), the Dutch National Flag problem, gives an array containing only `0`s, `1`s, and `2`s and asks to sort it in place, in one pass, without counting occurrences first. Move Zeroes got away with two pointers because it only had two categories, zero and non-zero. Three categories need a third pointer, since a two-way split can only ever describe a boundary between two regions, not three.
+
+`low` marks the edge of the confirmed-`0` region, everything before it is settled. `high` marks the edge of the confirmed-`2` region, everything after it is settled. `mid` scans forward, classifying whatever it currently sits on and deciding what to do with it.
+
+If `nums[mid]` is `0`, swap it with `nums[low]`, extending the confirmed-`0` region, and both `low` and `mid` advance, the value that came back from `low` is always safe to skip past, since the region before `mid` was already fully classified earlier, it could only have held a `0` or a `1`, never an unclassified value. If `nums[mid]` is `1`, it's already in the right place, `mid` just advances. If `nums[mid]` is `2`, swap it with `nums[high]`, extending the confirmed-`2` region, but `mid` does not advance here, whatever just got swapped in from `high` hasn't been looked at yet, and skipping it could leave it misclassified.
+
+Take `nums = [2, 0, 2, 1, 1, 0]`.
+
+```
+mid  nums[mid]  low  high  action                      array after
+0    2          0    5     swap(mid, high), high = 4    [0, 0, 2, 1, 1, 2]
+0    0          0    4     swap(low, mid), low=1, mid=1  [0, 0, 2, 1, 1, 2]
+1    0          1    4     swap(low, mid), low=2, mid=2  [0, 0, 2, 1, 1, 2]
+2    2          2    4     swap(mid, high), high = 3     [0, 0, 1, 1, 2, 2]
+2    1          2    3     mid = 3                       [0, 0, 1, 1, 2, 2]
+3    1          2    3     mid = 4                       [0, 0, 1, 1, 2, 2]
+```
+
+`mid` passes `high`, loop ends, final array `[0, 0, 1, 1, 2, 2]`, fully sorted in one pass.
+
+```javascript
+{{#include ./examples/sort-colors.js}}
+```
+
 ## Linked List
 
 [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/description/) gives the head of a linked list and asks whether it contains a cycle, some node's `next` eventually leads back to a node already visited instead of ending at `null`. No random access here, no indices, only `.next`, which is why this bucket works mechanically differently from the other two.
