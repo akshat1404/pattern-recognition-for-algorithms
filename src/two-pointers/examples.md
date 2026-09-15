@@ -158,3 +158,32 @@ Three boats, matching the known answer for this input.
 ```javascript
 {{#include ./examples/boats-to-save-people.js}}
 ```
+
+## Fast and Slow
+
+[Remove Duplicates from Sorted Array](https://leetcode.com/problems/remove-duplicates-from-sorted-array/description/) gives a sorted array and asks to remove duplicates in place, keeping one copy of each value, relative order preserved, and return the new length. The kept values have to end up in the first part of the array itself, no separate output array allowed.
+
+Without sorting, "have I already kept this value" would need a set, remembering every value written so far, O(n) extra space, which the problem explicitly rules out. Sorted order removes that need entirely, duplicates are guaranteed to sit next to each other, so a new value only ever needs comparing against the single most recently kept value, not against everything kept so far.
+
+`slow` marks the last position of the cleaned-up region, `fast` scans ahead one element at a time. Whenever `nums[fast]` differs from `nums[slow]`, it's a new value worth keeping, `slow` advances and `nums[fast]` gets written there. Whenever it matches, `fast` just moves on, nothing gets written, that duplicate is discarded.
+
+Take `nums = [0, 0, 1, 1, 1, 2, 2, 3, 3, 4]`.
+
+```
+fast  nums[fast]  nums[slow]  action
+1     0           0           skip (duplicate)
+2     1           0           keep, slow = 1, nums[1] = 1
+3     1           1           skip (duplicate)
+4     1           1           skip (duplicate)
+5     2           1           keep, slow = 2, nums[2] = 2
+6     2           2           skip (duplicate)
+7     3           2           keep, slow = 3, nums[3] = 3
+8     3           3           skip (duplicate)
+9     4           3           keep, slow = 4, nums[4] = 4
+```
+
+`slow` ends at `4`, so the new length is `5`, and the first five positions hold `[0, 1, 2, 3, 4]`, matching the known result for this input.
+
+```javascript
+{{#include ./examples/remove-duplicates-from-sorted-array.js}}
+```
