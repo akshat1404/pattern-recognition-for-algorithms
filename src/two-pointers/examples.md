@@ -135,3 +135,26 @@ Reading the `value` column bottom to top gives the result, `[0, 1, 9, 16, 100]`,
 ```javascript
 {{#include ./examples/squares-of-a-sorted-array.js}}
 ```
+
+[Boats to Save People](https://leetcode.com/problems/boats-to-save-people/description/) gives each person's weight and a weight limit, a boat carries at most two people, and asks for the minimum number of boats to carry everyone. Every problem so far in this bucket asked "find" or "compute" something, this one asks for the smallest count, a different objective entirely.
+
+Sort first. The heaviest person remaining always needs a boat, no way around that, so the only real question at each step is whether the lightest person remaining can ride along with them. That's the whole decision the two pointers are making, over and over.
+
+Two things make that decision safe. If the lightest remaining person can't fit with the heaviest, nobody else remaining can either, everyone else is at least as heavy as the lightest, so the heaviest goes alone, no point checking anyone in between. If the lightest can fit, pairing them here is never worse than saving the lightest for someone else, since every other remaining person is heavier and has an easier time fitting with somebody regardless of who takes the lightest spot.
+
+The code ends up looking close to Two Sum, sorted array, `left` and `right` converging, comparing a sum against a threshold, same skeleton. What's different is what happens after the comparison. Two Sum stops the moment it finds a match, the comparison's whole job is to locate one pair and return. Here there's no "found it" to stop on, every single step produces a boat regardless of the outcome, `boats++` runs unconditionally each iteration. The comparison isn't deciding when to stop, it's deciding how much progress this one boat buys, two people or one, `right` always moves, `left` only moves when the pair actually fits.
+
+Take `people = [3, 2, 2, 1]`, `limit = 3`, sorted to `[1, 2, 2, 3]`.
+
+```
+left  right  sorted[left]  sorted[right]  sum  fits?  boats
+0     3      1             3              4    no     1 (right alone)
+0     2      1             2              3    yes    2 (paired)
+1     1      2             2              4    no     3 (right alone)
+```
+
+Three boats, matching the known answer for this input.
+
+```javascript
+{{#include ./examples/boats-to-save-people.js}}
+```
