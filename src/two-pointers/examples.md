@@ -353,3 +353,25 @@ Final list, `1 -> 5 -> 2 -> 4 -> 3`, matching `L0 -> Ln -> L1 -> Ln-1 -> L2` exa
 ```javascript
 {{#include ./examples/reorder-list.js}}
 ```
+
+[Swapping Nodes in a Linked List](https://leetcode.com/problems/swapping-nodes-in-a-linked-list/description/) gives a list and an integer `k`, and asks to swap the values of the kth node from the start and the kth node from the end. The start side is easy, walk `k - 1` steps from `head`. The end side is the actual problem, a linked list has no length to compute an index from, unlike an array where "kth from the end" is just `length - k`.
+
+The fix doesn't compute an index at all, it keeps a fixed gap between two pointers instead. Once one pointer is `k - 1` steps ahead of the other, sliding both forward together, one step each, keeps that same gap the whole way. The moment the front pointer reaches the last node, the back pointer has to be exactly `k` nodes from the end, since the gap between them never changed, only where in the list it's sitting.
+
+Take `head = [1, 2, 3, 4, 5]`, `k = 2`.
+
+`first` walks `1` step from `head`, landing on node `2` (the 2nd from the start). `second` starts back at `head`, `runner` starts at `first`'s position, and both slide forward together until `runner` runs out of `next`.
+
+```
+step  runner  second
+0     2       1
+1     3       2
+2     4       3
+3     5       4
+```
+
+`runner` reaches `5`, the last node, `runner.next` is `null`, loop stops. `second` is at node `4`, the 2nd from the end. Swap the values at `first` (`2`) and `second` (`4`), giving `[1, 4, 3, 2, 5]`.
+
+```javascript
+{{#include ./examples/swapping-nodes-in-a-linked-list.js}}
+```
