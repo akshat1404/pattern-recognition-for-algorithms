@@ -187,3 +187,24 @@ fast  nums[fast]  nums[slow]  action
 ```javascript
 {{#include ./examples/remove-duplicates-from-sorted-array.js}}
 ```
+
+[Move Zeroes](https://leetcode.com/problems/move-zeroes/description/) gives an array and asks to move every zero to the end, keeping the relative order of the non-zero elements, in place, no copy of the array allowed. Unlike Remove Duplicates, this array isn't sorted at all, only the original relative order needs preserving, the weaker version of order from the intuition chapter.
+
+The decision at each step is simpler than Remove Duplicates too, no comparison against `slow`'s value needed, just whether `nums[fast]` is zero or not. But there's a wrinkle Remove Duplicates didn't have, a discarded duplicate can just be overwritten and forgotten, a zero can't, it still has to exist somewhere in the final array, just pushed to the end. That's why `slow` and `fast` swap places here instead of one overwriting the other, swapping relocates whatever was sitting at `slow` (a zero, or something already correctly placed) into `fast`'s old spot rather than losing it.
+
+Take `nums = [0, 1, 0, 3, 12]`.
+
+```
+fast  nums[fast]  action                         array after
+0     0           skip (zero)                    [0, 1, 0, 3, 12]
+1     1           swap(slow=0, fast=1), slow=1    [1, 0, 0, 3, 12]
+2     0           skip (zero)                     [1, 0, 0, 3, 12]
+3     3           swap(slow=1, fast=3), slow=2    [1, 3, 0, 0, 12]
+4     12          swap(slow=2, fast=4), slow=3    [1, 3, 12, 0, 0]
+```
+
+Final array is `[1, 3, 12, 0, 0]`, non-zero elements in their original relative order, every zero pushed to the end.
+
+```javascript
+{{#include ./examples/move-zeroes.js}}
+```
