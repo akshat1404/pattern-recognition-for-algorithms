@@ -375,3 +375,87 @@ step  runner  second
 ```javascript
 {{#include ./examples/swapping-nodes-in-a-linked-list.js}}
 ```
+
+[Remove Nth Node From End of List](https://leetcode.com/problems/remove-nth-node-from-end-of-list/description/) asks to remove the nth node from the end, in one pass. Same fixed-gap idea as Swapping Nodes, but the gap is used to land on the node just before a deletion point instead of a node to swap.
+
+A dummy node placed in front of `head` handles removing the head itself cleanly, without a special case. `fast` advances `n + 1` steps ahead of `slow`, both starting at the dummy, then both slide forward together, one step each, until `fast` runs off the end. The gap between them stays `n + 1` the whole time, so when `fast` becomes `null`, `slow` is sitting exactly one node before the one that needs removing.
+
+Take `head = [1, 2, 3, 4, 5]`, `n = 2`. `fast` advances 3 steps from the dummy, landing on node `3`. Then both slide together.
+
+```
+step  fast  slow
+0     3     dummy
+1     4     1
+2     5     2
+3     null  3
+```
+
+`slow` ends at node `3`, and `slow.next` is node `4`, the 2nd from the end, exactly the one to remove. `slow.next = slow.next.next` skips over it, giving `[1, 2, 3, 5]`.
+
+```javascript
+{{#include ./examples/remove-nth-node-from-end-of-list.js}}
+```
+
+[Intersection of Two Linked Lists](https://leetcode.com/problems/intersection-of-two-linked-lists/description/) gives two lists that may merge into a shared tail, and asks for the node where they intersect, or `null` if they never do. The two lists can differ in length before the shared part starts, so walking both from their own heads at the same speed won't line up at the intersection, one pointer would reach it before the other.
+
+The fix: whenever a pointer reaches the end of its own list, redirect it to the head of the other list. That swap is what equalizes things, each pointer ends up walking its own list's unique part plus the other list's unique part plus the shared part, the exact same total distance for both, so they arrive at the intersection together instead of offset by the length difference.
+
+Take `listA = [4, 1, 8, 4, 5]` and `listB = [5, 6, 1, 8, 4, 5]`, sharing the tail `8 -> 4 -> 5`. `pointerA` and `pointerB` start at their own heads, switching to the other list's head the moment either runs out.
+
+```
+step  pointerA  pointerB
+0     4         5
+1     1         6
+2     8         1
+3     4         8
+4     5         4
+5     null      5
+6     5 (B)     null
+7     6         4 (A)
+8     1         1
+9     8         8
+```
+
+`pointerA` and `pointerB` land on the same node, `8`, on step 9, the actual intersection.
+
+```javascript
+{{#include ./examples/intersection-of-two-linked-lists.js}}
+```
+
+[Palindrome Linked List](https://leetcode.com/problems/palindrome-linked-list/description/) asks whether a linked list reads the same forwards and backwards, in O(1) extra space. Same three phases as Reorder List, find the middle, reverse the second half, but the third phase compares instead of merges, Valid Palindrome's fail-on-first-mismatch logic applied to two pointers walking in lockstep instead of converging from opposite ends of a string.
+
+One deliberate difference from Middle of the Linked List's loop: the condition here is `fast.next && fast.next.next`, not `fast && fast.next`. That's what makes `slow` stop at the end of the first half rather than on the middle node itself, so the comparison phase only ever compares the two true halves against each other, never a middle node against nothing.
+
+Take `1 -> 2 -> 2 -> 1`. Finding the split: `slow` ends at the first `2`. `second = reverse(slow.next)` reverses `2 -> 1` into `1 -> 2`.
+
+```
+first  second  match?
+1      1       yes
+2      2       yes
+```
+
+`second` runs out after two comparisons, nothing failed, the list is a palindrome.
+
+```javascript
+{{#include ./examples/palindrome-linked-list.js}}
+```
+
+## Revisiting Hashing with Linked List technique
+
+[Happy Number](https://leetcode.com/problems/happy-number/description/) already got a full walkthrough in the Hashing chapter's Seen Before bucket, using a set to catch a repeated value. Worth returning to now that cycle detection has a name, the sequence of computed values, `n`, `next(n)`, `next(next(n))`, and so on, is really an implicit linked list, each value's "next" is just whatever the digit-squaring step produces. Floyd's applies to it exactly the way it applies to a real linked list, trading the set's O(n) space for two pointers at O(1).
+
+Take `n = 19`, `slow` and `fast` both starting at `19`, `slow` advancing one step at a time, `fast` two.
+
+```
+step  slow  fast
+1     82    68
+2     68    1
+3     100   1
+4     1     1
+```
+
+They meet at `1`, which is the only way this loop can end at `1`, since `1`'s own next value is always `1` again, a self-loop. Meeting anywhere else would mean the sequence found a cycle that never reaches `1`, exactly what happened for `n = 2` back in the Hashing chapter's trace.
+
+```javascript
+{{#include ./examples/happy-number-floyd.js}}
+```
