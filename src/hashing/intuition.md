@@ -21,4 +21,4 @@ I am going to throw some hints for identifying the usage of maps, but they won't
 
 Whenever a problem's brute force reads as "for each element, scan the rest to check something," that "something" is the candidate for going into a map first.
 
-Each of these four questions gets a full worked problem in the Examples chapter that follows, reasoning and code together.
+Each of these four questions gets a full worked problem in the Examples chapter that follows, reasoning and code together. The next chapter, Asking the Right Questions, covers how to tell hashing apart from a neighboring pattern when a problem could plausibly go either way.
