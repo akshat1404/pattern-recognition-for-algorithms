@@ -17,5 +17,6 @@
 
 - [Sliding Window](./sliding-window/intro.md)
   - [Intuition](./sliding-window/intuition.md)
+  - [Asking the Right Questions](./sliding-window/asking-the-right-questions.md)
   - [Implementation](./sliding-window/implementation.md)
   - [Intuition in Action](./sliding-window/examples.md)
