@@ -40,6 +40,4 @@ For a single matching pair, Two Sum II, Container With Most Water, the answer re
 
 So the reliable claim is narrower than it first seems: each step's decision comes from the two pointer values. The final answer sometimes is that same comparison, sometimes needs an extra anchor alongside it, and sometimes is a property of the whole walk rather than any single step.
 
-## The boundary against sliding window
-
-Two pointers and sliding window can look identical at a glance, same starting position, same direction of travel. The difference is what decides the next move. Two pointers decides from the pointer values directly, or a running value that only ever grows. Sliding window decides from an aggregate over the entire current window, a sum, a count, a frequency map, and that aggregate has to be actively adjusted both ways, added to when the window grows, subtracted from when it shrinks. If undoing part of what's being tracked is ever necessary when a pointer moves, that's sliding window, not two pointers.
+The next chapter, Asking the Right Questions, covers how to tell two pointers apart from sliding window when a problem could plausibly go either way.

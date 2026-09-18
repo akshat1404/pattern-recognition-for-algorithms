@@ -1,0 +1,9 @@
+# Asking the Right Questions
+
+## The boundary against sliding window
+
+Two pointers and sliding window can look identical at a glance, same starting position, same direction of travel. The difference is what decides the next move. Two pointers decides from the pointer values directly, or a running value that only ever grows. Sliding window decides from an aggregate over the entire current window, a sum, a count, a frequency map, and that aggregate has to be actively adjusted both ways, added to when the window grows, subtracted from when it shrinks. If undoing part of what's being tracked is ever necessary when a pointer moves, that's sliding window, not two pointers.
+
+Three real problems make this concrete. [Move Zeroes](https://leetcode.com/problems/move-zeroes/description/) never needs to know anything about a range, `fast` looks at one element, decides keep or skip, moves on, nothing gets tracked across a span of elements at all, squarely two pointers. [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/description/) needs a set of every character currently in the window, and when the window shrinks from the left, a character has to be removed from that set, undone, not just left alone. [Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/description/) needs a running sum of the current window, and shrinking the window means subtracting the departing element back out, the exact same undo pattern with a number instead of a set.
+
+Same shape on the surface for all three, two pointers walking through an array. What separates them is whether anything has to be actively un-tracked when the left side moves, nothing to undo means two pointers, something to undo means sliding window, worth checking [Sliding Window](../sliding-window/intro.md) instead.
