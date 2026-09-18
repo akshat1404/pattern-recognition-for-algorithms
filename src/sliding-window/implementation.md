@@ -74,3 +74,9 @@ function minimizeWindow(nums, meetsThreshold) {
 ```
 
 The direction of the `while` condition is what separates this from maximizing, `!isValid()` shrinks to escape a bad state, `meetsThreshold()` shrinks to keep testing a good one. Mixing the two up is the most common way this pattern breaks, shrinking on the wrong condition either stops too early or never stops at all.
+
+## The one question that actually matters
+
+`right` always advances, that never changes. The aggregate updating incrementally is mechanical once it's clear what to track. The one piece of real thinking left, every single time, is answering "what moves `left` forward."
+
+Fixed size answers it directly, the window's size exceeding `k`. Maximizing answers it as "the window just became invalid." Minimizing answers it as "the window is still valid, keep pushing to see how much smaller it gets." Three different sources for the exact same question, and once that question has an answer for a given problem, the rest of the code is close to boilerplate.
