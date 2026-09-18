@@ -1,6 +1,7 @@
 # Summary
 
 [Introduction](./introduction.md)
+[Decision Tree](./decision-tree.md)
 
 - [Hashing](./hashing/intro.md)
   - [Intuition](./hashing/intuition.md)
