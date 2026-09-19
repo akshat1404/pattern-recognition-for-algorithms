@@ -114,3 +114,34 @@ Now the same idea with a negative number, to see exactly what breaks. Take `targ
 ```javascript
 {{#include ./examples/minimum-size-subarray-sum.js}}
 ```
+
+[Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/description/) gives two strings, `s` and `t`, and asks for the shortest substring of `s` that contains every character of `t`, duplicates included, or an empty string if none exists.
+
+"Minimum" is the min ask, "substring" is the contiguous range. The condition that moves `left` is the window containing everything `t` needs, so the shape matches the last problem, `right` grows until the window becomes valid, then `left` shrinks for as long as it stays valid, recording the smallest window along the way.
+
+What's different is how validity works. The last problem checked a single running sum against a target. Here, validity is about how many of each specific character the window holds, which points to a frequency map, two of them, one for what `t` requires, built once, and one for what the window currently holds, adjusted as `right` grows and `left` shrinks. The direction check still holds, adding a character can never reduce what the window covers, and dropping one can never add coverage.
+
+Comparing the two maps in full after every move would cost a scan each time. The usual trick keeps a single counter instead, `formed`, the number of distinct required characters that currently have enough copies in the window. It only changes at the exact moment a character's count reaches its required amount going up, or drops below it going down. Extra copies beyond the requirement change nothing, and neither does dropping one of them. Validity becomes one comparison, `formed` against the number of distinct characters in `t`.
+
+Take `s = "ADOBECODEBANC"`, `t = "ABC"`, so `A`, `B`, and `C` are each required once.
+
+```
+right  char  formed  events                                               left  best
+0-2    A D O 1       none                                                 0     -
+3      B     2       none                                                 0     -
+4      E     2       none                                                 0     -
+5      C     3       valid, record ADOBEC (6), drop A, formed back to 2    1     ADOBEC
+6-8    O D E 2       none                                                 1     ADOBEC
+9      B     2       B count is now 2, formed unchanged                    1     ADOBEC
+10     A     3       valid, windows of 10, 9, 8, 7, 6 are none smaller,    6     ADOBEC
+                     dropping C at left 5 sends formed back to 2
+11     N     2       none                                                 6     ADOBEC
+12     C     3       valid, 7 and 6 are not smaller, record EBANC (5),     10    BANC
+                     record BANC (4), drop B, formed back to 2
+```
+
+At `right = 9`, the second `B` arrives and `formed` doesn't move, `B` was already covered. Later, when `left` drops the first `B`, its count falls from `2` to `1`, still enough, so `formed` doesn't move then either. The answer is `BANC`, the known result for this input.
+
+```javascript
+{{#include ./examples/minimum-window-substring.js}}
+```
