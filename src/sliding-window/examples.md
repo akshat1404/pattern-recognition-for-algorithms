@@ -84,3 +84,33 @@ A widely used version of this solution skips recomputing the most frequent count
 ```javascript
 {{#include ./examples/longest-repeating-character-replacement.js}}
 ```
+
+## Variable Size, Minimizing
+
+[Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/description/) gives an array of positive integers and a target, and asks for the length of the shortest contiguous subarray whose sum is at least the target, or `0` if no such subarray exists.
+
+The problem guarantees every number is positive, no zeros, no negatives. That guarantee is what makes everything below work, and it's worth holding onto from the start.
+
+"Minimum" is the min ask, "subarray" is the contiguous range. The condition that moves `left` flips direction from the last two problems. Those shrank while the window was invalid. Here, growing `right` pushes the sum toward the target, so once the sum reaches it, the window is valid, and `left` keeps stepping forward for as long as the window stays valid, recording a smaller answer at every step, stopping only when dropping one more element would break it.
+
+Because every number is positive, growing the window can only raise the sum and shrinking it can only lower it. That's the direction check passing, and it's the reason it's safe to stop shrinking the moment the sum drops below the target, nothing further along could have brought it back up.
+
+Take `target = 7`, `nums = [2, 3, 1, 2, 4, 3]`.
+
+```
+right  added  sum  shrink steps                              left  sum after  best
+0      2      2    none                                      0     2          -
+1      3      5    none                                      0     5          -
+2      1      6    none                                      0     6          -
+3      2      8    record 4, drop 2                          1     6          4
+4      4      10   record 4, drop 3, record 3, drop 1        3     6          3
+5      3      9    record 3, drop 2, record 2, drop 4        5     3          2
+```
+
+`best` ends at `2`, from the window `[4, 3]`, the known answer for this input.
+
+Now the same idea with a negative number, to see exactly what breaks. Take `target = 5`, `nums = [4, -5, 6]`. The true answer is `1`, the single element `[6]`. Running the same loop, `right = 2` gives a sum of `4 - 5 + 6 = 5`, valid, record a length of `3`. Then `left` drops the `4`, the sum falls to `1`, below the target, and the loop stops, reporting `3`. It stopped too early. The element actually blocking a smaller answer was the `-5` in the middle, and dropping it would have raised the sum, but the loop only shrinks while the sum stays at or above the target, so it never got that far. With negatives in the array, growing or shrinking the window no longer moves the sum in one predictable direction, and this shrinking condition stops being trustworthy. That's the case Subarray Sum Equals K in the Hashing chapter handles with prefix sums instead.
+
+```javascript
+{{#include ./examples/minimum-size-subarray-sum.js}}
+```
