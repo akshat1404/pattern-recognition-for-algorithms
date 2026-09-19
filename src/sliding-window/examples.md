@@ -57,3 +57,30 @@ right  char  window before  action                           left  window after 
 ```javascript
 {{#include ./examples/longest-substring-without-repeating-characters.js}}
 ```
+
+[Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/description/) gives a string of uppercase letters and an integer `k`. Up to `k` characters can be replaced with any other letter, and the question is the length of the longest substring that can be made all one letter.
+
+"Longest" is the max ask, "substring" is the contiguous range. The third piece, the condition that moves `left`, isn't stated anywhere in the problem, it has to be derived. A window can be turned into all one letter by replacing every character that isn't its most frequent letter, so the number of replacements needed is `windowSize - countOfMostFrequentLetter`. The window is valid while that stays at most `k`, and invalid the moment it goes over, which is when `left` steps forward.
+
+The tracked value here is a frequency map of the letters currently inside the window, incremented as `right` adds a letter, decremented as `left` drops one. That's the Frequency bucket from the Hashing chapter sitting inside the window. Sliding window decides how the window moves, hashing supplies what gets tracked inside it, and most non-trivial sliding window problems are one wrapped around the other.
+
+Take `s = "AABABBA"`, `k = 1`.
+
+```
+right  char  window after shrinking  counts     size  most  size - most  best
+0      A     A                       A1         1     1     0            1
+1      A     AA                      A2         2     2     0            2
+2      B     AAB                     A2 B1      3     2     1            3
+3      A     AABA                    A3 B1      4     3     1            4
+4      B     BAB                     A1 B2      3     2     1            4
+5      B     BABB                    A1 B3      4     3     1            4
+6      A     BBA                     A1 B2      3     2     1            4
+```
+
+At `right = 4` the window `AABAB` needs `5 - 3 = 2` replacements, over `k = 1`, so `left` steps forward twice, first dropping an `A`, then another `A`, until the window is `BAB`. The same thing happens at `right = 6`. `best` ends at `4`, the known answer for this input.
+
+A widely used version of this solution skips recomputing the most frequent count on every shrink, it keeps a running maximum that only ever goes up and never lowers it. That saves scanning the map each time and gives correct answers, but proving that a stale maximum can never inflate the result takes a subtler argument than belongs here. The version below recomputes exactly, which stays cheap since the map never holds more than 26 letters.
+
+```javascript
+{{#include ./examples/longest-repeating-character-replacement.js}}
+```
