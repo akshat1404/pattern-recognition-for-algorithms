@@ -26,6 +26,29 @@ This array has negative numbers, and nothing breaks. The direction check from th
 {{#include ./examples/maximum-average-subarray-i.js}}
 ```
 
+[Permutation in String](https://leetcode.com/problems/permutation-in-string/description/) gives two strings, `s1` and `s2`, and asks whether `s2` contains a permutation of `s1` as a contiguous substring.
+
+Read the statement the same way as before, and notice what's missing. There's no min or max ask, the answer is a yes or no. But "substring" is still the contiguous range, and the window's size is handed over directly, a permutation of `s1` has exactly `s1`'s length. So this is the fixed-size shape, and the answer to "what moves `left`" is the same as in Maximum Average Subarray, the window's length reaching past `s1`'s length.
+
+A permutation of `s1` is an anagram of `s1`, same letters, same counts. That's the Valid Anagram question from the Hashing chapter, asked of every window of `s2` that is exactly `s1`'s length. Checking each window from scratch would rebuild its letter counts every time. Sliding window supplies the other half of the solution, moving the window forward changes exactly two letters, one leaves, one enters, so the counts adjust in constant time. Hashing decides what a match means, sliding window decides how to check it at every position without redoing the work.
+
+Comparing the two count arrays in full after every move would cost a scan of 26 letters each time. The same idea from Minimum Window Substring applies here, keep a counter, `matches`, of how many of the 26 letters currently have equal counts in both. A letter becomes matched when its count reaches the target, and stops being matched when it moves one past it. The window is a permutation exactly when `matches` reaches `26`.
+
+Take `s1 = "ab"`, `s2 = "eidbaooo"`, so the window is `2` wide. The first window, `ei`, has `22` letters matching, every letter except `a`, `b`, `e`, and `i`.
+
+```
+right  window  entering  leaving  matches
+2      id      d         e        22
+3      db      b         i        24
+4      ba      a         d        26
+```
+
+At `right = 2`, `d` enters and stops matching, `e` leaves and starts matching again, so `matches` holds at `22`. At `right = 3`, `b` enters and reaches its target, `i` leaves and starts matching, `matches` goes to `24`. At `right = 4`, `a` enters and reaches its target, `d` leaves and starts matching, `matches` reaches `26`, and the answer is `true`, the window `ba` is a permutation of `ab`.
+
+```javascript
+{{#include ./examples/permutation-in-string.js}}
+```
+
 ## Variable Size, Maximizing
 
 [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/description/) gives a string and asks for the length of the longest substring with no repeated character.
