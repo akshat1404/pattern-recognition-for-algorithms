@@ -49,6 +49,61 @@ At `right = 2`, `d` enters and stops matching, `e` leaves and starts matching ag
 {{#include ./examples/permutation-in-string.js}}
 ```
 
+[Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/description/) gives an array and a window size `k`, and asks for an array containing the maximum of every window as it slides across, one number per window position. For `nums = [1, 3, -1, -3, 5, 3, 6, 7]` and `k = 3`, the answer is `[3, 3, 5, 5, 6, 7]`.
+
+The size is given, so this is the fixed-size shape, and `left` moves when the window's length passes `k`. The maximum being asked for is the largest value inside each window, not a window size, so there's no min or max ask over sizes here, same as Permutation in String.
+
+The brute force finds the max of every window by scanning all `k` of its elements, `n - k + 1` windows at `k` elements each, `O(n * k)`. Each slide changes exactly two things, one element leaves, one enters, and the other `k - 1` elements stay exactly as they were. The brute force ignores that and re-reads them anyway.
+
+For a sum, using that is one line, add the entering number, subtract the leaving one. A maximum has no such shortcut. A single running max works until the max itself leaves the window, and then there's nothing to subtract, the next biggest has to come from somewhere in the elements that stayed, and a lone variable never recorded it. So the question becomes: for the `k - 1` elements that stay, what is the least that needs to be remembered so the next max can be answered without re-reading them?
+
+Remembering only the max and the second max feels like enough, and it isn't. Take `nums = [9, 8, 7, 6, 5]`, `k = 3`, correct answers `[9, 8, 7]`. The first window `[9, 8, 7]` has max `9`, second `8`, and `7` gets thrown away. Slide, `9` leaves, `6` enters, the window is `[8, 7, 6]`, the max is `8`, correct, but the new second max should be `7`, which was discarded, so `6` takes its place. Slide again, `8` leaves, the window is `[7, 6, 5]`, and the tracker only knows `6`, so it reports `6` when the true max is `7`. In a decreasing run, every number in the window gets its turn as the max, one after another, as the bigger ones ahead of it leave, so every one of them has to be remembered.
+
+What can be forgotten is a number that will never get a turn. A number that is both older and smaller than something that arrived after it. Take `[3, 1, 2]`. `1` sits before `2`, so `1` leaves the window before `2` does, and `2` is bigger the whole time they share the window. `1` will never be the max, so it can be dropped. Smaller numbers that arrive later are the ones to keep, since they are still in the window after the bigger ones ahead of them leave.
+
+That list of surviving candidates is kept in a deque, short for double-ended queue, a list where items can be added and removed at both ends. A regular queue only adds at the back and removes from the front, a stack only touches one end, a deque allows both, and this problem uses both.
+
+A new number arrives, and everything smaller than or equal to it is removed from the back, one at a time, stopping at the first number that is bigger, then the new number is added at the back. The front number's position has slid out of the window, so it is removed from the front. The current max is needed, so the front is read.
+
+The deque ends up in decreasing order from front to back, but nothing sorts it. The order is a side effect of the removal rule, every number gets removed if something bigger and newer arrives behind it, so whatever sits in front of any number is bigger or equal. That's why the front is always the max, and finding the max costs nothing, no scan. It also never holds the whole window, only the survivors, and can be shorter than the window, never longer. Numbers equal to the new one are removed too, the newer copy leaves later and is just as large, so the older one never matters.
+
+If a new number is smaller than the front but bigger than the back, removal continues from the back until it reaches something bigger, and the new number goes right after it. With deque values `[7, 5, 2]` and a new number `4`, `2` is removed, `5` is bigger so removal stops, and `4` is added, giving `[7, 5, 4]`. It sits in the middle of the old contents by value but at the back of the deque, since everything that was behind it was removed.
+
+Take `nums = [1, 3, -1, -3, 5, 3, 6, 7]`, `k = 3`, showing the deque's values.
+
+```
+new number  deque after       max
+1           [1]               -
+3           [3]               -      (1 dropped, 3 beats it)
+-1          [3, -1]           3
+-3          [3, -1, -3]       3
+5           [5]               5      (-3, -1, 3 all dropped)
+3           [5, 3]            5
+6           [6]               6      (3 and 5 dropped)
+7           [7]               7
+```
+
+When `5` arrives, the window is `[-1, -3, 5]`, but the deque holds only `5`. `-1` and `-3` sit before `5` and leave sooner, so they can never win again. The result is `[3, 3, 5, 5, 6, 7]`.
+
+Nothing in that trace ever removed the front for sliding out of the window, because every number arriving was big enough to clear things first. That case shows up in a decreasing run. Take `nums = [9, 8, 7, 6, 5]`, `k = 3`.
+
+```
+new number  deque before front check  front out of window?  deque after   max
+9           [9]                       no                     [9]           -
+8           [9, 8]                    no                     [9, 8]        -
+7           [9, 8, 7]                 no                     [9, 8, 7]     9
+6           [9, 8, 7, 6]              yes, 9 slid out        [8, 7, 6]     8
+5           [8, 7, 6, 5]              yes, 8 slid out        [7, 6, 5]     7
+```
+
+Nothing new beats anything ahead of it, so the deque keeps everything, and the front leaves purely because its position slid out of the window. The result is `[9, 8, 7]`, the correct answer, and the exact case where keeping only the max and the second max failed.
+
+Each number is added to the deque once and removed at most once, so the whole thing runs in `O(n)`, even though a single step can remove many numbers. The code stores indices instead of values, since the front's position is what says whether it has slid out.
+
+```javascript
+{{#include ./examples/sliding-window-maximum.js}}
+```
+
 ## Variable Size, Maximizing
 
 [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/description/) gives a string and asks for the length of the longest substring with no repeated character.
