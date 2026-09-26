@@ -104,6 +104,126 @@ Each number is added to the deque once and removed at most once, so the whole th
 {{#include ./examples/sliding-window-maximum.js}}
 ```
 
+## Variable Size, Maximizing
+
+[Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/description/) gives a string and asks for the length of the longest substring with no repeated character.
+
+Read the problem statement word by word. "Longest" is a max ask, the first signal. "Substring" is a contiguous range, the second signal, stronger. "Without repeating characters" is the third, it hands over the condition that moves `left`, the window is invalid the moment a character shows up twice inside it. It also passes the direction check on its own, dropping a character off the left edge can only reduce or keep the same number of duplicates, never create a new one.
+
+The brute force checks every substring for duplicates, rebuilding a set of its characters each time. The window keeps one set alive instead, holding exactly the characters currently inside it, added to as `right` grows, removed from as `left` shrinks. That removal is the undo step, and it's what marks this as sliding window rather than plain two pointers.
+
+Each time `right` reaches a new character, one question decides everything, is that character already inside the window. If not, add it and move on. If yes, `left` has to step forward, dropping characters off the left edge one at a time, until the duplicate is gone, and only then does the new character go in.
+
+That check has to happen before adding, not after. A `Set` silently ignores an attempt to add a value it already holds, so adding first would hide the very duplicate we need to notice.
+
+Take `s = "abcabcbb"`.
+
+```
+right  char  window before  action                           left  window after  best
+0      a     {}             add                              0     {a}           1
+1      b     {a}            add                              0     {a, b}        2
+2      c     {a, b}         add                              0     {a, b, c}     3
+3      a     {a, b, c}      a inside, drop a, then add       1     {b, c, a}     3
+4      b     {b, c, a}      b inside, drop b, then add       2     {c, a, b}     3
+5      c     {c, a, b}      c inside, drop c, then add       3     {a, b, c}     3
+6      b     {a, b, c}      b inside, drop a, drop b, add    5     {c, b}        3
+7      b     {c, b}         b inside, drop c, drop b, add    7     {b}           3
+```
+
+`best` ends at `3`, from the window `abc`, matching the known answer.
+
+```javascript
+{{#include ./examples/longest-substring-without-repeating-characters.js}}
+```
+
+[Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/description/) gives a string of uppercase letters and an integer `k`. Up to `k` characters can be replaced with any other letter, and the question is the length of the longest substring that can be made all one letter.
+
+"Longest" is the max ask, "substring" is the contiguous range. The third piece, the condition that moves `left`, isn't stated anywhere in the problem, it has to be derived. A window can be turned into all one letter by replacing every character that isn't its most frequent letter, so the number of replacements needed is `windowSize - countOfMostFrequentLetter`. The window is valid while that stays at most `k`, and invalid the moment it goes over, which is when `left` steps forward.
+
+The tracked value here is a frequency map of the letters currently inside the window, incremented as `right` adds a letter, decremented as `left` drops one. That's the Frequency bucket from the Hashing chapter sitting inside the window. Sliding window decides how the window moves, hashing supplies what gets tracked inside it, and most non-trivial sliding window problems are one wrapped around the other.
+
+Take `s = "AABABBA"`, `k = 1`.
+
+```
+right  char  window after shrinking  counts     size  most  size - most  best
+0      A     A                       A1         1     1     0            1
+1      A     AA                      A2         2     2     0            2
+2      B     AAB                     A2 B1      3     2     1            3
+3      A     AABA                    A3 B1      4     3     1            4
+4      B     BAB                     A1 B2      3     2     1            4
+5      B     BABB                    A1 B3      4     3     1            4
+6      A     BBA                     A1 B2      3     2     1            4
+```
+
+At `right = 4` the window `AABAB` needs `5 - 3 = 2` replacements, over `k = 1`, so `left` steps forward twice, first dropping an `A`, then another `A`, until the window is `BAB`. The same thing happens at `right = 6`. `best` ends at `4`, the known answer for this input.
+
+A widely used version of this solution skips recomputing the most frequent count on every shrink, it keeps a running maximum that only ever goes up and never lowers it. That saves scanning the map each time and gives correct answers, but proving that a stale maximum can never inflate the result takes a subtler argument than belongs here. The version below recomputes exactly, which stays cheap since the map never holds more than 26 letters.
+
+```javascript
+{{#include ./examples/longest-repeating-character-replacement.js}}
+```
+
+## Variable Size, Minimizing
+
+[Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/description/) gives an array of positive integers and a target, and asks for the length of the shortest contiguous subarray whose sum is at least the target, or `0` if no such subarray exists.
+
+The problem guarantees every number is positive, no zeros, no negatives. That guarantee is what makes everything below work, and it's worth holding onto from the start.
+
+"Minimum" is the min ask, "subarray" is the contiguous range. The condition that moves `left` flips direction from the last two problems. Those shrank while the window was invalid. Here, growing `right` pushes the sum toward the target, so once the sum reaches it, the window is valid, and `left` keeps stepping forward for as long as the window stays valid, recording a smaller answer at every step, stopping only when dropping one more element would break it.
+
+Because every number is positive, growing the window can only raise the sum and shrinking it can only lower it. That's the direction check passing, and it's the reason it's safe to stop shrinking the moment the sum drops below the target, nothing further along could have brought it back up.
+
+Take `target = 7`, `nums = [2, 3, 1, 2, 4, 3]`.
+
+```
+right  added  sum  shrink steps                              left  sum after  best
+0      2      2    none                                      0     2          -
+1      3      5    none                                      0     5          -
+2      1      6    none                                      0     6          -
+3      2      8    record 4, drop 2                          1     6          4
+4      4      10   record 4, drop 3, record 3, drop 1        3     6          3
+5      3      9    record 3, drop 2, record 2, drop 4        5     3          2
+```
+
+`best` ends at `2`, from the window `[4, 3]`, the known answer for this input.
+
+Now the same idea with a negative number, to see exactly what breaks. Take `target = 5`, `nums = [4, -5, 6]`. The true answer is `1`, the single element `[6]`. Running the same loop, `right = 2` gives a sum of `4 - 5 + 6 = 5`, valid, record a length of `3`. Then `left` drops the `4`, the sum falls to `1`, below the target, and the loop stops, reporting `3`. It stopped too early. The element actually blocking a smaller answer was the `-5` in the middle, and dropping it would have raised the sum, but the loop only shrinks while the sum stays at or above the target, so it never got that far. With negatives in the array, growing or shrinking the window no longer moves the sum in one predictable direction, and this shrinking condition stops being trustworthy. That's the case Subarray Sum Equals K in the Hashing chapter handles with prefix sums instead.
+
+```javascript
+{{#include ./examples/minimum-size-subarray-sum.js}}
+```
+
+[Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/description/) gives two strings, `s` and `t`, and asks for the shortest substring of `s` that contains every character of `t`, duplicates included, or an empty string if none exists.
+
+"Minimum" is the min ask, "substring" is the contiguous range. The condition that moves `left` is the window containing everything `t` needs, so the shape matches the last problem, `right` grows until the window becomes valid, then `left` shrinks for as long as it stays valid, recording the smallest window along the way.
+
+What's different is how validity works. The last problem checked a single running sum against a target. Here, validity is about how many of each specific character the window holds, which points to a frequency map, two of them, one for what `t` requires, built once, and one for what the window currently holds, adjusted as `right` grows and `left` shrinks. The direction check still holds, adding a character can never reduce what the window covers, and dropping one can never add coverage.
+
+Comparing the two maps in full after every move would cost a scan each time. The usual trick keeps a single counter instead, `formed`, the number of distinct required characters that currently have enough copies in the window. It only changes at the exact moment a character's count reaches its required amount going up, or drops below it going down. Extra copies beyond the requirement change nothing, and neither does dropping one of them. Validity becomes one comparison, `formed` against the number of distinct characters in `t`.
+
+Take `s = "ADOBECODEBANC"`, `t = "ABC"`, so `A`, `B`, and `C` are each required once.
+
+```
+right  char  formed  events                                               left  best
+0-2    A D O 1       none                                                 0     -
+3      B     2       none                                                 0     -
+4      E     2       none                                                 0     -
+5      C     3       valid, record ADOBEC (6), drop A, formed back to 2    1     ADOBEC
+6-8    O D E 2       none                                                 1     ADOBEC
+9      B     2       B count is now 2, formed unchanged                    1     ADOBEC
+10     A     3       valid, windows of 10, 9, 8, 7, 6 are none smaller,    6     ADOBEC
+                     dropping C at left 5 sends formed back to 2
+11     N     2       none                                                 6     ADOBEC
+12     C     3       valid, 7 and 6 are not smaller, record EBANC (5),     10    BANC
+                     record BANC (4), drop B, formed back to 2
+```
+
+At `right = 9`, the second `B` arrives and `formed` doesn't move, `B` was already covered. Later, when `left` drops the first `B`, its count falls from `2` to `1`, still enough, so `formed` doesn't move then either. The answer is `BANC`, the known result for this input.
+
+```javascript
+{{#include ./examples/minimum-window-substring.js}}
+```
+
 ## Twists on the Standard Shapes
 
 The problems above each fit one of the three shapes as stated. The four below need one extra move before the window applies, a reframing, a subtraction, a sort, or a baseline. Three of them have a hidden window, one the statement never mentions, covered in the intuition chapter under The Hidden Window. Each one still comes down to the same question, what moves `left`, but the work is in getting the problem into a shape where that question has an answer.
@@ -226,141 +346,40 @@ At `right = 2`, raising `1` and `4` up to `8` costs `11`, over the budget, so `l
 
 [Grumpy Bookstore Owner](https://leetcode.com/problems/grumpy-bookstore-owner/description/) gives the number of customers arriving each minute, and for each minute whether the owner is grumpy, in which case those customers leave unsatisfied. The owner can stay calm for `minutes` consecutive minutes, once, and the goal is the maximum number of satisfied customers.
 
-Some customers are satisfied regardless, the ones arriving while the owner is already calm. That's a fixed baseline, and no window changes it. The technique only affects customers arriving during grumpy minutes inside the window it covers. So the window doesn't track the total at all, only the extra gained inside it, the customers in grumpy minutes it would save. The size is given, `minutes`, and the goal is the largest extra, so this is the fixed-size shape sitting on top of a baseline. The answer is the baseline plus the best extra.
+Read the statement the usual way. "Maximum" is the max ask. The contiguous range is written right in the statement, `minutes` consecutive minutes, and its size is handed over. So this is the fixed-size shape, and unlike the last few problems there is no hidden window to find. The work here is deciding what the window should track. It takes five steps, on `customers = [1, 0, 1, 2, 1, 1, 7, 5]`, `grumpy = [0, 1, 0, 1, 0, 1, 0, 1]`, `minutes = 3`.
 
-Take `customers = [1, 0, 1, 2, 1, 1, 7, 5]`, `grumpy = [0, 1, 0, 1, 0, 1, 0, 1]`, `minutes = 3`. The baseline is the customers in calm minutes, `1 + 1 + 1 + 7 = 10`. The first window covers minutes `0` to `2`, and the extra there is `0`.
+**1. What the problem says.** Each minute, some customers walk in, and the owner is either calm (`0`) or grumpy (`1`). Customers who arrive while the owner is grumpy leave unhappy. The owner can pick one stretch of `3` minutes in a row and stay calm for all of them. The goal is the most happy customers possible.
+
+**2. Start with no technique at all.** Only customers arriving in calm minutes are happy. Minutes `0, 2, 4, 6` are calm, so `1 + 1 + 1 + 7 = 10`. Call that the baseline. It doesn't depend on where the stretch goes, since the technique can never make anyone unhappy.
+
+**3. What the technique actually changes.** Inside the chosen stretch, a minute that was already calm stays the same, its customers were happy already. A minute that was grumpy becomes calm, so its customers flip from unhappy to happy. The gain from a stretch is therefore only the customers in grumpy minutes inside it. The total is the baseline plus the gain, so the best total comes from the stretch with the biggest gain.
+
+**4. Now it is a window question.** Write out the customers in grumpy minutes, with `0` for calm minutes, `[0, 0, 0, 2, 0, 1, 0, 5]`. The gain of any 3-minute stretch is the sum of 3 neighbors in that list:
 
 ```
-right  enters  leaves  extra  bestExtra
-3      2       0       2      2
-4      0       0       2      2
-5      1       0       3      3
-6      0       2       1      3
-7      5       0       6      6
+minutes 0-2: 0
+minutes 1-3: 2
+minutes 2-4: 2
+minutes 3-5: 3
+minutes 4-6: 1
+minutes 5-7: 6   <- biggest
 ```
 
-An entering value only counts if that minute is grumpy, and a leaving value only comes out if it was counted. The best extra is `6`, the window covering minutes `5` to `7`, so the answer is `10 + 6 = 16`.
+The best gain is `6`, so the answer is `10 + 6 = 16`. The window is `3` wide, given by the problem, and it asks for the largest sum, the fixed-size shape.
+
+**5. Sliding instead of re-adding.** Adding 3 numbers for every stretch is the same repeated work as before. Moving the stretch by one minute changes only two things, one minute leaves and one enters. So the gain is adjusted by adding the entering minute's customers if that minute is grumpy, and subtracting the leaving minute's customers if that minute was grumpy. `left` moves when the window would be longer than `minutes`, the same as in Maximum Average Subarray. The window tracks only the extra, not the total, with the calm customers sitting outside it as a fixed baseline. Starting from the first window, minutes `0` to `2`, with a gain of `0`:
+
+```
+right  enters  leaves  gain  best gain
+3      2       0       2     2
+4      0       0       2     2
+5      1       0       3     3
+6      0       2       1     3
+7      5       0       6     6
+```
+
+An entering value only counts if that minute is grumpy, and a leaving value only comes out if it was counted. The best gain is `6`, the window covering minutes `5` to `7`, so the answer is `10 + 6 = 16`.
 
 ```javascript
 {{#include ./examples/grumpy-bookstore-owner.js}}
-```
-
-## Variable Size, Maximizing
-
-[Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/description/) gives a string and asks for the length of the longest substring with no repeated character.
-
-Read the problem statement word by word. "Longest" is a max ask, the first signal. "Substring" is a contiguous range, the second signal, stronger. "Without repeating characters" is the third, it hands over the condition that moves `left`, the window is invalid the moment a character shows up twice inside it. It also passes the direction check on its own, dropping a character off the left edge can only reduce or keep the same number of duplicates, never create a new one.
-
-The brute force checks every substring for duplicates, rebuilding a set of its characters each time. The window keeps one set alive instead, holding exactly the characters currently inside it, added to as `right` grows, removed from as `left` shrinks. That removal is the undo step, and it's what marks this as sliding window rather than plain two pointers.
-
-Each time `right` reaches a new character, one question decides everything, is that character already inside the window. If not, add it and move on. If yes, `left` has to step forward, dropping characters off the left edge one at a time, until the duplicate is gone, and only then does the new character go in.
-
-That check has to happen before adding, not after. A `Set` silently ignores an attempt to add a value it already holds, so adding first would hide the very duplicate we need to notice.
-
-Take `s = "abcabcbb"`.
-
-```
-right  char  window before  action                           left  window after  best
-0      a     {}             add                              0     {a}           1
-1      b     {a}            add                              0     {a, b}        2
-2      c     {a, b}         add                              0     {a, b, c}     3
-3      a     {a, b, c}      a inside, drop a, then add       1     {b, c, a}     3
-4      b     {b, c, a}      b inside, drop b, then add       2     {c, a, b}     3
-5      c     {c, a, b}      c inside, drop c, then add       3     {a, b, c}     3
-6      b     {a, b, c}      b inside, drop a, drop b, add    5     {c, b}        3
-7      b     {c, b}         b inside, drop c, drop b, add    7     {b}           3
-```
-
-`best` ends at `3`, from the window `abc`, matching the known answer.
-
-```javascript
-{{#include ./examples/longest-substring-without-repeating-characters.js}}
-```
-
-[Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/description/) gives a string of uppercase letters and an integer `k`. Up to `k` characters can be replaced with any other letter, and the question is the length of the longest substring that can be made all one letter.
-
-"Longest" is the max ask, "substring" is the contiguous range. The third piece, the condition that moves `left`, isn't stated anywhere in the problem, it has to be derived. A window can be turned into all one letter by replacing every character that isn't its most frequent letter, so the number of replacements needed is `windowSize - countOfMostFrequentLetter`. The window is valid while that stays at most `k`, and invalid the moment it goes over, which is when `left` steps forward.
-
-The tracked value here is a frequency map of the letters currently inside the window, incremented as `right` adds a letter, decremented as `left` drops one. That's the Frequency bucket from the Hashing chapter sitting inside the window. Sliding window decides how the window moves, hashing supplies what gets tracked inside it, and most non-trivial sliding window problems are one wrapped around the other.
-
-Take `s = "AABABBA"`, `k = 1`.
-
-```
-right  char  window after shrinking  counts     size  most  size - most  best
-0      A     A                       A1         1     1     0            1
-1      A     AA                      A2         2     2     0            2
-2      B     AAB                     A2 B1      3     2     1            3
-3      A     AABA                    A3 B1      4     3     1            4
-4      B     BAB                     A1 B2      3     2     1            4
-5      B     BABB                    A1 B3      4     3     1            4
-6      A     BBA                     A1 B2      3     2     1            4
-```
-
-At `right = 4` the window `AABAB` needs `5 - 3 = 2` replacements, over `k = 1`, so `left` steps forward twice, first dropping an `A`, then another `A`, until the window is `BAB`. The same thing happens at `right = 6`. `best` ends at `4`, the known answer for this input.
-
-A widely used version of this solution skips recomputing the most frequent count on every shrink, it keeps a running maximum that only ever goes up and never lowers it. That saves scanning the map each time and gives correct answers, but proving that a stale maximum can never inflate the result takes a subtler argument than belongs here. The version below recomputes exactly, which stays cheap since the map never holds more than 26 letters.
-
-```javascript
-{{#include ./examples/longest-repeating-character-replacement.js}}
-```
-
-## Variable Size, Minimizing
-
-[Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/description/) gives an array of positive integers and a target, and asks for the length of the shortest contiguous subarray whose sum is at least the target, or `0` if no such subarray exists.
-
-The problem guarantees every number is positive, no zeros, no negatives. That guarantee is what makes everything below work, and it's worth holding onto from the start.
-
-"Minimum" is the min ask, "subarray" is the contiguous range. The condition that moves `left` flips direction from the last two problems. Those shrank while the window was invalid. Here, growing `right` pushes the sum toward the target, so once the sum reaches it, the window is valid, and `left` keeps stepping forward for as long as the window stays valid, recording a smaller answer at every step, stopping only when dropping one more element would break it.
-
-Because every number is positive, growing the window can only raise the sum and shrinking it can only lower it. That's the direction check passing, and it's the reason it's safe to stop shrinking the moment the sum drops below the target, nothing further along could have brought it back up.
-
-Take `target = 7`, `nums = [2, 3, 1, 2, 4, 3]`.
-
-```
-right  added  sum  shrink steps                              left  sum after  best
-0      2      2    none                                      0     2          -
-1      3      5    none                                      0     5          -
-2      1      6    none                                      0     6          -
-3      2      8    record 4, drop 2                          1     6          4
-4      4      10   record 4, drop 3, record 3, drop 1        3     6          3
-5      3      9    record 3, drop 2, record 2, drop 4        5     3          2
-```
-
-`best` ends at `2`, from the window `[4, 3]`, the known answer for this input.
-
-Now the same idea with a negative number, to see exactly what breaks. Take `target = 5`, `nums = [4, -5, 6]`. The true answer is `1`, the single element `[6]`. Running the same loop, `right = 2` gives a sum of `4 - 5 + 6 = 5`, valid, record a length of `3`. Then `left` drops the `4`, the sum falls to `1`, below the target, and the loop stops, reporting `3`. It stopped too early. The element actually blocking a smaller answer was the `-5` in the middle, and dropping it would have raised the sum, but the loop only shrinks while the sum stays at or above the target, so it never got that far. With negatives in the array, growing or shrinking the window no longer moves the sum in one predictable direction, and this shrinking condition stops being trustworthy. That's the case Subarray Sum Equals K in the Hashing chapter handles with prefix sums instead.
-
-```javascript
-{{#include ./examples/minimum-size-subarray-sum.js}}
-```
-
-[Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/description/) gives two strings, `s` and `t`, and asks for the shortest substring of `s` that contains every character of `t`, duplicates included, or an empty string if none exists.
-
-"Minimum" is the min ask, "substring" is the contiguous range. The condition that moves `left` is the window containing everything `t` needs, so the shape matches the last problem, `right` grows until the window becomes valid, then `left` shrinks for as long as it stays valid, recording the smallest window along the way.
-
-What's different is how validity works. The last problem checked a single running sum against a target. Here, validity is about how many of each specific character the window holds, which points to a frequency map, two of them, one for what `t` requires, built once, and one for what the window currently holds, adjusted as `right` grows and `left` shrinks. The direction check still holds, adding a character can never reduce what the window covers, and dropping one can never add coverage.
-
-Comparing the two maps in full after every move would cost a scan each time. The usual trick keeps a single counter instead, `formed`, the number of distinct required characters that currently have enough copies in the window. It only changes at the exact moment a character's count reaches its required amount going up, or drops below it going down. Extra copies beyond the requirement change nothing, and neither does dropping one of them. Validity becomes one comparison, `formed` against the number of distinct characters in `t`.
-
-Take `s = "ADOBECODEBANC"`, `t = "ABC"`, so `A`, `B`, and `C` are each required once.
-
-```
-right  char  formed  events                                               left  best
-0-2    A D O 1       none                                                 0     -
-3      B     2       none                                                 0     -
-4      E     2       none                                                 0     -
-5      C     3       valid, record ADOBEC (6), drop A, formed back to 2    1     ADOBEC
-6-8    O D E 2       none                                                 1     ADOBEC
-9      B     2       B count is now 2, formed unchanged                    1     ADOBEC
-10     A     3       valid, windows of 10, 9, 8, 7, 6 are none smaller,    6     ADOBEC
-                     dropping C at left 5 sends formed back to 2
-11     N     2       none                                                 6     ADOBEC
-12     C     3       valid, 7 and 6 are not smaller, record EBANC (5),     10    BANC
-                     record BANC (4), drop B, formed back to 2
-```
-
-At `right = 9`, the second `B` arrives and `formed` doesn't move, `B` was already covered. Later, when `left` drops the first `B`, its count falls from `2` to `1`, still enough, so `formed` doesn't move then either. The answer is `BANC`, the known result for this input.
-
-```javascript
-{{#include ./examples/minimum-window-substring.js}}
 ```
