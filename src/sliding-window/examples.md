@@ -141,13 +141,37 @@ The smallest window sum is `10`, so the answer is `22 - 10 = 12`, taking `5`, `6
 
 [Count Number of Nice Subarrays](https://leetcode.com/problems/count-number-of-nice-subarrays/description/) gives an array of positive integers and an integer `k`, and asks for the number of contiguous subarrays that contain exactly `k` odd numbers.
 
-A window handles "at most `k` odd numbers" cleanly. Adding an element can only keep or raise the odd count, and dropping one from the left can only keep or lower it, so the direction check passes and shrinking from the left is safe whenever the window goes over. "Exactly `k`" breaks that. A window with too few odd numbers and one with too many are both invalid, so there's no single direction of shrinking that fixes both.
+Read the statement the usual way. There's no min or max ask, the answer is a count. "Subarray" is the contiguous range. So the recognition only half fires, and the third stage, the condition that moves `left`, is where it gets stuck. A window handles "at most `k` odd numbers" cleanly, adding an element can only keep or raise the odd count and dropping one from the left can only keep or lower it. "Exactly `k`" breaks that. A window with too few odd numbers and one with too many are both invalid, so no single direction of shrinking fixes both.
 
-The way out is a subtraction. Every subarray with at most `k` odd numbers either has exactly `k`, or has at most `k - 1`. So the count with exactly `k` is the count with at most `k`, minus the count with at most `k - 1`. Each of those two counts is a plain window problem.
+**A first attempt, and what it misses.** Grow `right` until the window holds `k` odd numbers, then walk `left` forward over the leading even numbers, adding one to a count at each step, since each step is another valid start. Take `[2, 1, 1]` with `k = 2`. At `right = 2`, the valid starts are index `0`, giving `[2, 1, 1]`, and index `1`, giving `[1, 1]`. That's two subarrays, not one. The leading `2` is an even number, so starting before it or after it gives the same odd count.
 
-Counting inside one of them uses a fact about windows. Once `[left, right]` holds at most `k` odd numbers, every subarray that ends at `right` and starts anywhere from `left` to `right` does too, since fewer elements can't add odd numbers. That's `right - left + 1` new subarrays for each position of `right`.
+It still isn't enough to stop there. Take `[2, 1, 1, 2]`. When `right` moves onto the trailing `2`, the window still holds exactly two odd numbers, and two more subarrays appear, `[1, 1, 2]` and `[2, 1, 1, 2]`. Even numbers on the right give the same kind of extra freedom as even numbers on the left, and a walk that has already moved `left` forward can't count them.
 
-Take `nums = [1, 1, 2, 1, 1]`, `k = 3`. Counting subarrays with at most `3` odd numbers:
+**What actually decides a subarray.** Only which `k` consecutive odd numbers it contains. The even numbers around them don't change the odd count, so they only add freedom in where the subarray starts and where it ends. That suggests listing the positions of the odd numbers and working from that list.
+
+In `[2, 1, 1, 2]` the odd numbers sit at indices `1` and `2`. Put a marker at `-1` before the first and one at `4`, the array's length, after the last, giving `[-1, 1, 2, 4]`. For the group of two odd numbers, `1` and `2`:
+
+```
+start choices = 1 - (-1) = 2    (start at index 0 or 1)
+end choices   = 4 - 2   = 2    (end at index 2 or 3)
+count         = 2 * 2   = 4
+```
+
+The four subarrays are `[1, 1]`, `[2, 1, 1]`, `[1, 1, 2]`, and `[2, 1, 1, 2]`. The two choices multiply because any start pairs with any end. The markers stand in for "no previous odd number" and "no next odd number", so the first and last groups need no special case.
+
+Take `nums = [1, 1, 2, 1, 1]`, `k = 3`. The odd numbers sit at indices `0, 1, 3, 4`, and with the markers the list is `[-1, 0, 1, 3, 4, 5]`. A window of size `k = 3` slides over that list, one odd number at a time.
+
+```
+group of odd positions  start choices   end choices   product
+0, 1, 3                 0 - (-1) = 1    4 - 3 = 1     1
+1, 3, 4                 1 - 0 = 1       5 - 4 = 1     1
+```
+
+The total is `2`, matching the two subarrays that contain exactly three odd numbers, `[1, 1, 2, 1]` and `[1, 2, 1, 1]`. This is a sliding window too, fixed at `k` odd positions wide, moving over the list of odd positions instead of over the array itself.
+
+**A more general route.** Every subarray with at most `k` odd numbers either has exactly `k` or has at most `k - 1`, so the count with exactly `k` is the count with at most `k` minus the count with at most `k - 1`. "At most" passes the direction check, so each count is a plain window. Inside one, once `[left, right]` holds at most `k` odd numbers, every subarray ending at `right` and starting anywhere from `left` to `right` does too, which is `right - left + 1` new subarrays per position of `right`.
+
+On the same input, counting at most `3` odd numbers:
 
 ```
 right  odds  left  new subarrays  running count
@@ -158,7 +182,7 @@ right  odds  left  new subarrays  running count
 4      4->3  1     4              14
 ```
 
-At `right = 4` the fourth odd number pushes the count to `4`, over the limit, so `left` drops the first `1` and the count returns to `3`. That gives `14`. Counting with at most `2` odd numbers the same way gives `12`. The answer is `14 - 12 = 2`, matching the two subarrays that contain exactly three odd numbers, `[1, 1, 2, 1]` and `[1, 2, 1, 1]`.
+At `right = 4` the fourth odd number pushes the count over the limit, so `left` drops the first `1`, and the total is `14`. Counting at most `2` the same way gives `12`, and `14 - 12 = 2`, the same answer. This version is longer here, but it carries over unchanged to problems like Subarrays with K Different Integers, where there's no easy list of positions to slide over.
 
 ```javascript
 {{#include ./examples/count-number-of-nice-subarrays.js}}
