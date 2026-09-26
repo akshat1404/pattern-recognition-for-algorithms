@@ -8,6 +8,8 @@ Say we have `[2, 1, 5, 1, 3, 2]` and we care about every group of three elements
 
 Each step changes exactly two elements, one leaves, one enters. The sum never needs to be recomputed from scratch, only adjusted by the difference between the two.
 
+The range is not always written in the problem. Sometimes the statement names a substring or a subarray, and sometimes the window only appears after the problem is reframed, in the cards left behind, in a sorted order, or over a list of positions. The Hidden Window section of the intuition chapter covers those.
+
 ## Sliding window in JavaScript
 
 There's no special type for this, the way hashing has `Map` and `Set`. A sliding window is two index numbers and a variable holding whatever's being tracked.

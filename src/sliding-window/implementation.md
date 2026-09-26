@@ -80,3 +80,5 @@ The direction of the `while` condition is what separates this from maximizing, `
 `right` always advances, that never changes. The aggregate updating incrementally is mechanical once it's clear what to track. The one piece of real thinking left, every single time, is answering "what moves `left` forward."
 
 Fixed size answers it directly, the window's size exceeding `k`. Maximizing answers it as "the window just became invalid." Minimizing answers it as "the window is still valid, keep pushing to see how much smaller it gets." Three different sources for the exact same question, and once that question has an answer for a given problem, the rest of the code is close to boilerplate.
+
+That holds for hidden windows too, once the window has been found. In Maximum Points You Can Obtain from Cards the window is the cards left behind, fixed at `n - k`, so the fixed-size skeleton applies with a minimum in place of a maximum. In Frequency of the Most Frequent Element the window is a stretch of the sorted array, and the maximizing skeleton applies with a cost within a budget as the validity check. Finding the window is the extra work, and the loop itself does not change.
