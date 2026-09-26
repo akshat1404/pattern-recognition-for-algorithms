@@ -106,7 +106,7 @@ Each number is added to the deque once and removed at most once, so the whole th
 
 ## Twists on the Standard Shapes
 
-The problems above each fit one of the three shapes as stated. The four below need one extra move before the window applies, a reframing, a subtraction, a sort, or a baseline. Each one still comes down to the same question, what moves `left`, but the work is in getting the problem into a shape where that question has an answer.
+The problems above each fit one of the three shapes as stated. The four below need one extra move before the window applies, a reframing, a subtraction, a sort, or a baseline. Three of them have a hidden window, one the statement never mentions, covered in the intuition chapter under The Hidden Window. Each one still comes down to the same question, what moves `left`, but the work is in getting the problem into a shape where that question has an answer.
 
 [Maximum Points You Can Obtain from Cards](https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards/description/) lays cards in a row, each with a point value. In each of `k` steps, take one card from either the left end or the right end, and the goal is the maximum total points.
 
@@ -190,9 +190,21 @@ At `right = 4` the fourth odd number pushes the count over the limit, so `left` 
 
 [Frequency of the Most Frequent Element](https://leetcode.com/problems/frequency-of-the-most-frequent-element/description/) gives an array and a budget `k`. One operation increases any element by `1`, at most `k` operations are allowed, and the question is the highest frequency any single value can reach.
 
-Increments only go up, so a group of elements can only be raised to the group's largest value, and it wastes operations to go higher. For a target value, the cheapest elements to raise are the ones closest to it from below, and once the array is sorted, those are a contiguous stretch ending at the target. So sorting first is what makes a window valid here, the window is a stretch of the sorted array, and the element at `right` is the value everything else gets raised to.
+Read the statement the usual way. "Highest" is the max ask, the first signal. The second signal, a contiguous range, is nowhere in the statement. The array comes in whatever order it was given, and the elements that end up equal can come from any positions. This is a hidden window, one that only appears after a reframing, here a sort.
 
-The condition that moves `left` is a cost, and it has to be derived. Raising every element in the window to the value at `right` costs `sorted[right] * windowSize - windowSum`, and the window is valid while that stays within `k`. The direction check holds. Growing `right` to the next element can only raise the cost, since the array is sorted and the target only gets bigger, and dropping from `left` can only lower it.
+**Increments only go up.** Elements can only be raised, never lowered. So when a group of elements is made equal, the value they all end at is the group's largest element. Raising the group past that only spends operations for nothing.
+
+**The cheapest group for a target.** Raising an element to a target costs the target minus that element, so the elements closest below the target are the cheapest to raise. Once the array is sorted, the elements closest below a given element are exactly the ones just before it. So for a target `sorted[right]`, the best group of any size is a stretch of the sorted array ending at `right`. That stretch is the window, and it exists only because the array was sorted first.
+
+**The cost is a formula, and it has to be derived.** Raising every element in `[left, right]` up to `sorted[right]` costs the sum of the gaps:
+
+```
+(sorted[right] - sorted[left]) + (sorted[right] - sorted[left + 1]) + ... + (sorted[right] - sorted[right - 1])
+```
+
+Written without listing the gaps, that is `sorted[right] * windowSize - windowSum`. `windowSum` is the running value that gets added to as `right` grows and subtracted from as `left` shrinks, the same running sum used in the earlier problems. The window is valid while that cost stays within `k`.
+
+**What moves `left`.** The direction check holds. Growing `right` to the next element can only raise the cost, since the array is sorted, the target gets bigger, and there is one more element to raise. Dropping from `left` can only lower it. So `left` moves while the cost is over `k`, and the answer is the largest window size seen.
 
 Take `nums = [1, 4, 8, 13]`, `k = 5`, already sorted.
 
