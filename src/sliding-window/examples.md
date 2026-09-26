@@ -104,6 +104,111 @@ Each number is added to the deque once and removed at most once, so the whole th
 {{#include ./examples/sliding-window-maximum.js}}
 ```
 
+## Twists on the Standard Shapes
+
+The problems above each fit one of the three shapes as stated. The four below need one extra move before the window applies, a reframing, a subtraction, a sort, or a baseline. Each one still comes down to the same question, what moves `left`, but the work is in getting the problem into a shape where that question has an answer.
+
+[Maximum Points You Can Obtain from Cards](https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards/description/) lays cards in a row, each with a point value. In each of `k` steps, take one card from either the left end or the right end, and the goal is the maximum total points.
+
+Read the statement the way the earlier problems were read. "Maximum" is the max ask, the first signal. But the cards come off the two ends, so there is no contiguous range in what gets taken, and the second signal doesn't fire on the surface. The window in this problem is hidden, and the steps below are how it comes out.
+
+**Only the first `k` and the last `k` cards matter.** Exactly `k` cards get taken, so at most `k` of them come from the left, and nothing past the first `k` cards on the left can ever be reached. The same holds on the right. In `[1, 2, 3, 4, 5, 6, 1]` with `k = 3`, the reachable cards are `1, 2, 3` on the left and `5, 6, 1` on the right. The `4` in the middle can never be taken, whatever the choices are.
+
+**When `k` is more than half of `n`, the two ends overlap.** The first `k` and the last `k` cards then share some cards, and every card is reachable, so nothing drops out of the problem. Nothing gets counted twice either. A choice takes `i` cards from the left and `k - i` from the right, those add up to exactly `k`, and `k` is at most `n`, so the two ends never reach the same card. At the extreme, `k = n`, every card is taken and the answer is the total.
+
+**Picking the bigger end each step fails.** Each step only offers the leftmost or the rightmost card, which suggests two pointers, one at each end, taking whichever card is bigger. Take `[1, 2, 100000, 3, 4, 5]` with `k = 3`. Comparing the ends takes `5`, then `4`, then `3`, for `12`. The best answer is `1 + 2 + 100000 = 100003`, taking three cards from the left. This fails the test from the Two Pointers chapter, a pointer is only safe to move when it can never lose a better answer, and here taking the bigger end can lose one, since a small card at the edge can sit directly in front of a huge one. The decision can't be made one card at a time by looking at the two ends, it has to be made about the split as a whole, how many cards come from the left.
+
+**The cards left behind form a window.** Take `i` cards from the left and `k - i` from the right, and what remains is exactly `n - k` cards in one unbroken block in the middle. Sliding that block from one end of the array to the other covers every split, from `i = 0` to `i = k`. The points taken are the total minus the sum of that block, so taking the most points is the same as leaving the least. The window is hidden because it isn't in the cards taken, it's in the ones not taken. Its size is fixed at `n - k`, and what is being asked for is its smallest sum, so this is the fixed-size shape. The answer is the total of all cards minus the smallest window sum.
+
+That settles the `[1, 2, 100000, 3, 4, 5]` case. The window is `6 - 3 = 3` wide and the total is `100015`. The window sums are `100003`, `100005`, `100007`, and `12`. The smallest is `12`, from the block `[3, 4, 5]`, so the answer is `100015 - 12 = 100003`, with no card-by-card choice made anywhere.
+
+The cue to carry to other problems is the wording, "from either end" or "from the edges" is a hint to look at what sits in the middle, not at the ends.
+
+Take `cardPoints = [1, 2, 3, 4, 5, 6, 1]`, `k = 3`. The total is `22`, and the window is `7 - 3 = 4` wide. The first window, `[1, 2, 3, 4]`, sums to `10`.
+
+```
+right  enters  leaves  windowSum  minWindow
+4      5       1       14         10
+5      6       2       18         10
+6      1       3       16         10
+```
+
+The smallest window sum is `10`, so the answer is `22 - 10 = 12`, taking `5`, `6`, and `1` from the right end.
+
+```javascript
+{{#include ./examples/maximum-points-you-can-obtain-from-cards.js}}
+```
+
+[Count Number of Nice Subarrays](https://leetcode.com/problems/count-number-of-nice-subarrays/description/) gives an array of positive integers and an integer `k`, and asks for the number of contiguous subarrays that contain exactly `k` odd numbers.
+
+A window handles "at most `k` odd numbers" cleanly. Adding an element can only keep or raise the odd count, and dropping one from the left can only keep or lower it, so the direction check passes and shrinking from the left is safe whenever the window goes over. "Exactly `k`" breaks that. A window with too few odd numbers and one with too many are both invalid, so there's no single direction of shrinking that fixes both.
+
+The way out is a subtraction. Every subarray with at most `k` odd numbers either has exactly `k`, or has at most `k - 1`. So the count with exactly `k` is the count with at most `k`, minus the count with at most `k - 1`. Each of those two counts is a plain window problem.
+
+Counting inside one of them uses a fact about windows. Once `[left, right]` holds at most `k` odd numbers, every subarray that ends at `right` and starts anywhere from `left` to `right` does too, since fewer elements can't add odd numbers. That's `right - left + 1` new subarrays for each position of `right`.
+
+Take `nums = [1, 1, 2, 1, 1]`, `k = 3`. Counting subarrays with at most `3` odd numbers:
+
+```
+right  odds  left  new subarrays  running count
+0      1     0     1              1
+1      2     0     2              3
+2      2     0     3              6
+3      3     0     4              10
+4      4->3  1     4              14
+```
+
+At `right = 4` the fourth odd number pushes the count to `4`, over the limit, so `left` drops the first `1` and the count returns to `3`. That gives `14`. Counting with at most `2` odd numbers the same way gives `12`. The answer is `14 - 12 = 2`, matching the two subarrays that contain exactly three odd numbers, `[1, 1, 2, 1]` and `[1, 2, 1, 1]`.
+
+```javascript
+{{#include ./examples/count-number-of-nice-subarrays.js}}
+```
+
+[Frequency of the Most Frequent Element](https://leetcode.com/problems/frequency-of-the-most-frequent-element/description/) gives an array and a budget `k`. One operation increases any element by `1`, at most `k` operations are allowed, and the question is the highest frequency any single value can reach.
+
+Increments only go up, so a group of elements can only be raised to the group's largest value, and it wastes operations to go higher. For a target value, the cheapest elements to raise are the ones closest to it from below, and once the array is sorted, those are a contiguous stretch ending at the target. So sorting first is what makes a window valid here, the window is a stretch of the sorted array, and the element at `right` is the value everything else gets raised to.
+
+The condition that moves `left` is a cost, and it has to be derived. Raising every element in the window to the value at `right` costs `sorted[right] * windowSize - windowSum`, and the window is valid while that stays within `k`. The direction check holds. Growing `right` to the next element can only raise the cost, since the array is sorted and the target only gets bigger, and dropping from `left` can only lower it.
+
+Take `nums = [1, 4, 8, 13]`, `k = 5`, already sorted.
+
+```
+right  window       cost                    valid?  left  best
+0      [1]          1*1 - 1 = 0             yes     0     1
+1      [1, 4]       4*2 - 5 = 3             yes     0     2
+2      [1, 4, 8]    8*3 - 13 = 11           no      0     2
+       [4, 8]       8*2 - 12 = 4            yes     1     2
+3      [4, 8, 13]   13*3 - 25 = 14          no      1     2
+       [8, 13]      13*2 - 21 = 5           yes     2     2
+```
+
+At `right = 2`, raising `1` and `4` up to `8` costs `11`, over the budget, so `left` drops the `1`, and the window `[4, 8]` costs `4`. At `right = 3`, the same thing happens again. The best window stays at size `2`, the known answer for this input.
+
+```javascript
+{{#include ./examples/frequency-of-the-most-frequent-element.js}}
+```
+
+[Grumpy Bookstore Owner](https://leetcode.com/problems/grumpy-bookstore-owner/description/) gives the number of customers arriving each minute, and for each minute whether the owner is grumpy, in which case those customers leave unsatisfied. The owner can stay calm for `minutes` consecutive minutes, once, and the goal is the maximum number of satisfied customers.
+
+Some customers are satisfied regardless, the ones arriving while the owner is already calm. That's a fixed baseline, and no window changes it. The technique only affects customers arriving during grumpy minutes inside the window it covers. So the window doesn't track the total at all, only the extra gained inside it, the customers in grumpy minutes it would save. The size is given, `minutes`, and the goal is the largest extra, so this is the fixed-size shape sitting on top of a baseline. The answer is the baseline plus the best extra.
+
+Take `customers = [1, 0, 1, 2, 1, 1, 7, 5]`, `grumpy = [0, 1, 0, 1, 0, 1, 0, 1]`, `minutes = 3`. The baseline is the customers in calm minutes, `1 + 1 + 1 + 7 = 10`. The first window covers minutes `0` to `2`, and the extra there is `0`.
+
+```
+right  enters  leaves  extra  bestExtra
+3      2       0       2      2
+4      0       0       2      2
+5      1       0       3      3
+6      0       2       1      3
+7      5       0       6      6
+```
+
+An entering value only counts if that minute is grumpy, and a leaving value only comes out if it was counted. The best extra is `6`, the window covering minutes `5` to `7`, so the answer is `10 + 6 = 16`.
+
+```javascript
+{{#include ./examples/grumpy-bookstore-owner.js}}
+```
+
 ## Variable Size, Maximizing
 
 [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/description/) gives a string and asks for the length of the longest substring with no repeated character.
