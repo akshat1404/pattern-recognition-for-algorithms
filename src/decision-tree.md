@@ -2,7 +2,7 @@
 
 Every other page in this guide assumes a pattern has already been picked, and digs into when that specific pattern fits and how its code looks. This page is the step before that, reading a problem cold and narrowing down which pattern to even consider, before opening any single chapter.
 
-It can only ever reflect the chapters that already exist. Right now that's Hashing, Two Pointers, and Sliding Window. This page gets revisited and expanded every time a new pattern is added, sometimes a new pattern will split an earlier question further than it's split today.
+It can only ever reflect the chapters that already exist. Right now that's Hashing, Two Pointers, Sliding Window, and Binary Search. This page gets revisited and expanded every time a new pattern is added, sometimes a new pattern will split an earlier question further than it's split today.
 
 ## Question 1: does the problem only care about values, not position?
 
@@ -28,6 +28,14 @@ Two ends of a sorted array converging inward, a read/write pointer compacting an
 
 If yes, that's [Two Pointers](./two-pointers/intro.md).
 
+If the problem doesn't reduce to two positions moving with no aggregate needed, move to the next question.
+
+## Question 4: does a guess anywhere in the search space let you discard the rest of it without checking each one?
+
+This holds whenever the data is sorted, or whenever some condition on a candidate answer is monotonic, false up to a point and true from there on, or the reverse. Checking one guess and finding it too small or too big tells you every guess on the wrong side is settled too, no need to look at them individually. That's not limited to searching a sorted array for a value, it also covers guessing an answer, a capacity, a speed, a distance, and checking whether that guess is feasible.
+
+If yes, that's [Binary Search](./binary-search/intro.md).
+
 ## Still open
 
-Everything past here, an aggregate over a range that isn't monotonic, a search space that isn't a simple sequence, a decision that depends on subproblems rather than a single pass, doesn't have a question here yet. That's what the chapters after Sliding Window will need to fill in.
+Everything past here, an aggregate over a range that isn't monotonic, a decision that depends on subproblems rather than a single pass, doesn't have a question here yet. That's what the chapters after Binary Search will need to fill in.
