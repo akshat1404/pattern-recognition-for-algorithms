@@ -20,3 +20,9 @@
   - [Asking the Right Questions](./sliding-window/asking-the-right-questions.md)
   - [Implementation](./sliding-window/implementation.md)
   - [Intuition in Action](./sliding-window/examples.md)
+
+- [Binary Search](./binary-search/intro.md)
+  - [Intuition](./binary-search/intuition.md)
+  - [Asking the Right Questions](./binary-search/asking-the-right-questions.md)
+  - [Implementation](./binary-search/implementation.md)
+  - [Intuition in Action](./binary-search/examples.md)
