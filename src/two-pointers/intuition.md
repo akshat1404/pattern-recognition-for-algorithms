@@ -1,5 +1,9 @@
 # Intuition
 
+## When to reach for it
+
+Two questions, in order. First, is the data ordered, sorted, or at least laid out in a fixed sequence where position means something. If no, two pointers is off the table. Second, would this problem otherwise need a hash map or an extra array to remember something, and does the data's order make that memory redundant. If both answers are yes, that's two pointers.
+
 ## The trade
 
 A brute force approach to most two-pointer problems checks every pair of positions against each other, an index `i` against every other index `j`, O(n^2). Two pointers replaces that nested loop with two positions moving through the data once, but only when the data has enough order to justify it.
@@ -15,10 +19,6 @@ Take a sorted array, `[2, 7, 11, 15]`, target `9`. `left` at index `0` holds `2`
 Compare that to an unsorted array. Knowing something sits at index `3` tells us nothing about its size relative to index `0`. We'd have to actually read both values, position and value are unrelated. That's what a hash map exists to fix in the unordered case, a lookup instead of a positional guarantee. When the data is ordered, position already gives us that guarantee for free, and the lookup structure becomes redundant.
 
 Order doesn't have to mean sorted by value, either. Sorted is the strong case, value order and position order match exactly, which is what lets a problem reason directly about a target sum from the two pointers' values. But a weaker, still sufficient version of order shows up often too, a fixed sequence with nothing scrambled about which position comes before which. [Valid Palindrome](https://leetcode.com/problems/valid-palindrome/description/) has positional order with no numeric order at all. [Container With Most Water](https://leetcode.com/problems/container-with-most-water/description/) gets its width for free from position, `right - left`, and a safety argument, the shorter wall caps the area no matter what's on the other side, from the values, neither needs sorting. [Move Zeroes](https://leetcode.com/problems/move-zeroes/description/) only needs the original relative order preserved, nothing numeric at all.
-
-## When to reach for it
-
-Two questions, in order. First, is the data ordered, sorted, or at least laid out in a fixed sequence where position means something. If no, two pointers is off the table. Second, would this problem otherwise need a hash map or an extra array to remember something, and does the data's order make that memory redundant. If both answers are yes, that's two pointers.
 
 ## The three shapes
 
