@@ -1,15 +1,5 @@
 # Intuition
 
-## Where the window comes from
-
-The brute force for a contiguous min or max question picks a start index and an end index and checks whatever sits between them, every possible pair of `(start, end)`. That range, whatever is currently inside it, is already what the problem is asking about, a subarray, a substring. "Window" is just the name for that range while we're deciding whether it's valid and whether it beats the best one found so far.
-
-It isn't a new object being introduced, it's the same contiguous range the brute force was already checking, one pair at a time. `left` and `right` are just names for that range's two current ends, the same two numbers a `(start, end)` pair already was.
-
-## The trade
-
-What changes is what happens to the range between checks. The brute force throws it away and builds a fresh one for the next `(start, end)` pair, recomputing whatever needs computing, a sum, a count, a set of characters, from scratch every single time. Sliding window keeps the same range alive and adjusts it instead, one element leaves, one element enters, rather than rebuilding it from nothing. That's where "sliding" comes from, the range slides forward instead of getting recreated, and the aggregate being tracked updates by one element's worth of change instead of being recomputed over the whole range.
-
 ## From candidate to guarantee
 
 Two things make a problem look like sliding window, and a third thing actually confirms it.
@@ -25,6 +15,16 @@ Check it concretely with a sum. Array `[3, -1, 4]`. Window `[3]`, sum `3`. Add t
 Now `[3, 1, 4]`, all positive. Window `[3]`, sum `3`. Add the next, window `[3, 1]`, sum `4`, bigger, guaranteed, since every number being added is positive. Remove the leftmost, the sum goes back down, also guaranteed. That back-and-forth always running in the same direction is the entire check, nothing more exotic than that.
 
 [Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/description/) passes all three, min/max asked, contiguous range, and values constrained non-negative, so the direction check holds. Sliding window applies. [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/description/) allows negative numbers, the direction check fails, and despite looking similar on the surface, it needs prefix sums and a hash map instead, covered in the Hashing chapter's Pairing bucket.
+
+## Where the window comes from
+
+The brute force for a contiguous min or max question picks a start index and an end index and checks whatever sits between them, every possible pair of `(start, end)`. That range, whatever is currently inside it, is already what the problem is asking about, a subarray, a substring. "Window" is just the name for that range while we're deciding whether it's valid and whether it beats the best one found so far.
+
+It isn't a new object being introduced, it's the same contiguous range the brute force was already checking, one pair at a time. `left` and `right` are just names for that range's two current ends, the same two numbers a `(start, end)` pair already was.
+
+## The trade
+
+What changes is what happens to the range between checks. The brute force throws it away and builds a fresh one for the next `(start, end)` pair, recomputing whatever needs computing, a sum, a count, a set of characters, from scratch every single time. Sliding window keeps the same range alive and adjusts it instead, one element leaves, one element enters, rather than rebuilding it from nothing. That's where "sliding" comes from, the range slides forward instead of getting recreated, and the aggregate being tracked updates by one element's worth of change instead of being recomputed over the whole range.
 
 ## Two shapes, not one
 
