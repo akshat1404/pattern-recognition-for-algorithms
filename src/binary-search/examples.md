@@ -39,3 +39,39 @@ low  high  mid  nums[mid]  action               result
 ```javascript
 {{#include ./examples/find-first-and-last-position.js}}
 ```
+
+[Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/description/) gives an array of distinct values that was sorted ascending and then rotated at an unknown pivot, and asks for the index of `target`, or `-1`, in `O(log n)`. For `nums = [4, 5, 6, 7, 0, 1, 2]` and `target = 0`, the answer is `4`.
+
+The `O(log n)` requirement and the near-sorted array point at binary search. The array is not sorted, though, and that removes the free check. On the example, the first `mid` is index `3`, value `7`, which is bigger than `0`. Classic search reads that as "too big, discard the right half," and the right half is where `0` is. Comparing `nums[mid]` to `target` no longer says which side holds the answer.
+
+The brute force is a scan, `O(n)`. To do better, we need something true about every split that the broken sort order does not take away. A rotation moves a block from the front to the back, which creates exactly one drop point, one place where a large value is followed by a small one. In `[4, 5, 6, 7, 0, 1, 2]` it sits between `7` and `0`. That drop can only be in one of the two halves at `mid`, so the other half has no drop inside it and is sorted.
+
+A sorted half is enough, because a sorted half gives back the check we lost. If the left half is sorted and `nums[low] <= target < nums[mid]`, then `target` is in the left half or nowhere, so the right half is discarded. If `target` falls outside that range, it cannot be in the sorted half at all, so the sorted half is discarded and the search moves to the other one. Every step still throws away a whole half, so the time stays `O(log n)`.
+
+That leaves one question, which half is sorted. If `nums[low] <= nums[mid]`, the left half has no drop inside it, since its first value is not bigger than its last. Otherwise the drop is in the left half, and the right half is the sorted one. The comparison uses `<=` so that a left half holding a single element, where `low` and `mid` are the same index, counts as sorted. Distinct values matter here, since with duplicates `nums[low]`, `nums[mid]`, and `nums[high]` can all be equal and the comparison no longer says where the drop is.
+
+Take `nums = [4, 5, 6, 7, 0, 1, 2]` and `target = 0`.
+
+```
+low  high  mid  nums[mid]  sorted half  target in it?  action
+0    6     3    7          left [4..7]  no             low = 4
+4    6     5    1          left [0..1]  yes            high = 4
+4    4     4    0          match, return 4
+```
+
+At the first step the left half `[4, 5, 6, 7]` is sorted, and `0` is not between `4` and `7`, so `0` can only be in the right half. At the second step `[0, 1]` is sorted and `0` is in its range, so the right side is discarded.
+
+The right half being the sorted one needs its own trace. Take `nums = [6, 7, 0, 1, 2, 4, 5]` and `target = 5`.
+
+```
+low  high  mid  nums[mid]  sorted half   target in it?  action
+0    6     3    1          right [1..5]  yes            low = 4
+4    6     5    4          left [2..4]   no             low = 6
+6    6     6    5          match, return 6
+```
+
+At the first step `nums[low] = 6` is bigger than `nums[mid] = 1`, so the drop is in the left half and the right half `[1, 2, 4, 5]` is sorted. `5` is within `1` to `5`, so the left half is discarded.
+
+```javascript
+{{#include ./examples/search-in-rotated-sorted-array.js}}
+```
