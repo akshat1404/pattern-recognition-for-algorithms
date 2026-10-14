@@ -63,7 +63,7 @@ Peaks being scattered is not what makes this work. Scattered answers on their ow
 
 ## 5. Magnetic Force Between Two Balls
 
-**The statement.** [Magnetic Force Between Two Balls](https://leetcode.com/problems/magnetic-force-between-two-balls/description/) gives positions of baskets along a line and a number of balls, and asks for the largest possible value of the smallest gap between any two balls once they are all placed in baskets.
+**The statement.** [Magnetic Force Between Two Balls](https://leetcode.com/problems/magnetic-force-between-two-balls/description/) gives an array `position` of `n` baskets, where `position[i]` is where the `i`th basket sits on a line, and a number of balls `m`. Each basket holds at most one ball. The force between two balls is the distance between their baskets. All `m` balls have to be placed, and among all pairs of balls, the smallest distance is what counts. It asks for the largest that smallest distance can be. For `position = [1, 2, 3, 4, 7]` and `m = 3`, the answer is `3`. Balls at `1`, `4`, and `7` are `3` apart each. A gap of `4` does not work, since after `1` the next basket at least `4` away is `7`, and there is no room for a third ball.
 
 **Asks for.** The largest possible minimum gap between balls.
 
