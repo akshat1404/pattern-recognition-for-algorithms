@@ -59,7 +59,7 @@ Peaks being scattered is not what makes this work. Scattered answers on their ow
 
 **Offers.** A yes or no test for any guessed speed, and a speed that works keeps working when faster. No array, the answer is a number in a range.
 
-**Why it fits.** The candidates are every speed from `1` up to the size of the largest pile, since eating faster than the largest pile gains nothing. If a speed is too slow, every lower speed is too slow as well, and if a speed works, every higher one works too. So the answers run no, then yes, flipping once, and the answer is the first yes. Each guess is tested by working out the hours it would take, and every test settles half of the remaining speeds.
+**Why it fits.** The candidates are every speed from `1` up to the size of the largest pile. Koko eats from only one pile per hour, so every pile costs at least one hour. At a speed equal to the largest pile, every pile takes exactly one hour, and no faster speed can bring a pile below that. If a speed is too slow, every lower speed is too slow as well, and if a speed works, every higher one works too. So the answers run no, then yes, flipping once, and the answer is the first yes. Each guess is tested by working out the hours it would take, and every test settles half of the remaining speeds.
 
 ## 5. Magnetic Force Between Two Balls
 
