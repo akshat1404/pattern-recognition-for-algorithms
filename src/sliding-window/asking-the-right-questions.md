@@ -2,15 +2,13 @@
 
 ## Seeing it in a statement
 
-Reverse engineering a sliding window problem starts with the shape of the answer. The wording cues are "subarray", "substring", "contiguous", or "consecutive elements", together with "longest", "shortest", "at most `k`", "of size `k`", or "contains all of". These say the answer is one unbroken stretch of the input, and the plain solution tries every start and every end.
+- If the problem asks about every subarray or substring of a given size `k`, use a fixed size window.
+- If the problem asks for the longest subarray or substring that stays within a limit, at most `k`, no repeats, grow the window and shrink it while it is invalid.
+- If the problem asks for the shortest subarray or substring that reaches a target, a sum or all required characters, grow the window and shrink it while it is still valid.
+- If the problem takes elements from both ends, look at the part left in the middle, it is a window.
+- If a sum can go down when an element is added, negative numbers allowed, it is not sliding window. Check Hashing with prefix sums.
 
-Next, look at what the problem tracks about a stretch, a sum, a count, a set of characters. The question to ask is whether adding an element on the right always pushes that value one way, and removing one on the left always pushes it back. A sum of non-negative values passes, a count passes, a sum with negative values does not. If it passes, a stretch that went bad can always be fixed by trimming its left end.
-
-The link to the pattern is made by naming what moves the left edge. The right edge advances every step, and the left edge moves when the stretch passes a given size, while it is invalid when the goal is the longest, or while it is still valid when the goal is the shortest. If that rule can be stated in a sentence, the problem is a sliding window.
-
-Some statements never mention a stretch. If elements are taken from the two ends, the part left in the middle is a stretch. If sorting puts the elements that matter next to each other, the sorted order holds one. The last check rules out the neighbors, a tracked value that can move either way sends the problem to [Hashing](../hashing/asking-the-right-questions.md), and nothing to undo when a pointer moves sends it to [Two Pointers](../two-pointers/asking-the-right-questions.md).
-
-Five problems follow, each read from its statement to the pattern with this chain. For every one, what the statement says, the words that give the pattern away, and the logic that confirms it. No code here, the code lives in Implementation and Examples.
+Five problems follow, each read from its statement to the pattern. No code here, the code lives in Implementation and Examples.
 
 ## 1. Find All Anagrams in a String
 
