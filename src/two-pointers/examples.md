@@ -1,4 +1,4 @@
-# Intuition in Action
+# Two Pointers: Examples
 
 Worked problems from the questions chapter, reasoning and code together, one shape at a time.
 
