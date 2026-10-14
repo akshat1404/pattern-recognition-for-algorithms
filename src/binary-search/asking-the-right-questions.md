@@ -53,7 +53,7 @@ Peaks being scattered is not what makes this work. Scattered answers on their ow
 
 ## 4. Koko Eating Bananas
 
-**The statement.** [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/description/) gives piles of bananas and a number of hours. Each hour, Koko picks one pile and eats up to some fixed number of bananas from it. It asks for the smallest eating speed that finishes every pile in time.
+**The statement.** [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/description/) gives an array `piles` of `n` piles, where `piles[i]` is the number of bananas in the `i`th pile, and a number of hours `h`. Koko picks an eating speed `k`, bananas per hour. Each hour she chooses one pile and eats `k` bananas from it. If the pile has fewer than `k` left, she finishes it and waits out the rest of that hour. It asks for the smallest `k` that lets her finish every pile within `h` hours. For `piles = [3, 6, 7, 11]` and `h = 8`, the answer is `4`. At speed `4` the piles take `1`, `2`, `2`, and `3` hours, `8` in total. At speed `3` they take `1`, `2`, `3`, and `4`, which is `10`, too many.
 
 **Asks for.** The smallest speed that finishes in time.
 
