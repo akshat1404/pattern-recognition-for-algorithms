@@ -1,6 +1,16 @@
 # Binary Search: Asking the Right Questions
 
-Five problems, each read from its statement to the pattern. For every one, what the statement says, the words that give the pattern away, and the logic that confirms it. The confirming step is the same each time, a yes or no question about one candidate whose answers flip only once across all candidates, so one check settles a whole side. No code here, the code lives in Implementation and Examples.
+## Seeing it in a statement
+
+Reverse engineering a binary search problem starts with what a candidate answer is. In some problems it is a position in an array, the place where a target sits. In others it is a number, a speed, a capacity, a gap, a count of days. The wording cues are "sorted" or "rotated" for the first kind, and "the smallest value such that", "the largest possible minimum", or "within `D` days" for the second. A range of possible answers far too large to try one by one is a cue as well.
+
+Next, ask whether one candidate can be tested alone with a yes or no. Is the value at this index at least the target. Does this speed finish the piles in time. Can the balls be placed with at least this gap. If the only way to judge a candidate is to look at it together with others, as with a pair that sums to a target, there is no single test, and the problem is not binary search.
+
+The link to the pattern is made by asking what a yes says about the neighbors. If a speed works, does every faster speed work too. If the answer to the test carries over to a whole side of the candidate, then the answers across all candidates flip only once, and one test at the middle throws away half of them. That carrying over is the whole requirement. Sorted order is one way to get it, and a feasibility test that only gets easier as the guess grows is another.
+
+The last check rules out [Two Pointers](../two-pointers/asking-the-right-questions.md). After a check, count how many candidates are gone. If only the one that was touched is ruled out, the problem is two pointers. If a whole side is ruled out at once, it is binary search.
+
+Five problems follow, each read from its statement to the pattern with this chain. For every one, what the statement says, the words that give the pattern away, and the logic that confirms it. No code here, the code lives in Implementation and Examples.
 
 ## 1. Search a 2D Matrix
 
