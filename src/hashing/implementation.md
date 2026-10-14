@@ -1,6 +1,16 @@
 # Implementation
 
-Once a problem is recognized as one of the four buckets from the intuition chapter, the code follows a fixed shape. These are the four skeletons, one per bucket, worth knowing from memory rather than re-derived each time.
+A hash map is key-value storage. Give it a key and it hands back the value stored under that key, and the cost of a read or a write stays the same no matter how many keys it already holds. Once a problem is recognized as one of the four kinds from Asking the Right Questions, the code follows a fixed shape. These are the four skeletons, one per kind, worth knowing from memory rather than re-derived each time.
+
+## Hash maps in JavaScript
+
+JavaScript has three structures that are the same key-value idea, shaped for different needs.
+
+`Object` is the plain version. Keys are coerced to strings, and it is what most people reach for first without thinking of it as a hash map.
+
+`Map` is the general-purpose version. Any value can be a key, insertion order is preserved, and it has a proper `.has()`, `.get()`, `.set()` interface. It is the right choice whenever both a key and a value attached to it are needed, like frequency counts.
+
+`Set` is a hash map with the value dropped. It stores only keys and answers one question, `.has(key)`. It is the right choice whenever the value would be meaningless and all that matters is whether the key exists, which is the Seen Before kind.
 
 ## Seen Before
 

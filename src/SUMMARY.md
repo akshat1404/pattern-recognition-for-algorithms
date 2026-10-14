@@ -3,11 +3,10 @@
 [Introduction](./introduction.md)
 [Decision Tree](./decision-tree.md)
 
-- [Hashing](./hashing/intro.md)
-  - [Intuition](./hashing/intuition.md)
+- [Hashing]()
   - [Asking the Right Questions](./hashing/asking-the-right-questions.md)
   - [Implementation](./hashing/implementation.md)
-  - [Intuition in Action](./hashing/examples.md)
+  - [Examples](./hashing/examples.md)
 
 - [Two Pointers](./two-pointers/intro.md)
   - [Intuition](./two-pointers/intuition.md)

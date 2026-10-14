@@ -1,6 +1,6 @@
 # Intuition in Action
 
-Worked problems from the intuition chapter, reasoning and code together, one bucket at a time.
+Worked problems from the questions chapter, reasoning and code together, one bucket at a time.
 
 ## Seen Before
 

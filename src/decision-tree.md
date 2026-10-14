@@ -6,7 +6,7 @@ It can only ever reflect the chapters that already exist. Right now that's Hashi
 
 ## Question 1: does the problem only care about values, not position?
 
-If the only thing that matters is whether a value exists, how many times it occurs, or what other value completes it, and order or position never enters the question, that points to [Hashing](./hashing/intro.md).
+If the only thing that matters is whether a value exists, how many times it occurs, or what other value completes it, and order or position never enters the question, that points to [Hashing](./hashing/asking-the-right-questions.md).
 
 If position, order, or a contiguous run of elements matters, move to the next question.
 
