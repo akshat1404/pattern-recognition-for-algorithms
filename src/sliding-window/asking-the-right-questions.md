@@ -1,53 +1,49 @@
 # Sliding Window: Asking the Right Questions
 
-A statement rarely says "window". What it says is something about a stretch of the input, and five questions asked in order read that. The first two check whether the problem is about a stretch and what kind of answer it wants, the third is the check that confirms it, the fourth names what to do when the stretch goes wrong, and the fifth handles the statements where no stretch is written at all.
+Five problems, each read from its statement to the pattern. For every one, what the statement says, the words that give the pattern away, and the logic that confirms it. The confirming step is the same each time, growing the stretch pushes the tracked value one way and shrinking it pushes it back, and from there the only real decision is what moves the left edge. No code here, the code lives in Implementation and Examples.
 
-## Question 1: is the thing being asked about a contiguous stretch of the input?
+## 1. Find All Anagrams in a String
 
-The window is not a new object. It is the range the obvious solution was already looking at, a start index, an end index, and whatever sits between them. A subarray or a substring is a contiguous stretch. A subsequence, or any subset of the elements, is not.
+**The statement.** [Find All Anagrams in a String](https://leetcode.com/problems/find-all-anagrams-in-a-string/description/) gives two strings, `s` and `p`, and asks for every starting index in `s` where an anagram of `p` begins.
 
-[Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/description/) asks about a substring, so the stretch is written in the statement. If the statement picks elements from anywhere in the input with no requirement that they sit next to each other, there is no stretch and this question ends the search. Some statements name no stretch and still have one, which is Question 5.
+**What gives it away.** An anagram of `p` is a substring of `s`, so the answer is about contiguous stretches. And an anagram has exactly `p`'s length, so the size of the stretch is handed over.
 
-## Question 2: does the statement give the size, or ask for the best size?
+**Why it fits.** Every stretch of `s` with `p`'s length is a candidate, and each one is checked by comparing letter counts with `p`, a Frequency question from hashing. Sliding forward by one changes exactly two letters, one leaves and one enters, so the counts are adjusted rather than rebuilt. The left edge moves whenever the stretch grows past `p`'s length. Hashing decides what a match is, the window decides how every position gets checked.
 
-A stretch problem comes in one of three forms, and the wording separates them.
+## 2. Fruit Into Baskets
 
-**The size is given.** Words like "of size `k`", "every window of length", or "a substring as long as `s1`". [Maximum Average Subarray I](https://leetcode.com/problems/maximum-average-subarray-i/description/), [Permutation in String](https://leetcode.com/problems/permutation-in-string/description/), and [Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/description/) all hand over the size. The answer can be a number, a yes or no, or a list, and no best size is asked for.
+**The statement.** [Fruit Into Baskets](https://leetcode.com/problems/fruit-into-baskets/description/) describes a row of trees, each with one type of fruit, and two baskets that each hold one type. Starting at any tree and moving right, one fruit is picked from every tree, stopping at the first tree whose fruit fits in neither basket. It asks for the most fruit that can be picked.
 
-**The best size under a limit.** Words like "longest", "largest", "at most `k`", or "without repeating". The stretch has to stay valid, and the question is how long it can get. [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/description/) and [Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/description/) are this form.
+**What gives it away.** The story hides the stretch. "Start at any tree, move right, pick from every tree, stop" describes a contiguous run of trees. "Two baskets, one type each" says the run can hold at most two different types. "The most fruit" asks for the longest such run. Stripped of the story, the question is the longest subarray with at most two distinct values.
 
-**The best size to reach a threshold.** Words like "shortest", "smallest", "at least", or "contains all of". The stretch has to become valid, and the question is how short it can be while valid. [Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/description/) and [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/description/) are this form.
+**Why it fits.** Adding a tree can only keep or raise the number of distinct types, and dropping the leftmost tree can only keep or lower it, so the direction holds. This is the maximizing form, the right edge always advances, and the left edge moves only while the run holds three types, with a count map tracking how many of each type are inside.
 
-A min or max ask on its own is a weak signal, since plenty of those problems have no stretch in them. It counts only together with Question 1.
+## 3. Minimum Window Substring
 
-## Question 3: when the stretch grows, and when it loses its leftmost element, does the tracked value move in a predictable direction?
+**The statement.** [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/description/) gives two strings, `s` and `t`, and asks for the shortest substring of `s` that contains every character of `t`, duplicates included.
 
-This is the check that confirms the pattern. Whatever the problem tracks, a sum, a count, a set of characters, adding an element on the right has to push it one way, and removing one on the left has to push it back. If that holds, shrinking from the left is a safe way to fix a stretch that went bad. If it does not, the real problem could sit anywhere inside the stretch, and trimming the edge may fix nothing.
+**What gives it away.** "Shortest substring" is a best size over a contiguous stretch. "Contains every character" is a threshold to reach, which makes this the minimizing form.
 
-Check it with a sum. On `[3, -1, 4]`, the stretch `[3]` has sum `3`, and adding the next element gives `[3, -1]` with sum `2`. The sum went down after something was added, so there is no guarantee about what trimming the left would do. On `[3, 1, 4]` every element is positive, so adding raises the sum and removing lowers it, every time. That same direction, always, is the entire check.
+**Why it fits.** Adding a character to the stretch can only cover more of `t`, and removing one can only cover less, so the direction holds. The right edge advances until the stretch covers all of `t`. Then the left edge moves while the stretch still covers it, and each of those steps is a chance at something shorter. A count of how many of `t`'s characters are fully covered makes "is it still valid" a single comparison.
 
-[Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/description/) passes, since its values are non-negative. [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/description/) allows negative numbers and fails, which sends it to prefix sums and a map, covered in [Hashing](../hashing/asking-the-right-questions.md). Counts and distinct-character constraints pass naturally, since removing an element can only lower a count.
+## 4. Subarray Product Less Than K
 
-## Question 4: what moves the left edge, and does moving it undo anything?
+**The statement.** [Subarray Product Less Than K](https://leetcode.com/problems/subarray-product-less-than-k/description/) gives an array of positive integers and a number `k`, and asks how many contiguous subarrays have a product less than `k`.
 
-The right edge advances once per step, always. The one real decision in the whole pattern is what moves the left edge, and it has a different source in each form from Question 2. When the size is given, the left edge moves when the stretch grows past that size. When maximizing, it moves while the stretch is invalid. When minimizing, it moves while the stretch is still valid, so every step along the way is a chance at something shorter. If that condition cannot be stated in a sentence, the problem is not ready to be a window.
+**What gives it away.** "Contiguous subarrays" is the stretch. The answer is a count, not a best size, which looks unlike the other forms at first. The word that settles it is "positive".
 
-The same question separates this pattern from [Two Pointers](../two-pointers/asking-the-right-questions.md). In two pointers, moving a pointer leaves nothing behind to correct. In a window, moving the left edge undoes part of what is tracked, a character leaves a set or a number leaves a sum. Something to undo means sliding window, nothing to undo means two pointers. What gets tracked often comes from [Hashing](../hashing/asking-the-right-questions.md), a set for distinct characters or a count map for letter frequencies, while the window decides how that structure is updated.
+**Why it fits.** Every value is at least `1`, so multiplying in a new value can never shrink the product, and dividing out the leftmost value can never grow it. That is the direction check, and it passes. For each right edge, the left edge moves until the product drops below `k`. At that point every stretch that ends at the right edge and starts anywhere from the left edge onward is valid too, since removing values from the left of a valid stretch only lowers its product, so all of them are counted at once.
 
-## Question 5: if the statement names no stretch, is one hidden?
+The same problem with negative numbers or zeros allowed fails the check, since a product could flip sign or collapse to zero as the stretch grows. [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/description/) fails it for the same reason, and goes to [Hashing](../hashing/asking-the-right-questions.md).
 
-Some problems ask for a maximum or a minimum and never mention a subarray or a substring, and a window still solves them. Three sub-questions find it.
+## 5. Minimum Operations to Reduce X to Zero
 
-**What is left behind after the choice is made.** If elements are taken from the two ends, the untouched part is one unbroken block. [Maximum Points You Can Obtain from Cards](https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards/description/) takes cards from both ends of a row, and the cards left in the middle are a window of size `n - k`. The wording cue is "from either end" or "from the edges".
+**The statement.** [Minimum Operations to Reduce X to Zero](https://leetcode.com/problems/minimum-operations-to-reduce-x-to-zero/description/) gives an array of positive integers and a number `x`. Each operation removes the leftmost or rightmost element and subtracts it from `x`. It asks for the fewest operations that bring `x` to exactly `0`, or `-1` if it cannot be done.
 
-**Whether sorting puts the elements that matter next to each other.** If elements can only move in one direction and the goal is to make several equal or close, sorting turns the group that matters into a stretch. [Frequency of the Most Frequent Element](https://leetcode.com/problems/frequency-of-the-most-frequent-element/description/) raises elements by one up to a budget, and after sorting, the cheapest group to raise to any target is the stretch just below it.
+**What gives it away.** No subarray is mentioned, and the removed elements come from two ends, so they are never one contiguous stretch. What stays behind is. Removing from both ends always leaves one unbroken block in the middle. The wording cue is "leftmost or rightmost".
 
-**Whether a shorter list holds the real structure.** If the condition is about the count of one special kind of element, the positions of those elements form a list where the window is simple. [Count Number of Nice Subarrays](https://leetcode.com/problems/count-number-of-nice-subarrays/description/) needs exactly `k` odd numbers, and a window of `k` consecutive positions over the list of odd positions counts the answer.
+**Why it fits.** The removed elements sum to `x`, so the block left behind sums to the total minus `x`. Fewest operations means removing as few elements as possible, which means the longest block in the middle with that exact sum. All values are positive, so the direction holds. This is the maximizing form, with the left edge moving while the block's sum is too big. A pointer at each end taking the larger value, which two pointers would suggest, has no safety argument here, since a small value at an edge can hide exactly the value needed behind it.
 
-A related case is a window that tracks only the part of the input a choice changes. [Grumpy Bookstore Owner](https://leetcode.com/problems/grumpy-bookstore-owner/description/) has a fixed baseline of customers who are satisfied regardless, and the window slides over only the extra customers a technique would win back.
+## What the five share
 
-If none of these produces a window, another pattern is likely the fit. A greedy choice at each step, such as taking the bigger end in the cards problem, is worth testing against a small counterexample before trusting it.
-
-## Putting it together
-
-Sliding window fits when the question is about a contiguous stretch, the size is given or the best size is asked for, growing and shrinking the stretch move the tracked value in a predictable direction, a condition for moving the left edge can be stated, and a hidden stretch has been looked for when the statement names none. The loop that follows is the same every time, and Implementation shows its three forms.
+Every one is about a contiguous stretch, written in the statement, hidden in a story, or hidden in what is left behind. In every one, adding an element moves the tracked value one way and removing one moves it back, and the problem stops at that check whenever negative numbers or zeros could break it. Once both hold, the remaining question is what moves the left edge, a given size, an invalid stretch, or a stretch that is still valid. When moving a pointer undoes nothing, the problem belongs to [Two Pointers](../two-pointers/asking-the-right-questions.md) instead.
