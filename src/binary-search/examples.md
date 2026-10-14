@@ -91,16 +91,15 @@ value  1  1  2  3  3  4  4  8  8
 
 Before the `2`, the pair `(1, 1)` starts on index `0`, an even index. After the `2`, the pairs start on `3`, `5`, and `7`, all odd. The single element takes up one position, and that shifts every pair after it by one. So the structure of the indices changes at exactly one place, the single element.
 
-That gives the check. Move `mid` to an even index, stepping back one if it is odd, and ask whether `nums[mid]` equals `nums[mid + 1]`. If it does, the pair starting there is intact, the shift has not happened yet, and the single element is further right, so `low = mid + 2`. If it does not, the pairs are already shifted, and the single element is at `mid` or to its left, so `high = mid`. Across the even indices the answers run yes, yes, and then no from the single element onward, flipping once.
+That gives the check, as long as it is asked at the start of a pair. At an odd index after the shift, `nums[i]` equals `nums[i + 1]` too, and the check would give the wrong answer. So the search runs over pair numbers instead of indices. Pair `k` starts at index `2k`, and `k` goes from `0` to `n / 2`, the last one being where the single element sits if it comes at the very end.
 
-`mid` has to be even because the question only makes sense at the start of a pair. At an odd index after the shift, `nums[mid]` equals `nums[mid + 1]` too, and the check would give the wrong answer.
+At each `mid`, look at index `i = 2 * mid`. If `nums[i]` differs from both its neighbors, it is the single element, and the search returns it. If `nums[i]` equals `nums[i + 1]`, the pair is intact, the shift has not happened yet, and the single element is further right, so `low = mid + 1`. Otherwise the pairs are already shifted, and the single element is to the left, so `high = mid - 1`. Across the pairs the answers to "is it intact" run yes, yes, and then no from the single element onward, flipping once.
 
 ```
-low  high  mid  even mid  pair intact?  action
-0    8     4    4         3 vs 4, no    high = 4
-0    4     2    2         2 vs 3, no    high = 2
-0    2     1    0         1 vs 1, yes   low = 2
-2    2     stop, the answer is nums[2] = 2
+low  high  mid  i  nums[i]  neighbors  action
+0    4     2    4  3        3 and 4    shifted, high = 1
+0    1     0    0  1        none and 1 intact, low = 1
+1    1     1    2  2        1 and 3    single, return 2
 ```
 
 This is a third source of the one-flip property. Sorted values give it in the classic search, a feasibility test gives it when searching on the answer, and here it comes from the positions where pairs start.

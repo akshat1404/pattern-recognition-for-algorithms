@@ -6,26 +6,28 @@
 //
 // Before the single element, every pair starts on an even index. After
 // it, every pair starts on an odd index, since the single element shifts
-// everything by one. So at an even index, "is the pair here intact" is
-// true before the single element and false from it onward, flipping once.
+// everything by one. So the search runs over pair numbers: pair k starts
+// at index 2k, and "is pair k intact" is true before the single element
+// and false from it onward.
 
 function singleNonDuplicate(nums) {
     let low = 0;
-    let high = nums.length - 1;
+    let high = Math.floor(nums.length / 2);
 
-    while (low < high) {
-        let mid = low + Math.floor((high - low) / 2);
-        // The check only means something at the start of a pair.
-        if (mid % 2 === 1) mid--;
+    while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        const i = 2 * mid;
 
-        if (nums[mid] === nums[mid + 1]) {
-            low = mid + 2;
+        if (nums[i] !== nums[i - 1] && nums[i] !== nums[i + 1]) {
+            return nums[i];
+        }
+
+        if (nums[i] === nums[i + 1]) {
+            low = mid + 1;
         } else {
-            high = mid;
+            high = mid - 1;
         }
     }
-
-    return nums[low];
 }
 
 module.exports = { singleNonDuplicate };

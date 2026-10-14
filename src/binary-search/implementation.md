@@ -19,7 +19,7 @@ function binarySearch(nums, target) {
     let high = nums.length - 1;
 
     while (low <= high) {
-        const mid = low + Math.floor((high - low) / 2);
+        const mid = Math.floor((low + high) / 2);
 
         if (nums[mid] === target) {
             return mid;
@@ -47,7 +47,7 @@ function leftmostOccurrence(nums, target) {
     let result = -1;
 
     while (low <= high) {
-        const mid = low + Math.floor((high - low) / 2);
+        const mid = Math.floor((low + high) / 2);
 
         if (nums[mid] === target) {
             result = mid;
@@ -72,7 +72,7 @@ There's no array to index into here. `low` and `high` bound a range of candidate
 ```javascript
 function minimumFeasible(low, high, isFeasible) {
     while (low < high) {
-        const mid = low + Math.floor((high - low) / 2);
+        const mid = Math.floor((low + high) / 2);
 
         if (isFeasible(mid)) {
             high = mid;
