@@ -75,6 +75,31 @@ Peaks being scattered is not what makes this work. Scattered answers on their ow
 
 **Why it fits.** Guess a gap and ask whether all the balls fit with at least that much space between each pair. To test it, sort the positions, place a ball in the first basket, and keep placing each next ball in the first basket at least that gap away. Placing each ball as early as possible always leaves the most room for the rest. If a gap is achievable, every smaller gap is too, and if it is not, no larger gap is. The answers run yes, then no, flipping once, and the answer is the last yes. Sorting here is part of the test, not the thing being searched.
 
+## Building the range when the statement gives none
+
+Koko and Magnetic Force hand over no array to search. The range of candidates has to be built from the statement, and two questions about the answer build it. What is the smallest value the answer could ever be, which becomes `low`. What is the largest value it could ever be, which becomes `high`.
+
+For Koko, a speed of `0` never finishes anything, so `low` is `1`. A speed equal to the largest pile finishes every pile in one hour, the fastest possible, so `high` is the largest pile. For Magnetic Force, positions are distinct whole numbers, so any two balls are at least `1` apart and `low` is `1`. No two balls can be further apart than the two outermost baskets, so `high` is the distance between them.
+
+The range only has to contain the answer, it does not have to be tight. Each check halves what is left, so a loose bound costs only a few extra checks. When unsure, a bound that is obviously safe beats a clever one that might cut the answer off.
+
+With the range built, the middle of it is a candidate answer, and the check says whether it is valid. A valid middle might be the answer, so it is recorded before the search moves on. Where the search moves depends on whether the problem wants the smallest valid value or the largest.
+
+| Looking for | Middle is valid | Middle is not valid |
+|---|---|---|
+| The smallest valid value, Koko | Record it, search the left half | Search the right half |
+| The largest valid value, Magnetic Force | Record it, search the right half | Search the left half |
+
+For Koko, a speed that works means every faster speed works too, so the only open question is whether a slower one also works. A speed that fails means every slower speed fails too, so the answer must be faster. Take `piles = [3, 6, 7, 11]` and `h = 8`, with the range `[1, 11]`.
+
+```
+low  high  mid  hours  valid?  action
+1    11    6    6      yes     record 6, search left
+1    5     3    10     no      search right
+4    5     4    8      yes     record 4, search left
+4    3     stop, the answer is 4
+```
+
 ## What the five share
 
 In every one, a single candidate can be tested with a yes or no, an index, a speed, a gap. The answers across all the candidates flip only once, or at least one side is guaranteed to hold an answer, so one check discards a whole side. The candidates are either positions in an array, sorted outright, sorted in pieces, or not sorted at all, or the possible values of the answer itself. When a check can only rule out the one element it touched, the problem is closer to [Two Pointers](../two-pointers/asking-the-right-questions.md).
