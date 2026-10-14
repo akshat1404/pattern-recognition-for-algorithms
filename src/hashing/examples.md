@@ -1,4 +1,4 @@
-# Intuition in Action
+# Hashing: Examples
 
 Worked problems from the questions chapter, reasoning and code together, one bucket at a time.
 
