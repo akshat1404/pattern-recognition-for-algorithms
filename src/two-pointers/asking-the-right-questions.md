@@ -1,43 +1,47 @@
 # Two Pointers: Asking the Right Questions
 
-Two pointers rarely shows up by name in a statement. What shows up is data in a particular order and a question that could be answered by comparing positions. Five questions asked of the statement find it. The first three decide whether it fits, the fourth names which of the three shapes it is, and the fifth separates it from sliding window.
+Five problems, each read from its statement to the pattern. For every one, what the statement says, the words that give the pattern away, and the logic that confirms it. The confirming step is always the same test, an argument that moving a pointer can never skip a better answer. No code here, the code lives in Implementation and Examples.
 
-## Question 1: does position tell us something true about a value?
+## 1. 3Sum Closest
 
-In ordered data, where a value sits says something about it without a lookup. Take the sorted array `[2, 7, 11, 15]` with target `9`. The pointer at the far right holds `15`, the largest value still in range. Paired with `2`, the smallest value in range, it is already too big, so paired with anything else in range it is too big too. `15` can be discarded without checking a single other pair, purely because of where it sits.
+**The statement.** [3Sum Closest](https://leetcode.com/problems/3sum-closest/description/) gives an array and a target, and asks for the sum of three elements that is closest to the target.
 
-The same array unsorted tells us nothing from position. Index `3` could hold anything, and the only way to learn what completes a value is to remember what has been seen, which is [Hashing](../hashing/asking-the-right-questions.md). Order does not have to mean sorted by value, either. [Valid Palindrome](https://leetcode.com/problems/valid-palindrome/description/) has a fixed first and last character with no numeric order at all, and [Move Zeroes](https://leetcode.com/problems/move-zeroes/description/) only needs the original relative order kept.
+**What gives it away.** A sum of a few elements compared against a target. The answer is a sum, not a set of indices, so sorting the array is allowed, and once sorted, the problem has the two-ends shape.
 
-## Question 2: would the obvious approach pair up every position, or build a structure to remember something?
+**Why it fits.** Fix one element, then place one pointer just after it and one at the far end. If the three values sum to less than the target, moving the left pointer right is the only move that can bring the sum up toward the target, and moving the right pointer left could only push it further away. If the sum is more than the target, the reverse holds. Each move is the only one that could get closer, so no better triple is ever skipped. Hashing does not fit here, since "closest" has no exact partner to look up.
 
-Write the plain first solution. For two pointers it takes one of two forms. One compares every position against every other position, as in [Two Sum II](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/description/), where every pair is a candidate. The other builds an extra array or map to hold what the walk has passed, as in compacting an array into a second array, or keeping arrays of the tallest wall to the left and to the right of every position in [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/description/).
+## 2. Valid Palindrome II
 
-Two pointers fits when the order makes that structure unnecessary. The pointers' own positions carry the information the pairs or the extra array would have held. If the plain solution needs neither, for example it inspects each element once and moves on, the question is simpler than this pattern.
+**The statement.** [Valid Palindrome II](https://leetcode.com/problems/valid-palindrome-ii/description/) gives a string and asks whether it can be a palindrome after deleting at most one character.
 
-## Question 3: can I argue that moving one pointer never loses a better answer?
+**What gives it away.** "Palindrome" means comparing the first character with the last, the second with the second to last, and so on. There is no numeric order, but the positions are fixed, which is enough.
 
-This is the test that decides it. At each step one pointer has to move, and the move is only safe if we can prove nothing better sits behind it. In [Container With Most Water](https://leetcode.com/problems/container-with-most-water/description/), the area is capped by the shorter of two walls. Moving the taller wall inward can only shrink the width and cannot raise the cap, so the shorter wall is the one that must move, and the proof is one sentence.
+**Why it fits.** Start a pointer at each end. While the two characters match, both move inward, and this is safe because any palindrome needs that outer pair to match anyway. At the first mismatch, one of the two characters has to be the one deleted, since no deletion further inside can fix the outer pair. That leaves two options, skip the left character or skip the right one, and each option is a plain palindrome check on what remains. The single mismatch narrows the whole problem to two checks.
 
-When no such argument exists, the pattern does not apply, even if the problem looks like it should. [Maximum Points You Can Obtain from Cards](https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards/description/) takes cards from the two ends, which suggests a pointer at each end taking the bigger card. A small card at an edge can sit right in front of a huge one. On `[1, 2, 100000, 3, 4, 5]` with `k = 3`, taking the bigger end each time gives `12` when the best is `100003`. The safety argument fails, so the pointers are the wrong tool, and the chapter on [Sliding Window](../sliding-window/asking-the-right-questions.md) covers what fits.
+## 3. Merge Sorted Array
 
-## Question 4: which shape is it?
+**The statement.** [Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/description/) gives two sorted arrays, where the first has empty space at its end equal to the length of the second, and asks for the second merged into the first in place, sorted.
 
-Three shapes cover the pattern, and each has its own cues.
+**What gives it away.** "Sorted" twice, and "in place". Two sorted inputs that have to be combined in order are read with one pointer each.
 
-**Two ends moving inward.** A sorted array and a target condition over a pair or a triplet. Words like "pair that sums to", "three numbers that", "the most water between two lines", or "is it a palindrome". [Two Sum II](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/description/), [3Sum](https://leetcode.com/problems/3sum/description/), [Squares of a Sorted Array](https://leetcode.com/problems/squares-of-a-sorted-array/description/), and [Boats to Save People](https://leetcode.com/problems/boats-to-save-people/description/) all sit here. The decision at each step is a comparison of the two pointers' values against a target.
+**Why it fits.** Filling from the front overwrites values of the first array that have not been read yet. Filling from the back does not. The largest value still unplaced is the larger of the two arrays' last unread values, since both are sorted, and it belongs in the last empty slot. That slot is either free space or a position whose value has already been moved, so nothing unread gets overwritten. A third pointer marks where the next value goes, and it always stays behind the values still waiting to be read.
 
-**Both pointers from the same end.** A statement that asks to change an array in place, with no extra space, in one pass. Words like "remove", "move to the end", "keep only", or "in place". One pointer reads every element and the other marks where the next kept element goes. [Remove Duplicates from Sorted Array](https://leetcode.com/problems/remove-duplicates-from-sorted-array/description/), [Move Zeroes](https://leetcode.com/problems/move-zeroes/description/), and [Sort Colors](https://leetcode.com/problems/sort-colors/description/) are this shape.
+## 4. Is Subsequence
 
-**Two pointers at different speeds.** Anything with only a "next" step and no way to jump to an index, such as a linked list, or a process that can loop. Words like "cycle", "middle", "the `n`th node from the end", or "where two lists meet". [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/description/), [Middle of the Linked List](https://leetcode.com/problems/middle-of-the-linked-list/description/), and [Remove Nth Node From End of List](https://leetcode.com/problems/remove-nth-node-from-end-of-list/description/) are the list forms. [Happy Number](https://leetcode.com/problems/happy-number/description/) is the same idea on a sequence of numbers that may loop.
+**The statement.** [Is Subsequence](https://leetcode.com/problems/is-subsequence/description/) gives two strings, `s` and `t`, and asks whether the characters of `s` appear in `t` in the same order, not necessarily next to each other.
 
-## Question 5: does anything have to be undone when a pointer moves?
+**What gives it away.** "In the same order" over two sequences. Both pointers move in the same direction, one in each string.
 
-This separates two pointers from sliding window, which walks through an array the same way. In two pointers, a step only needs the values or positions the pointers currently sit on, and moving a pointer leaves nothing behind to correct. Move Zeroes looks at one element at a time and decides keep or skip, with nothing about the elements already passed revisited.
+**Why it fits.** The pointer in `t` moves forward every step. The pointer in `s` moves forward only when the two characters match. Matching a character of `s` at the earliest place it appears in `t` is always safe, since it leaves as much of `t` as possible for the characters that come after. If the pointer in `s` reaches its end, the answer is yes. A window does not fit, because the matched characters of `t` do not have to be next to each other and nothing gets undone when a pointer moves.
 
-In sliding window, the range between the pointers is tracked as a whole, and shrinking it means undoing part of what was tracked. [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/description/) keeps a set of the characters in the range, and moving the left pointer removes one from it. [Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/description/) keeps a running sum and subtracts the departing element. Anything to undo on a move means [Sliding Window](../sliding-window/asking-the-right-questions.md).
+## 5. Find the Duplicate Number
 
-A small running value that only grows and never needs correcting is allowed. Trapping Rain Water carries the tallest wall seen from each side, and neither number is ever revised downward, so it stays two pointers.
+**The statement.** [Find the Duplicate Number](https://leetcode.com/problems/find-the-duplicate-number/description/) gives `n + 1` numbers, each between `1` and `n`, with exactly one value repeated. It asks for the repeated value without changing the array and using only a fixed amount of extra space.
 
-## Putting it together
+**What gives it away.** The constraints shut out the usual answers. A set would find the duplicate, but it is extra space that grows with the input, and sorting changes the array. What is left is the shape of the values themselves, every value is a valid index into the array.
 
-Two pointers fits when position carries information, the plain solution would pair positions or build a structure the order makes unnecessary, a safety argument for each move can be stated, one of the three shapes matches the wording, and nothing has to be undone when a pointer moves. The answer itself is not always the two pointers' final values. 3Sum keeps a third value fixed outside the moving pair, and in-place compaction produces its answer from the whole pass, not from one comparison.
+**Why it fits.** Read each value as a pointer to the index it names, so index `i` leads to index `nums[i]`. Starting from index `0` and following these links, the walk can never leave the array, so it must eventually loop. No value is `0`, so no link leads back to index `0`, and the walk enters the loop from outside it. The index where it enters has two links leading into it, one from the path and one from inside the loop. Two links into one index means two positions hold the same value, so the index where the loop begins is the duplicate value itself. The problem has turned into a linked list with a cycle, and the fast and slow pointers find a cycle's starting point without any extra structure.
+
+## What the five share
+
+Every one has an order that position can lean on, a sorted array, the two ends of a string, two sequences read in order, or links that form a list. In every one, the pointer that moves is the one whose move can be argued safe in a single sentence, and no move ever needs to be undone. When something tracked across the whole range has to be corrected as a pointer moves, the problem belongs to [Sliding Window](../sliding-window/asking-the-right-questions.md). When the input has no usable order and the question is about values alone, it belongs to [Hashing](../hashing/asking-the-right-questions.md).
