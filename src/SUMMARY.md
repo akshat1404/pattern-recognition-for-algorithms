@@ -8,11 +8,10 @@
   - [Implementation](./hashing/implementation.md)
   - [Examples](./hashing/examples.md)
 
-- [Two Pointers](./two-pointers/intro.md)
-  - [Intuition](./two-pointers/intuition.md)
+- [Two Pointers]()
   - [Asking the Right Questions](./two-pointers/asking-the-right-questions.md)
   - [Implementation](./two-pointers/implementation.md)
-  - [Intuition in Action](./two-pointers/examples.md)
+  - [Examples](./two-pointers/examples.md)
 
 - [Sliding Window](./sliding-window/intro.md)
   - [Intuition](./sliding-window/intuition.md)

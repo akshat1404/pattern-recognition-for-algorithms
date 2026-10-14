@@ -26,7 +26,7 @@ If the problem isn't about a contiguous run at all, move to the next question.
 
 Two ends of a sorted array converging inward, a read/write pointer compacting an array in place, or two pointers moving through a linked list at different speeds. None of these ever need to know something about an entire range at once, only the values or positions the pointers currently sit on.
 
-If yes, that's [Two Pointers](./two-pointers/intro.md).
+If yes, that's [Two Pointers](./two-pointers/asking-the-right-questions.md).
 
 If the problem doesn't reduce to two positions moving with no aggregate needed, move to the next question.
 

@@ -1,12 +1,12 @@
 # Intuition in Action
 
-Worked problems from the intuition chapter, reasoning and code together, one shape at a time.
+Worked problems from the questions chapter, reasoning and code together, one shape at a time.
 
 ## Converging
 
 [Two Sum II - Input Array Is Sorted](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/description/) gives a 1-indexed array, already sorted, and a target, and asks for the 1-indexed positions of the two numbers that add up to it. Exactly one solution exists.
 
-This is the exact reasoning from the intuition chapter, worked through to completion. Take `numbers = [2, 7, 11, 15]`, `target = 9`. `left` starts at index `0` (`2`), `right` starts at index `3` (`15`).
+This is the position-carries-information reasoning from Question 1, worked through to completion. Take `numbers = [2, 7, 11, 15]`, `target = 9`. `left` starts at index `0` (`2`), `right` starts at index `3` (`15`).
 
 Step one: `2 + 15 = 17`, too big. Position already told us `15` is the largest value left in range, so pairing it with anything else in range can only be too big as well, `right` is the only side that could possibly fix this, move it back. `right` becomes index `2` (`11`).
 
@@ -20,7 +20,7 @@ Notice what never happened, at no point did the algorithm check `2` against `11`
 {{#include ./examples/two-sum-ii.js}}
 ```
 
-[3Sum](https://leetcode.com/problems/3sum/description/) gives an array and asks for every unique triplet that sums to `0`, no duplicate triplets in the result. This is the case from the intuition chapter where the answer needs a third value outside the two moving pointers.
+[3Sum](https://leetcode.com/problems/3sum/description/) gives an array and asks for every unique triplet that sums to `0`, no duplicate triplets in the result. This is the case where the answer needs a third value outside the two moving pointers, noted at the end of Asking the Right Questions.
 
 The array isn't sorted to begin with, so sort it first, that's what makes converging possible at all. Once sorted, fix one value as an anchor, `sorted[i]`, and the rest of the problem becomes finding two numbers that sum to `-sorted[i]`, which is exactly Two Sum II's shape, just with a target computed from the anchor instead of given directly.
 
@@ -32,7 +32,7 @@ Two duplicate-avoidance checks show up that Two Sum II never needed, since Two S
 {{#include ./examples/three-sum.js}}
 ```
 
-[Container With Most Water](https://leetcode.com/problems/container-with-most-water/description/) gives an array of heights, and any two indices form a container, holding water up to the shorter of the two heights, over a width equal to the distance between them. Return the largest amount of water any pair can hold. This is the case from the intuition chapter where the array isn't sorted at all, order shows up purely in position, not value.
+[Container With Most Water](https://leetcode.com/problems/container-with-most-water/description/) gives an array of heights, and any two indices form a container, holding water up to the shorter of the two heights, over a width equal to the distance between them. Return the largest amount of water any pair can hold. This is the case from Question 1 where the array isn't sorted at all, order shows up purely in position, not value.
 
 Every pair of indices forms a rectangle, and finding the one with the largest area is exactly what the problem is asking, checking all of them directly is the brute force, O(n^2).
 
@@ -62,7 +62,7 @@ left  right  heights[left]  heights[right]  width  area  move
 {{#include ./examples/container-with-most-water.js}}
 ```
 
-[Valid Palindrome](https://leetcode.com/problems/valid-palindrome/description/) gives a string and asks whether it reads the same forwards and backwards, counting only letters and digits, ignoring case, ignoring everything else. This is the case from the intuition chapter with no numeric order at all, just a fixed first character and a fixed last character to converge between.
+[Valid Palindrome](https://leetcode.com/problems/valid-palindrome/description/) gives a string and asks whether it reads the same forwards and backwards, counting only letters and digits, ignoring case, ignoring everything else. This is the case from Question 1 with no numeric order at all, just a fixed first character and a fixed last character to converge between.
 
 Punctuation and spaces get skipped entirely before any comparison happens, `"A man, a plan, a canal: Panama"` really means comparing just `"amanaplanacanalpanama"`, letters only, lowercased.
 
@@ -74,7 +74,7 @@ That last step is the whole safety argument. The moment a mismatch shows up, not
 {{#include ./examples/valid-palindrome.js}}
 ```
 
-[Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/description/) gives an array of wall heights and asks for the total water trapped after it rains. This is the case from the intuition chapter with a small monotonic running value carried alongside the pointers, `maxLeft` and `maxRight`.
+[Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/description/) gives an array of wall heights and asks for the total water trapped after it rains. This is the case from Question 5 with a small running value carried alongside the pointers, `maxLeft` and `maxRight`.
 
 Water trapped at any single position is `min(maxLeftOf(i), maxRightOf(i)) - height[i]`, the shorter of the two boundary walls decides how high the water can sit there, same idea as Container With Most Water, just asked at every position instead of between two chosen walls once.
 
@@ -188,7 +188,7 @@ fast  nums[fast]  nums[slow]  action
 {{#include ./examples/remove-duplicates-from-sorted-array.js}}
 ```
 
-[Move Zeroes](https://leetcode.com/problems/move-zeroes/description/) gives an array and asks to move every zero to the end, keeping the relative order of the non-zero elements, in place, no copy of the array allowed. Unlike Remove Duplicates, this array isn't sorted at all, only the original relative order needs preserving, the weaker version of order from the intuition chapter.
+[Move Zeroes](https://leetcode.com/problems/move-zeroes/description/) gives an array and asks to move every zero to the end, keeping the relative order of the non-zero elements, in place, no copy of the array allowed. Unlike Remove Duplicates, this array isn't sorted at all, only the original relative order needs preserving, the weaker version of order from Question 1.
 
 The decision at each step is simpler than Remove Duplicates too, no comparison against `slow`'s value needed, just whether `nums[fast]` is zero or not. But there's a wrinkle Remove Duplicates didn't have, a discarded duplicate can just be overwritten and forgotten, a zero can't, it still has to exist somewhere in the final array, just pushed to the end. That's why `slow` and `fast` swap places here instead of one overwriting the other, swapping relocates whatever was sitting at `slow` (a zero, or something already correctly placed) into `fast`'s old spot rather than losing it.
 

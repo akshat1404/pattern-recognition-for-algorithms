@@ -1,6 +1,20 @@
 # Implementation
 
-Once a problem is recognized as one of the three shapes from the intuition chapter, the code follows a fixed shape. These are the three skeletons, worth knowing from memory rather than re-derived each time.
+Two pointers is two variables walking through the same data at once, each with its own rule for moving, and the two positions compared or combined to decide what happens next. On an array or string they are two indices.
+
+```javascript
+let left = 0;
+let right = nums.length - 1;
+```
+
+On a linked list there are no indices, so the two pointers are two variables holding node references.
+
+```javascript
+let slow = head;
+let fast = head;
+```
+
+No new data structure is involved either way. The pattern lives in how the two variables move relative to each other. Once a problem is recognized as one of the three shapes from Asking the Right Questions, the code follows a fixed form. These are the three skeletons, worth knowing from memory rather than re-derived each time.
 
 ## Converging
 

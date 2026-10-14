@@ -6,7 +6,7 @@ Two pointers and sliding window can walk through an array the same way, same sta
 
 [Move Zeroes](https://leetcode.com/problems/move-zeroes/description/) never tracks anything across a span, `fast` looks at one element, decides keep or skip, nothing about the elements already passed gets revisited or summarized. Plain two pointers, not sliding window, even though it walks through an array one element at a time. [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/description/) keeps a set of every character currently in the window, and shrinking the window means removing a character from that set, actively undoing part of what's tracked. [Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/description/) keeps a running sum of the window, and shrinking means subtracting the departing element back out, the same undo pattern with a number instead of a set.
 
-The question worth asking: when the left edge moves, does anything besides the pointer itself need updating. Nothing to update means [Two Pointers](../two-pointers/intro.md). Something that has to be added on growth and subtracted on shrink means sliding window.
+The question worth asking: when the left edge moves, does anything besides the pointer itself need updating. Nothing to update means [Two Pointers](../two-pointers/asking-the-right-questions.md). Something that has to be added on growth and subtracted on shrink means sliding window.
 
 ## The boundary against hashing
 
