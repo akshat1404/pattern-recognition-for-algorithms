@@ -18,8 +18,7 @@
   - [Implementation](./sliding-window/implementation.md)
   - [Examples](./sliding-window/examples.md)
 
-- [Binary Search](./binary-search/intro.md)
-  - [Intuition](./binary-search/intuition.md)
+- [Binary Search]()
   - [Asking the Right Questions](./binary-search/asking-the-right-questions.md)
   - [Implementation](./binary-search/implementation.md)
-  - [Intuition in Action](./binary-search/examples.md)
+  - [Examples](./binary-search/examples.md)

@@ -1,6 +1,13 @@
 # Implementation
 
-One loop underlies every shape here. `low` and `high` mark the current range, `mid` gets checked once per iteration, and a single comparison decides which half survives. The loop ends when there's nothing left to check.
+There is no special type for binary search, just two numbers marking the current range.
+
+```javascript
+let low = 0;
+let high = nums.length - 1;
+```
+
+The pattern lives in how `low` and `high` move toward each other based on what the middle tells us. One loop underlies every shape here. `low` and `high` mark the current range, `mid` gets checked once per iteration, and a single comparison decides which half survives. The loop ends when there's nothing left to check.
 
 ## Classic search
 
