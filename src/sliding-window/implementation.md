@@ -1,5 +1,15 @@
 # Implementation
 
+A sliding window is two indices, `left` and `right`, plus a variable holding whatever is being tracked about the range between them.
+
+```javascript
+let left = 0;
+let right = 0;
+let windowSum = 0;
+```
+
+The tracked value depends on the problem, a plain number for a sum, a `Set` for distinct characters, a `Map` for character counts. There is no special type involved. The pattern lives in how `left` and `right` move relative to each other and how the tracked value is adjusted as they do.
+
 One loop underlies every sliding window problem. `right` always advances, one step per iteration, no exceptions. `left` advances under a condition, checked every step. The only thing that changes between problems is where that condition comes from.
 
 ## Fixed size

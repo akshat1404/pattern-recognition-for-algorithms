@@ -13,11 +13,10 @@
   - [Implementation](./two-pointers/implementation.md)
   - [Examples](./two-pointers/examples.md)
 
-- [Sliding Window](./sliding-window/intro.md)
-  - [Intuition](./sliding-window/intuition.md)
+- [Sliding Window]()
   - [Asking the Right Questions](./sliding-window/asking-the-right-questions.md)
   - [Implementation](./sliding-window/implementation.md)
-  - [Intuition in Action](./sliding-window/examples.md)
+  - [Examples](./sliding-window/examples.md)
 
 - [Binary Search](./binary-search/intro.md)
   - [Intuition](./binary-search/intuition.md)

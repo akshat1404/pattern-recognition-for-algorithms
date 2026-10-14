@@ -1,6 +1,6 @@
 # Intuition in Action
 
-Worked problems from the intuition chapter, reasoning and code together, one shape at a time.
+Worked problems from the questions chapter, reasoning and code together, one shape at a time.
 
 ## Fixed Size
 
@@ -20,7 +20,7 @@ right  enters  leaves  windowSum  bestSum
 
 `bestSum` ends at `51`, from the window `[12, -5, -6, 50]`, and `51 / 4 = 12.75`, the answer.
 
-This array has negative numbers, and nothing breaks. The direction check from the intuition chapter, whether growing the window always moves the tracked value the same way, only matters when the shrinking condition is derived from the window's contents. Here the condition is just size, so it never comes up.
+This array has negative numbers, and nothing breaks. The direction check from Question 3, whether growing the window always moves the tracked value the same way, only matters when the shrinking condition is derived from the window's contents. Here the condition is just size, so it never comes up.
 
 ```javascript
 {{#include ./examples/maximum-average-subarray-i.js}}
@@ -226,7 +226,7 @@ At `right = 9`, the second `B` arrives and `formed` doesn't move, `B` was alread
 
 ## Twists on the Standard Shapes
 
-The problems above each fit one of the three shapes as stated. The four below need one extra move before the window applies, a reframing, a subtraction, a sort, or a baseline. Three of them have a hidden window, one the statement never mentions, covered in the intuition chapter under The Hidden Window. Each one still comes down to the same question, what moves `left`, but the work is in getting the problem into a shape where that question has an answer.
+The problems above each fit one of the three shapes as stated. The four below need one extra move before the window applies, a reframing, a subtraction, a sort, or a baseline. Three of them have a hidden window, one the statement never mentions, covered in Question 5 of Asking the Right Questions. Each one still comes down to the same question, what moves `left`, but the work is in getting the problem into a shape where that question has an answer.
 
 [Maximum Points You Can Obtain from Cards](https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards/description/) lays cards in a row, each with a point value. In each of `k` steps, take one card from either the left end or the right end, and the goal is the maximum total points.
 
