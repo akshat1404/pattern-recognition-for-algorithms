@@ -4,7 +4,7 @@ This guide starts from one habit I want for every problem I come across. See a p
 
 The Decision Tree page is where to start with a problem cold. It asks a small number of questions about the statement and narrows down which pattern to open first. Each chapter after it goes deep on one pattern, split into three pages that follow one order, recognize, write, practice.
 
-Asking the Right Questions is the page I care about most. It holds five questions to ask of a problem statement, each with the wording cues that make the answer visible and the problems that sit on each side of it. It contains no code and no analysis of running time, only the logic that takes a statement to a pattern, including how to tell the pattern apart from its closest neighbors.
+Asking the Right Questions is the page I care about most. It works through five problems, reading each statement for the words that give the pattern away and the logic that confirms it. It contains no code and no analysis of running time, only the logic that takes a statement to a pattern, including how to tell the pattern apart from its closest neighbors.
 
 Implementation answers how the code looks once the pattern is known. These are the skeletons worth knowing from memory, so that recognizing the pattern is the only hard part left and writing it becomes mechanical.
 
