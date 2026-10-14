@@ -1,45 +1,53 @@
 # Hashing: Asking the Right Questions
 
-A problem statement almost never says "use a hash map". What it contains are wording cues and a shape, and five questions asked of the statement are enough to read both. The first two decide whether hashing is even on the table, the third names which kind of hashing problem it is, the fourth turns the recognition into something usable, and the fifth rules out the neighbors.
+Five problems, each read from its statement to the pattern. For every one, what the statement says, the words that give the pattern away, and the logic that confirms it and rules out the neighbors. No code here, the code lives in Implementation and Examples.
 
-## Question 1: would shuffling the input change the answer?
+## 1. Contains Duplicate II
 
-A hash map remembers values by key and, unless we store it on purpose, forgets where each value sat. So the first check is whether position matters to the answer at all. [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/description/) gives the same answer on any shuffle of the array, and so does [Two Sum](https://leetcode.com/problems/two-sum/description/), where the values that pair up never depend on the order they arrive in.
+**The statement.** [Contains Duplicate II](https://leetcode.com/problems/contains-duplicate-ii/description/) gives an array `nums` and a number `k`, and asks whether two different indices `i` and `j` hold the same value with `i` and `j` at most `k` apart.
 
-Some statements suggest order and do not need it. [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/description/) says "sequence", but the array stays unsorted and what the problem asks is whether `n`, `n + 1`, and `n + 2` exist anywhere in the input. That is still a question about values. A statement like [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/description/) fails the shuffle test, since shuffling changes which substrings exist, and a map alone cannot answer it.
+**What gives it away.** "The same value" is a Seen Before question, has this value shown up already. The distance limit adds a condition on top, but the core ask is still about a value repeating.
 
-## Question 2: does the obvious approach repeat the same lookup for every element?
+**Why it fits.** The plain approach looks back from every element, up to `k` positions, for an equal value, the same search repeated once per element. A map from each value to the last index it appeared at replaces that search. On reaching a value, look it up, and if its last index is within `k`, the answer is yes. If not, overwrite the stored index with the current one. Only the last index matters, since any earlier occurrence is even further away.
 
-Write the first solution that comes to mind, the one with no cleverness. In hashing problems it nearly always has the same shape, for each element, go through the other elements to check something. Contains Duplicate checks each element against the ones before it. Two Sum checks each element against all the others for the one that completes it.
+Position matters in this problem, but it is what gets stored under the key, not the key itself. The same problem can also be read as a window of size `k` holding a set of values, which is hashing and sliding window working together.
 
-That inner search, repeated once per element, is the part a hash map takes over. The map answers "is there something with this label" directly, so the inner loop disappears. If the obvious approach has no repeated search in it, for example one pass that only compares neighbors, there is nothing for a map to replace.
+## 2. First Unique Character in a String
 
-## Question 3: which of four things is each element asking about the others?
+**The statement.** [First Unique Character in a String](https://leetcode.com/problems/first-unique-character-in-a-string/description/) gives a string and asks for the index of the first character that appears exactly once, or `-1` if there is none.
 
-Every hashing problem asks one of four things about a value, and each has its own wording cues.
+**What gives it away.** "Appears exactly once" is a Frequency question, how many times does this character show up in the whole string.
 
-**Have I seen this before.** Words like "duplicate", "appears again", "already", or "within `k` positions". [Contains Duplicate II](https://leetcode.com/problems/contains-duplicate-ii/description/) is this with a distance attached. [Happy Number](https://leetcode.com/problems/happy-number/description/) never says duplicate, but a number that comes back means the process is cycling, and recognizing a repeat is the whole job.
+**Why it fits.** A character's count is not known until the whole string has been read, since a character that looks unique halfway through can repeat at the very end. So the counts come first, from the full string, with the character as the key. Then the string is walked again in its original order, and the first character whose count is `1` is the answer.
 
-**How many times has it shown up.** Words like "how many", "most common", "same letters", or "make the counts match". [Valid Anagram](https://leetcode.com/problems/valid-anagram/description/), [Ransom Note](https://leetcode.com/problems/ransom-note/description/), and [Determine if Two Strings Are Close](https://leetcode.com/problems/determine-if-two-strings-are-close/description/) all compare counts of letters, and [Majority Element](https://leetcode.com/problems/majority-element/description/) is a count that has to beat a threshold.
+The word "first" brings order back, and that is the part worth noticing. Order decides which unique character to report, but it plays no part in the counts. Shuffling the string changes the answer's index and leaves every count the same, so the counting is pure hashing and the order is only a final filter.
 
-**What completes this one.** Words like "two numbers that add up to", "a pair whose difference is", or "a subarray that sums to". Each element has a partner it needs, and the question is whether that partner was already passed. [Two Sum](https://leetcode.com/problems/two-sum/description/) and [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/description/) both ask it.
+## 3. Pairs of Songs With Total Durations Divisible by 60
 
-**Which ones belong together.** Words like "group", "same pattern", "same row, column, or box", or "equivalent". [Group Anagrams](https://leetcode.com/problems/group-anagrams/description/), [Group Shifted Strings](https://www.geeksforgeeks.org/dsa/group-shifted-string/), and [Valid Sudoku](https://leetcode.com/problems/valid-sudoku/description/) all sort elements into buckets that something in the statement defines.
+**The statement.** [Pairs of Songs With Total Durations Divisible by 60](https://leetcode.com/problems/pairs-of-songs-with-total-durations-divisible-by-60/description/) gives a list of song durations and asks how many pairs of songs have a total duration divisible by `60`.
 
-## Question 4: what would the key be?
+**What gives it away.** "Pairs" with a condition on their sum is a Pairing question, each song needs a partner that completes it.
 
-Once the kind is clear, the working question is what label each element gets filed under so that related elements land in the same place. In a Seen Before problem the label is the value itself. In a Frequency problem the label is the value and what is stored under it is a count.
+**Why it fits.** The partner is not one fixed value, as it is in Two Sum. Whether a sum is divisible by `60` depends only on the two remainders after dividing by `60`. A song with remainder `20` needs a partner with remainder `40`, and a song with remainder `0` needs another with remainder `0`. So the key is the remainder, and what is stored under it is how many songs with that remainder have been seen. Each new song adds the stored count of its partner's remainder to the total.
 
-In a Pairing problem the label is the partner. For Two Sum, an element `x` files itself under `x` and looks for `target - x`. For Subarray Sum Equals K, a running prefix sum `p` looks for `p - k`, since a subarray that sums to `k` is two prefix sums that differ by `k`. In a Grouping problem the label is whatever form all related elements share. Anagrams share their sorted letters, shifted strings share the gaps between consecutive letters, and a Sudoku cell has three labels at once, its row, its column, and its box.
+Sorting the durations does not help, which rules out two pointers. A longer song says nothing about its remainder, so position in a sorted list carries no information about which songs pair up. Shuffling the list leaves the count unchanged.
 
-If no label can be named, the recognition is probably wrong or the problem needs a reframing first. Longest Consecutive Sequence looks unlabeled until the question becomes "does `n - 1` exist", at which point the label is the number itself.
+## 4. Group Anagrams
 
-## Question 5: does the order of the input give the answer for free?
+**The statement.** [Group Anagrams](https://leetcode.com/problems/group-anagrams/description/) gives a list of strings and asks for them grouped so that anagrams of each other end up together.
 
-This question separates hashing from its two closest neighbors. If the input is sorted, position tells us things a map would otherwise have to remember. [Two Sum II](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/description/) asks exactly what Two Sum asks, but on a sorted array the rightmost value is the largest one remaining, so two pointers from both ends replace the map. A sorted input is the signal to check [Two Pointers](../two-pointers/asking-the-right-questions.md).
+**What gives it away.** "Grouped" is the Grouping question, which strings belong together.
 
-The other neighbor is a contiguous range. [Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/description/) asks for a subarray with a sum condition, and Subarray Sum Equals K does too. The difference is the values. With non-negative numbers, growing the range can only raise the sum and shrinking can only lower it, so a window works, covered in [Sliding Window](../sliding-window/asking-the-right-questions.md). With negative numbers allowed, the sum can move either way as the range grows, a window gives no guarantee, and the prefix-sum label from Question 4 is the way through.
+**Why it fits.** Grouping needs a key that every member of a group shares and no outsider has. Two strings are anagrams exactly when they have the same letters in the same counts, so the sorted letters of a string work as the key, and so does its count of each letter. The check for any grouping key is that two items map to the same key if and only if they belong together. Here both directions hold, so every string files itself under its key and each key collects one group. Nothing about the order of the input list matters.
 
-## Putting it together
+## 5. Longest Consecutive Sequence
 
-Hashing fits when shuffling the input leaves the answer unchanged, the obvious approach repeats a search per element, the repeated search is one of the four kinds, a label can be named for each element, and the input's order gives nothing away. When the first four hold and the fifth fails, the [Decision Tree](../decision-tree.md) page says which neighbor to open next.
+**The statement.** [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/description/) gives an unsorted array and asks for the length of the longest run of consecutive values, such as `1, 2, 3, 4`, wherever those values sit in the array.
+
+**What gives it away.** This one hides. "Longest" and "sequence" suggest a stretch of the array, which points at a window, but "consecutive" here is about values, not positions. The real question is whether `n + 1` exists anywhere in the input, which is Seen Before.
+
+**Why it fits.** Put every value in a set. A run can only start at a value whose `n - 1` is missing, since otherwise the run would extend further down. From each such start, keep asking whether the next value is in the set, and the count of successful asks is the run's length. A window is ruled out because the input order means nothing, and the shuffle test confirms it, any shuffle of the array has the same answer.
+
+## What the five share
+
+Each statement asks one of four things about a value, has it been seen, how many times, what completes it, or what it belongs with. Each has a key that can be named, the value, the character, the remainder, the sorted letters, the number itself. And in each, the input's order is either irrelevant or used only after the hashing is done, as a stored index in the first problem and a final filter in the second. When order starts deciding the answer itself, the [Decision Tree](../decision-tree.md) points to [Two Pointers](../two-pointers/asking-the-right-questions.md) or [Sliding Window](../sliding-window/asking-the-right-questions.md).
