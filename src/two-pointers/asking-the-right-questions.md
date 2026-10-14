@@ -1,6 +1,16 @@
 # Two Pointers: Asking the Right Questions
 
-Five problems, each read from its statement to the pattern. For every one, what the statement says, the words that give the pattern away, and the logic that confirms it. The confirming step is always the same test, an argument that moving a pointer can never skip a better answer. No code here, the code lives in Implementation and Examples.
+## Seeing it in a statement
+
+Reverse engineering a two pointers problem starts from the order in the input. The wording cues are "sorted", "in place", "without extra space", "palindrome", "in the same order", or a linked list with a question about a cycle, a middle, or a node counted from the end. Each of these says that where a value sits tells us something about it.
+
+Next, write the plain solution. In a two pointers problem it either compares every position with every other position, or builds an extra array or map to remember what has been passed. The question to ask is whether the order makes that work unnecessary, whether the positions of two pointers can stand in for the pairs or the extra memory.
+
+The link to the pattern is made by one argument. At each step one pointer has to move, and we need to say which one and why moving it can never skip a better answer. In a sorted array with a sum too big, the right pointer holds the largest value left, so it is the one to move. If that argument can be stated in a sentence, the problem is two pointers. If it cannot, a greedy pointer move is likely to fail on some input, and another pattern fits.
+
+The last check rules out [Sliding Window](../sliding-window/asking-the-right-questions.md). If moving a pointer means something tracked across the whole range has to be undone, a character removed from a set or a value subtracted from a sum, the problem is a window. If each step only looks at the values under the pointers, it stays two pointers.
+
+Five problems follow, each read from its statement to the pattern with this chain. For every one, what the statement says, the words that give the pattern away, and the logic that confirms it. No code here, the code lives in Implementation and Examples.
 
 ## 1. 3Sum Closest
 
