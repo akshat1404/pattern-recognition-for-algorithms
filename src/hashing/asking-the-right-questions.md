@@ -1,6 +1,16 @@
 # Hashing: Asking the Right Questions
 
-Five problems, each read from its statement to the pattern. For every one, what the statement says, the words that give the pattern away, and the logic that confirms it and rules out the neighbors. No code here, the code lives in Implementation and Examples.
+## Seeing it in a statement
+
+Reverse engineering a hashing problem starts from the plain solution, not from the pattern. Write the first approach that comes to mind, and in a hashing problem it has one shape, for each element, go through the other elements looking for something. That inner search, repeated once per element, is the thing to notice.
+
+Then name what the inner search is looking for. It is always one of four things, a value seen before, how many times a value has appeared, a partner that completes the current value, or the group a value belongs to. The wording usually says which, "duplicate" or "appears again" for the first, "count", "most frequent", or "same letters" for the second, "two numbers that add up to" for the third, and "group" or "same pattern" for the fourth.
+
+The link to hashing is made when that thing can be written as a label. If every element can be filed under a key, the value itself, a count, the partner it needs, or a shared form like sorted letters, then a map answers the inner search by looking up the key instead of scanning. If no key can be named, the problem is not hashing yet, and may need reframing first.
+
+The last check rules out the neighbors. Shuffle the input in your head. If the answer stays the same, order plays no part, and hashing is the right tool. If shuffling changes the answer, position is carrying information, and [Two Pointers](../two-pointers/asking-the-right-questions.md) or [Sliding Window](../sliding-window/asking-the-right-questions.md) is the better fit.
+
+Five problems follow, each read from its statement to the pattern with this chain. For every one, what the statement says, the words that give the pattern away, and the logic that confirms it. No code here, the code lives in Implementation and Examples.
 
 ## 1. Contains Duplicate II
 
