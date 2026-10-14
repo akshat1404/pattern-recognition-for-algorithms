@@ -67,6 +67,10 @@ Peaks being scattered is not what makes this work. Scattered answers on their ow
 
 **Asks for.** The largest possible minimum gap between balls.
 
+"Largest minimum" reads oddly at first. The balls can be placed in many arrangements, and each arrangement has its own smallest gap, `min1`, `min2`, `min3`, and so on. The answer is the arrangement whose smallest gap is the biggest. On `position = [1, 2, 3, 4, 7]` with `m = 3`, balls at `1, 2, 3` have a smallest gap of `1`, at `1, 3, 7` it is `2`, and at `1, 4, 7` it is `3`. The largest of these is `3`.
+
+"Smallest maximum" is the mirror image, and it shows up just as often. Each arrangement has its own largest value, `max1`, `max2`, `max3`, and the answer is the arrangement whose largest value is the least. [Split Array Largest Sum](https://leetcode.com/problems/split-array-largest-sum/description/) is this form, every way of splitting the array has a biggest part sum, and the answer is the split whose biggest part sum is smallest. Both phrasings point to binary search on the answer.
+
 **Offers.** A yes or no test for any guessed gap. Maximizing a minimum directly is hard, but checking whether a gap is achievable is easy.
 
 **Why it fits.** Guess a gap and ask whether all the balls fit with at least that much space between each pair. To test it, sort the positions, place a ball in the first basket, and keep placing each next ball in the first basket at least that gap away. Placing each ball as early as possible always leaves the most room for the rest. If a gap is achievable, every smaller gap is too, and if it is not, no larger gap is. The answers run yes, then no, flipping once, and the answer is the last yes. Sorting here is part of the test, not the thing being searched.
