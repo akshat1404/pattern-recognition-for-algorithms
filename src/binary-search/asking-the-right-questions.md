@@ -39,11 +39,17 @@ Five problems follow, each read from its statement to the pattern. No code here,
 
 **The statement.** [Find Peak Element](https://leetcode.com/problems/find-peak-element/description/) gives an array with no two equal neighbors and asks for the index of any peak, a value bigger than both its neighbors, with the space beyond each end counted as lower than everything.
 
-**Asks for.** Any one peak.
+**Asks for.** Any one peak, in `O(log n)`.
 
-**Offers.** Neighbors that are never equal, and edges that count as lower than everything. Nothing is sorted, but "any peak" means a side only has to be guaranteed to hold one peak.
+**Offers.** Edges that count as `-INF`, so walking uphill always ends on a peak, and permission to return any peak, so a side only has to be guaranteed to hold one.
 
-**Why it fits.** Compare the middle with its right neighbor. If the neighbor is bigger, walk right from it, and the values either keep rising to the end of the array, where the last value is a peak because the space beyond it counts as lower, or they drop at some point, and the value just before the drop is a peak. Either way, the right side holds a peak, and the left side can be discarded. If the neighbor is smaller, the same argument runs leftward from the middle. The lesson is that binary search needs a guarantee about one side, and sorted order is only one way to get it.
+**Why it fits.** The first instinct is a single pass, walk left to right and return the first element bigger than the one after it. That is correct, and without the `O(log n)` requirement it would be the answer. The requirement is what pushes us to look for a way to discard half the array at once.
+
+Picture the array padded as `[-INF, ...array..., -INF]`. With that padding, even `[1, 2, 3, 4]` has a peak, the `4`, since it is bigger than the `-INF` beyond it. Now compare the middle with its right neighbor. If the neighbor is bigger, walk right from it. Each next value is either smaller, and the current one is a peak, or bigger, and the walk climbs on. The climb cannot go past the `-INF` at the end, so it always stops on a peak. The right side is guaranteed to hold one, and the left side is discarded. If the neighbor is smaller, the same walk runs leftward from the middle.
+
+The discarded side may hold a peak too. On `[1, 2, 1, 2, 3, 4, 5]` the search goes right and returns the `5`, never visiting the peak at index `1`. That is allowed because the problem accepts any peak.
+
+Peaks being scattered is not what makes this work. Scattered answers on their own force a full scan. Asked for the global maximum of the same array, binary search fails, since the uphill side might hold a small peak while the maximum sits on the other side. What makes it work is "any peak" together with the `-INF` edges, which turn one comparison into a guarantee about one side. Sorted order is one way to get that guarantee, and this is another.
 
 ## 4. Koko Eating Bananas
 
