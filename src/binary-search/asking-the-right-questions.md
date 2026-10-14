@@ -1,39 +1,47 @@
 # Binary Search: Asking the Right Questions
 
-Binary search rarely announces itself. A sorted array is the common cue, but plenty of problems that use it have no array to search, and plenty of sorted arrays do not call for it. Five questions asked of the statement find the pattern whether or not an array is in sight. The first three decide whether it applies, the fourth names which form it takes, and the fifth says when a match ends the search.
+Five problems, each read from its statement to the pattern. For every one, what the statement says, the words that give the pattern away, and the logic that confirms it. The confirming step is the same each time, a yes or no question about one candidate whose answers flip only once across all candidates, so one check settles a whole side. No code here, the code lives in Implementation and Examples.
 
-## Question 1: can I ask a yes or no question about a single candidate?
+## 1. Search a 2D Matrix
 
-A candidate is whatever could be the answer. In a sorted array it is an index, and the question is whether the value there is at least the target. In a problem about a speed or a capacity, it is a number, and the question is whether that speed gets the job done in time. If a candidate can be tested alone, with a clear yes or no, the first requirement is met.
+**The statement.** [Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/description/) gives a grid where each row is sorted and the first value of each row is bigger than the last value of the row above, and asks whether a target is in the grid.
 
-If the only way to judge a candidate is to look at several others at once, there is no single-candidate question to ask. [Two Sum II](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/description/) is like this, since whether an index is part of the answer depends on what it pairs with, so no yes or no exists for one index alone.
+**What gives it away.** "Sorted" plus the rule linking each row to the next. Together they say the grid is one sorted list, cut into rows.
 
-## Question 2: does the answer flip only once across all the candidates?
+**Why it fits.** Read the grid row by row, and the values never decrease from the first cell to the last. Number the cells in that order, and every number maps to a row and a column, the row from how many full rows come before it and the column from what is left over. So the candidates are those numbers, the question at each one is whether its value is at least the target, and the answers flip once, exactly as in a sorted array. The grid shape is only a way of storing the list.
 
-This is the question that licenses everything else. Line the candidates up in order. The yes or no answers have to run as false for a while and then true from some point on, or the reverse, and never switch back and forth. The sort order of an array gives this for free, since "is this value at least the target" is false up to the target's position and true after it.
+## 2. Find Minimum in Rotated Sorted Array
 
-Nothing needs to be sorted for it to hold. In [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/description/), a speed that is too slow to finish in time stays too slow at any lower speed, and a speed that works keeps working at any higher one. No array of speeds exists, yet the answers still run false then true. If the answers could go yes, no, yes as the candidate grows, one check would say nothing about its neighbors, and the pattern does not apply.
+**The statement.** [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/description/) gives an array of distinct values that was sorted and then rotated, so `[0, 1, 2, 4, 5, 6, 7]` might become `[4, 5, 6, 7, 0, 1, 2]`, and asks for the smallest value.
 
-## Question 3: does one check settle a whole side, or only the element it touched?
+**What gives it away.** "Sorted then rotated" means order is broken in exactly one place, and the minimum sits right after that break.
 
-This separates binary search from [Two Pointers](../two-pointers/asking-the-right-questions.md), which also narrows a range over ordered data. After a check in two pointers, one position is ruled out and the other positions stay open. After a check in binary search, everything on one side of the candidate is ruled out together, because the single flip from Question 2 guarantees how the whole side would have answered.
+**Why it fits.** The array is two sorted blocks, every value in the first block is bigger than every value in the second, and the minimum is where the second block starts. Ask of each index whether its value is at most the last value of the array. Every index in the first block says no, every index in the second says yes, so the answers flip once and the minimum is the first yes. Checking the middle against the last value tells us which block the middle is in, and that settles a whole side.
 
-[Search Insert Position](https://leetcode.com/problems/search-insert-position/description/) is binary search for this reason. One look at the middle value discards half the array. Two Sum II compares two live positions to a target, and each comparison only tells us to move one pointer by one step. The test to run on a problem: after the check, how many candidates are gone.
+## 3. Find Peak Element
 
-## Question 4: is the thing being searched an array, or the range of possible answers?
+**The statement.** [Find Peak Element](https://leetcode.com/problems/find-peak-element/description/) gives an array with no two equal neighbors and asks for the index of any peak, a value bigger than both its neighbors, with the space beyond each end counted as lower than everything.
 
-The pattern comes in two forms, and the wording separates them.
+**What gives it away.** Nothing is sorted, which seems to rule binary search out. "Any peak" is the giveaway, since any one valid answer is enough, a side only has to be guaranteed to hold a peak, not every peak.
 
-**An array is given.** Words like "sorted", "find the position of", "first and last occurrence", "where it would be inserted", or "rotated". The candidates are the indices. [Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/description/) is the plain case. [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/description/) has a sort order that is partly broken, and it still fits, because every split has one half that is sorted and that half gives back a trustworthy check.
+**Why it fits.** Compare the middle with its right neighbor. If the neighbor is bigger, walk right from it, and the values either keep rising to the end of the array, where the last value is a peak because the space beyond it counts as lower, or they drop at some point, and the value just before the drop is a peak. Either way, the right side holds a peak, and the left side can be discarded. If the neighbor is smaller, the same argument runs leftward from the middle. The lesson is that binary search needs a guarantee about one side, and sorted order is only one way to get it.
 
-**The answer itself is a number in a range.** Words like "the minimum capacity such that", "the smallest speed that", "the largest minimum distance", or "the least number of days". There is no array in the statement. The candidates are all the values the answer could take, bounded by the smallest and largest it could possibly be, and the yes or no question is whether a given value is feasible. [Capacity To Ship Packages Within D Days](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/description/) and [Split Array Largest Sum](https://leetcode.com/problems/split-array-largest-sum/description/) are this form. The part that takes thought is arguing Question 2 for them, for instance that a larger capacity can only make shipping easier.
+## 4. Koko Eating Bananas
 
-## Question 5: is the answer a match, or the edge where the answers flip?
+**The statement.** [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/description/) gives piles of bananas and a number of hours. Each hour, Koko picks one pile and eats up to some fixed number of bananas from it. It asks for the smallest eating speed that finishes every pile in time.
 
-If the statement asks for any position holding a value, a match ends the search. Most problems ask for more. Words like "first", "last", "smallest such that", "minimum that works", or "where it would be inserted" ask for the edge where the answers change from false to true, and a match is only a clue that the edge is at that spot or past it.
+**What gives it away.** "The smallest speed that" finishes in time. There is no array to search, the answer is a number in a range, and the question to ask of any guess is a plain yes or no, does this speed finish in time.
 
-On `[8, 8, 8, 8]` with target `8`, the middle index is a match and is neither the first nor the last occurrence. A match found in a problem like this is recorded, and the search keeps going toward the edge. In the answer-in-a-range form this is always the case, since the question is the smallest (or largest) candidate that passes, and every passing candidate is only a clue that a better one may lie further along.
+**Why it fits.** The candidates are every speed from `1` up to the size of the largest pile, since eating faster than the largest pile gains nothing. If a speed is too slow, every lower speed is too slow as well, and if a speed works, every higher one works too. So the answers run no, then yes, flipping once, and the answer is the first yes. Each guess is tested by working out the hours it would take, and every test settles half of the remaining speeds.
 
-## Putting it together
+## 5. Magnetic Force Between Two Balls
 
-Binary search fits when a single candidate can be tested with a yes or no, the answers across all candidates flip only once, one check settles a whole side, and the candidates are either the indices of an array or the possible values of the answer. The last question only changes what happens at a match. Implementation shows the three forms that follow.
+**The statement.** [Magnetic Force Between Two Balls](https://leetcode.com/problems/magnetic-force-between-two-balls/description/) gives positions of baskets along a line and a number of balls, and asks for the largest possible value of the smallest gap between any two balls once they are all placed in baskets.
+
+**What gives it away.** "The largest possible minimum" is the wording cue for search on an answer. Maximizing a minimum directly is hard, but asking whether a given gap is achievable is easy.
+
+**Why it fits.** Guess a gap and ask whether all the balls fit with at least that much space between each pair. To test it, sort the positions, place a ball in the first basket, and keep placing each next ball in the first basket at least that gap away. Placing each ball as early as possible always leaves the most room for the rest. If a gap is achievable, every smaller gap is too, and if it is not, no larger gap is. The answers run yes, then no, flipping once, and the answer is the last yes. Sorting here is part of the test, not the thing being searched.
+
+## What the five share
+
+In every one, a single candidate can be tested with a yes or no, an index, a speed, a gap. The answers across all the candidates flip only once, or at least one side is guaranteed to hold an answer, so one check discards a whole side. The candidates are either positions in an array, sorted outright, sorted in pieces, or not sorted at all, or the possible values of the answer itself. When a check can only rule out the one element it touched, the problem is closer to [Two Pointers](../two-pointers/asking-the-right-questions.md).
