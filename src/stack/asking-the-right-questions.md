@@ -6,11 +6,11 @@ Every problem statement has two parts. What it asks for, the shape of the answer
 
 | Asks for | Offers | Use |
 |---|---|---|
-| Whether brackets or tags are correctly nested | Openers that wait for a closer, and the latest opener must close first | Stack of openers |
-| A nested structure expanded or evaluated, `k[...]`, expressions | An inner part that must finish before the outer part can continue | Stack of saved outer state |
-| What survives after collisions or cancellations | A new element that only ever meets the most recent survivor | Stack of survivors |
-| The next greater or next smaller element, days until warmer | Elements waiting for a bigger or smaller one to arrive | Stack of waiting indices, kept in order |
-| The widest range where an element is the smallest | A range that ends at the nearest smaller element on each side | Stack of indices with rising heights |
+| Whether every opening item has a matching closing item, in the right order | Items that open and close, where the latest open item must close first | Stack of open items |
+| A result built from parts nested inside other parts | An inner part that must finish before the outer part can continue | Stack of saved outer state |
+| What remains after elements cancel or remove each other | A new element that only interacts with the most recent remaining one | Stack of remaining elements |
+| For each element, the nearest element after it (or before it) that is greater or smaller | Elements that wait until something greater or smaller arrives | Stack of waiting elements, kept in order |
+| For each element, how far it extends before a smaller (or greater) element stops it | A range that ends at the nearest smaller (or greater) element on each side | Stack of waiting elements, kept in order |
 
 If the oldest waiting element is settled first, not the newest, it is a queue. If elements have to leave from both ends, as in Sliding Window Maximum, it is a deque, covered in [Sliding Window](../sliding-window/asking-the-right-questions.md).
 
