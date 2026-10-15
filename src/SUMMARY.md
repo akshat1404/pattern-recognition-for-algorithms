@@ -22,3 +22,8 @@
   - [Asking the Right Questions](./binary-search/asking-the-right-questions.md)
   - [Implementation](./binary-search/implementation.md)
   - [Examples](./binary-search/examples.md)
+
+- [Stack]()
+  - [Asking the Right Questions](./stack/asking-the-right-questions.md)
+  - [Implementation](./stack/implementation.md)
+  - [Examples](./stack/examples.md)
