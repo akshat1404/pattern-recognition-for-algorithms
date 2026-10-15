@@ -4,25 +4,27 @@
 // Problem: nums is sorted, every value appears exactly twice except one,
 // which appears once. Return that value in O(log n) time and O(1) space.
 //
-// Before the single element, every pair starts on an even index. After
-// it, every pair starts on an odd index, since the single element shifts
-// everything by one. So the search runs over pair numbers: pair k starts
-// at index 2k, and "is pair k intact" is true before the single element
-// and false from it onward.
+// Find mid's pair, then count the elements to the left of that pair. An
+// even count means the left side is made only of complete pairs, so the
+// single element is on the right. An odd count means it is on the left.
 
 function singleNonDuplicate(nums) {
     let low = 0;
-    let high = Math.floor(nums.length / 2);
+    let high = nums.length - 1;
 
     while (low <= high) {
         const mid = Math.floor((low + high) / 2);
-        const i = 2 * mid;
 
-        if (nums[i] !== nums[i - 1] && nums[i] !== nums[i + 1]) {
-            return nums[i];
+        let leftCount;
+        if (nums[mid] === nums[mid - 1]) {
+            leftCount = mid - 1;
+        } else if (nums[mid] === nums[mid + 1]) {
+            leftCount = mid;
+        } else {
+            return nums[mid];
         }
 
-        if (nums[i] === nums[i + 1]) {
+        if (leftCount % 2 === 0) {
             low = mid + 1;
         } else {
             high = mid - 1;
