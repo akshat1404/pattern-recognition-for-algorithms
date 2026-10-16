@@ -107,3 +107,65 @@ This is a third source of the one-flip property. Sorted values give it in the cl
 ```javascript
 {{#include ./examples/single-element-in-a-sorted-array.js}}
 ```
+
+## Search on Answer
+
+### The split shape
+
+Several problems in this section share one shape. There is an array `arr` and a number `x`, and the array has to be broken into `x` contiguous subarrays, in order. There are many ways to do it. On `arr = [1, 2, 3]` with `x = 2`, one way is `[1, 2]` and `[3]`, another is `[1]` and `[2, 3]`.
+
+Each way gives a list of subarray sums, and each list has a largest value. Call these `max1`, `max2`, and so on, one per way. The answer is the smallest of them, the minimum of the maximums.
+
+```
+way 1: [1, 2] [3]   sums 3, 3   max 3
+way 2: [1] [2, 3]   sums 1, 5   max 5
+answer: min(3, 5) = 3
+```
+
+Trying every way does not scale, since the number of ways grows very fast with the size of the array. The move that makes this solvable is to stop searching through the ways and guess the answer instead. Pick a value `C` and ask a yes or no question, is there a way to split the array so that every subarray sum is at most `C`.
+
+That question has an easy answer. Fill each subarray as full as possible without going over `C`, and start a new one only when the next element would push it over. Filling each subarray as full as it can go always leaves the fewest elements for the rest, so if this uses at most `x` subarrays, `C` works, and if it uses more, no way works.
+
+The guesses flip once. If every subarray fits under `C`, the same split fits under `C + 1`, so once a guess works, every bigger guess works too. That makes it a search on the answer, for the smallest `C` that works.
+
+The range comes from the array. Some subarray has to hold the largest element, so the answer is at least `max(arr)`, which becomes `low`. A single subarray holding everything has sum `sum(arr)`, which becomes `high`. A middle value that works is recorded, and the search goes left for something smaller. A middle value that fails sends the search right.
+
+Splitting into "at most `x`" pieces and "exactly `x`" pieces give the same answer. A piece with two or more elements can always be split in two without raising the largest sum, so a split with fewer pieces can be turned into one with exactly `x`.
+
+### Capacity To Ship Packages Within D Days
+
+[Capacity To Ship Packages Within D Days](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/description/) gives an array `weights`, where `weights[i]` is the weight of the `i`th package, and a number of days `days`. Each day, a ship loads packages in the given order, never skipping one, until the next package would push the load over the ship's capacity. It asks for the smallest capacity that ships every package within `days` days. For `weights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]` and `days = 5`, the answer is `15`.
+
+**Asks for.** The smallest capacity that works.
+
+**Offers.** A yes or no test for any guessed capacity, load the packages day by day and count the days.
+
+This is the split shape with different names. The packages are `arr`, the days are `x`, and each day's load is one subarray. The capacity a split needs is its heaviest day, so the answer is the split whose heaviest day is the lightest.
+
+At capacity `15`, the days fill like this.
+
+```
+day 1: 1 2 3 4 5   = 15
+day 2: 6 7         = 13
+day 3: 8           = 8
+day 4: 9           = 9
+day 5: 10          = 10
+```
+
+The range is `low = 10`, the heaviest package, and `high = 55`, the total.
+
+```
+low  high  mid  days needed  works?  action
+10   55    32   2            yes     record 32, search left
+10   31    20   4            yes     record 20, search left
+10   19    14   6            no      search right
+15   19    17   4            yes     record 17, search left
+15   16    15   5            yes     record 15, search left
+15   14    stop, the answer is 15
+```
+
+At `14`, the packages need six days, one too many, and at `15` they fit in five, so `15` is the smallest capacity that works.
+
+```javascript
+{{#include ./examples/capacity-to-ship-packages.js}}
+```
