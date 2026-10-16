@@ -128,7 +128,7 @@ That question has an easy answer. Fill each subarray as full as possible without
 
 The guesses flip once. If every subarray fits under `C`, the same split fits under `C + 1`, so once a guess works, every bigger guess works too. That makes it a search on the answer, for the smallest `C` that works.
 
-The range comes from the array. Some subarray has to hold the largest element, so the answer is at least `max(arr)`, which becomes `low`. A single subarray holding everything has sum `sum(arr)`, which becomes `high`. A middle value that works is recorded, and the search goes left for something smaller. A middle value that fails sends the search right.
+The range comes from the array. Some subarray has to hold the largest element, so the answer is at least `max(arr)`, which becomes `low`. A single subarray holding everything has sum `sum(arr)`, which becomes `high`. So for any problem with this shape, the range is `[max(arr), sum(arr)]`. Other answer-range problems build their range differently, as Koko and Magnetic Force do on the questions page. A middle value that works is recorded, and the search goes left for something smaller. A middle value that fails sends the search right.
 
 Splitting into "at most `x`" pieces and "exactly `x`" pieces give the same answer. A piece with two or more elements can always be split in two without raising the largest sum, so a split with fewer pieces can be turned into one with exactly `x`.
 
