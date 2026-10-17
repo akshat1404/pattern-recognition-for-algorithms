@@ -43,3 +43,38 @@ This removes as few as possible. Every bracket removed had no partner at all, an
 ```javascript
 {{#include ./examples/minimum-remove-to-make-valid-parentheses.js}}
 ```
+
+[Asteroid Collision](https://leetcode.com/problems/asteroid-collision/description/) gives an array of integers, one per asteroid in a row. The absolute value is the asteroid's size, and the sign is its direction, positive moving right and negative moving left. All move at the same speed. When two meet, the smaller one explodes, and if they are the same size, both explode. Two moving in the same direction never meet. It asks for the asteroids left after all collisions. `[5, 10, -5]` becomes `[5, 10]`, `[8, -8]` becomes `[]`, `[10, 2, -5]` becomes `[10]`, and `[-2, -1, 1, 2]` stays as it is, since nothing meets.
+
+**Asks for.** What survives.
+
+**Offers.** An arriving asteroid that only ever meets the most recent survivor first.
+
+For a right-moving asteroid to be in the final answer, it has to be bigger than every left-moving asteroid that reaches it. A right-moving asteroid cannot be decided when it is read, since its fate depends on left-moving asteroids that come later. So it waits on the stack. The stack holds the survivors so far, and right-moving asteroids are always pushed.
+
+The work happens when a left-moving asteroid arrives. It travels back through the survivors and meets the top first, the most recent one. As long as the top is right-moving, there are three outcomes, and the comparison is between sizes, the top against the arrival's absolute value.
+
+| Top compared with the arrival | Result | Next |
+|---|---|---|
+| Smaller | The top explodes and is popped | Check the new top |
+| Same size | Both explode, the top is popped | Stop, the arrival is not pushed |
+| Bigger | The arrival explodes | Stop, the arrival is not pushed |
+
+Only the first case keeps going. If the arrival destroys every right-moving asteroid on top and reaches an empty stack, or a top that is also moving left, nothing can reach it any more, and it is pushed. That is why left-moving asteroids at the start, as in `[-2, -1, 1, 2]`, survive. Nothing right-moving comes before them.
+
+Take `[10, 2, -5]`.
+
+```
+read  action                              stack
+10    moving right, push                  10
+2     moving right, push                  10 2
+-5    top 2 is smaller, pop it            10
+      top 10 is bigger, -5 explodes       10
+result [10]
+```
+
+In one line, right-moving asteroids are always pushed, and a left-moving one pops smaller right-moving asteroids off the top, then either dies on one at least its size, or is pushed once nothing moving right is left on top.
+
+```javascript
+{{#include ./examples/asteroid-collision.js}}
+```
