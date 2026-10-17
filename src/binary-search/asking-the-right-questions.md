@@ -13,6 +13,12 @@ Every problem statement has two parts. What it asks for, the shape of the answer
 
 If one check only rules out the element it touched and not a whole side, it is not binary search. Check Two Pointers.
 
+**A number, not a piece of the array.** Sliding window answers which stretch, or how long. Two pointers answers which pair, or which positions. When the answer is a quantity, a day, a speed, a capacity, a distance, it is binary search on the answer, even if the statement also talks about adjacent elements or subarrays. Those belong to the check, not to the answer.
+
+**A guess that is easy to check.** When checking a guessed answer is easy and finding the answer directly is hard, the problem is a guessing problem, and binary search is guessing done well. Every guess that turns out wrong removes half of the remaining range, so a good guess is reached in a few steps.
+
+**A maximum hidden in plain sight.** Some statements ask for a minimum and never say "maximum", yet are a minimum of a maximum. "The minimum days to wait" before flowers can be used means waiting for the last of them to bloom, the largest bloom day among the flowers chosen. The answer is the choice whose largest is smallest.
+
 Five problems follow, each read from its statement to the pattern. No code here, the code lives in Implementation and Examples.
 
 ## 1. Search a 2D Matrix
