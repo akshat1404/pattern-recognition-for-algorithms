@@ -50,22 +50,22 @@ function countAtMostByRows(matrix, value) {
     return count;
 }
 
-// Faster version, used above: walk from the bottom-left corner, where
-// right means bigger and up means smaller. A cell at or below value means
-// the whole column above it is too, so count it and step right. Otherwise
-// step up. At most 2n steps.
+// Faster version, used above: walk from the top-right corner, where left
+// means smaller and down means bigger. A cell at or below value means the
+// whole row up to it is too, so count it and step down. Otherwise step
+// left. The row version without restarting each row. At most 2n steps.
 function countAtMost(matrix, value) {
     const n = matrix.length;
-    let row = n - 1;
-    let col = 0;
+    let row = 0;
+    let col = n - 1;
     let count = 0;
 
-    while (row >= 0 && col < n) {
+    while (row < n && col >= 0) {
         if (matrix[row][col] <= value) {
-            count += row + 1;
-            col++;
+            count += col + 1;
+            row++;
         } else {
-            row--;
+            col--;
         }
     }
 

@@ -228,7 +228,18 @@ The first way to count is row by row, starting at `[0, 0]`. Each row is sorted, 
 
 That is correct, but when `mid` cuts through every row, it still walks close to every cell, about `n²` steps per check. The walking can be shared between rows. Where a row stops counting can only move left as we go down, because each row is bigger than the one above it, column by column. So there is no need to restart each row from the left.
 
-Start at the bottom-left corner instead. If the cell is at or below `mid`, every cell above it in that column is smaller still, so the whole column up to there counts, and the walk steps right. If the cell is above `mid`, the walk steps up. From this corner, right always means bigger and up always means smaller, so every cell gives a clear direction, which the top-left corner does not, since both right and down mean bigger. Each step leaves a row or a column behind, so a count takes at most `2n` steps.
+Start at the top-right corner instead, the end of the first row. If the cell is at or below `mid`, every cell to its left in that row is smaller still, so the row counts up to there, `col + 1` elements, and the walk steps down to the next row. If the cell is above `mid`, the walk steps left. The walk never moves right again, since the next row's stopping point can only be further left. From this corner, left always means smaller and down always means bigger, so every cell gives a clear direction, which the top-left corner does not, since both right and down mean bigger. Each step leaves a row or a column behind, so a count takes at most `2n` steps.
+
+For `mid = 12`, the walk goes like this.
+
+```
+(0, 2) = 9   at or below 12   row 0 counts 3 (1, 5, 9), step down
+(1, 2) = 13  above 12         step left
+(1, 1) = 11  at or below 12   row 1 counts 2 (10, 11), step down
+(2, 1) = 13  above 12         step left
+(2, 0) = 12  at or below 12   row 2 counts 1 (12), step down, done
+count = 6
+```
 
 ```
 low  high  mid  count at or below mid  action
