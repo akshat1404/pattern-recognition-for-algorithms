@@ -14,22 +14,24 @@ function asteroidCollision(asteroids) {
     const stack = [];
 
     for (const a of asteroids) {
-        let alive = true;
-
-        while (alive && a < 0 && stack.length > 0 && stack[stack.length - 1] > 0) {
-            const top = stack[stack.length - 1];
-
-            if (top < -a) {
-                stack.pop();
-            } else if (top === -a) {
-                stack.pop();
-                alive = false;
-            } else {
-                alive = false;
-            }
+        if (a > 0) {
+            stack.push(a);
+            continue;
         }
 
-        if (alive) stack.push(a);
+        // Smaller right-moving asteroids on top explode.
+        while (stack.length > 0 && stack[stack.length - 1] > 0 && stack[stack.length - 1] < -a) {
+            stack.pop();
+        }
+
+        if (stack.length > 0 && stack[stack.length - 1] === -a) {
+            // Same size, both explode.
+            stack.pop();
+        } else if (stack.length === 0 || stack[stack.length - 1] < 0) {
+            // Nothing moving right is left to hit it.
+            stack.push(a);
+        }
+        // Otherwise a bigger right-moving asteroid is on top, and a explodes.
     }
 
     return stack;
