@@ -169,3 +169,35 @@ At `14`, the packages need six days, one too many, and at `15` they fit in five,
 ```javascript
 {{#include ./examples/capacity-to-ship-packages.js}}
 ```
+
+### Minimum Number of Days to Make m Bouquets
+
+[Minimum Number of Days to Make m Bouquets](https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/description/) gives an array `bloomDay`, where `bloomDay[i]` is the day flower `i` blooms, and two numbers `m` and `k`. A bouquet needs `k` adjacent flowers that have all bloomed, and each flower can go in at most one bouquet. It asks for the smallest number of days to wait before `m` bouquets can be made, or `-1` if that is impossible. For `bloomDay = [7, 7, 7, 7, 12, 7, 7]`, `m = 2`, and `k = 3`, the answer is `12`.
+
+**Asks for.** The smallest day that works.
+
+**Offers.** A yes or no test for any guessed day, count the runs of bloomed flowers and the bouquets each run gives.
+
+The answer is a day, a number, not a stretch of flowers, which points at binary search on the answer even though the statement talks about adjacent flowers. The adjacent flowers belong to the check. The maximum is hidden too. Waiting for a bouquet means waiting for its last flower to bloom, so the wait for a set of bouquets is the largest bloom day among their flowers, and the answer is the choice whose largest is smallest.
+
+This is not the split shape, so the range is not `[max(arr), sum(arr)]`. It comes from the bloom days. Before the earliest bloom day nothing has bloomed, so `low` is `min(bloomDay)`. By the latest bloom day every flower has bloomed, so `high` is `max(bloomDay)`, and if `m` bouquets cannot be made by then, they never can.
+
+The answers flip once because flowers never un-bloom. A flower open on day `d` is still open on day `d + 1`, so every bouquet possible on day `d` is still possible later. Once a day works, every later day works.
+
+Whether the answer is `-1` is known before searching. `m` bouquets of `k` flowers need `m * k` flowers, and if the array has fewer than that, no day works. If it has enough, the latest bloom day always works, so the search always finds an answer.
+
+The check walks the flowers once. A bloomed flower adds to the current run, and when the run reaches `k`, that is one bouquet and the run starts over. A flower not yet bloomed breaks the run.
+
+```
+low  high  mid  bloomed by mid      runs   bouquets  works?  action
+7    12    9    all except the 12   4, 2   1         no      search right
+10   12    11   all except the 12   4, 2   1         no      search right
+12   12    12   all                 7      2         yes     record 12, search left
+12   11    stop, the answer is 12
+```
+
+On days `9` and `11` the `12` splits the flowers into a run of four and a run of two, which gives one bouquet, since the run of four only holds one group of three. On day `12` the run is all seven flowers, which holds two groups of three.
+
+```javascript
+{{#include ./examples/minimum-days-to-make-bouquets.js}}
+```
