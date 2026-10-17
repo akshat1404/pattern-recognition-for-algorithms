@@ -78,3 +78,41 @@ In one line, right-moving asteroids are always pushed, and a left-moving one pop
 ```javascript
 {{#include ./examples/asteroid-collision.js}}
 ```
+
+[Simplify Path](https://leetcode.com/problems/simplify-path/description/) gives an absolute Unix path, starting with `/`, and asks for its simplified form. A `.` means the current directory and does nothing. A `..` means go up one directory, and at the root it stays at the root. Several slashes in a row count as one. Any other name is a directory, including `...`. The result starts with `/`, has single slashes between names, no trailing slash, and no `.` or `..`. `"/home//foo/"` becomes `"/home/foo"`, `"/../"` becomes `"/"`, and `"/.../a/../b/c/../d/./"` becomes `"/.../b/d"`.
+
+**Asks for.** A cleaned path.
+
+**Offers.** A `..` that removes the most recent directory still in the path, a cancellation like the asteroids.
+
+The stack holds directory names. Each name is pushed as it is read, and a `..` pops the most recent one, the directory it leaves. At the end, the names still on the stack are the path, joined with `/` and with a `/` in front.
+
+Splitting the path on `/` gives the pieces, but it also gives empty ones. `"/home//foo/".split("/")` is `["", "home", "", "foo", ""]`, an empty piece for the leading slash, one for the double slash, and one for the trailing slash. They are skipped the same way as `.`. A `..` at the root finds the stack empty, and since there is nothing above the root, it does nothing.
+
+| Piece | Action |
+|---|---|
+| `""` or `.` | Skip |
+| `..` | Pop, if the stack is not empty |
+| Any other name, including `...` | Push |
+
+Take `"/home/user/Documents/../../Pictures/../"`.
+
+```
+piece      action   stack
+""         skip
+home       push     home
+user       push     home user
+Documents  push     home user Documents
+..         pop      home user
+..         pop      home
+Pictures   push     home Pictures
+..         pop      home
+""         skip     home
+result "/home"
+```
+
+An empty stack at the end gives `"/" + ""`, which is `"/"`, so the root needs no special case.
+
+```javascript
+{{#include ./examples/simplify-path.js}}
+```
