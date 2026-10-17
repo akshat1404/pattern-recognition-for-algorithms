@@ -147,3 +147,40 @@ Every row of the stack is falling from bottom to top, and no sort ever ran.
 ```javascript
 {{#include ./examples/online-stock-span.js}}
 ```
+
+[Remove K Digits](https://leetcode.com/problems/remove-k-digits/description/) gives a string `num` of digits and a number `k`, and asks for exactly `k` digits to be removed so that the remaining number is as small as possible, with the remaining digits kept in their original order. The result is returned as a string with no leading zeros, or `"0"` if nothing is left. `"1432219"` with `k = 3` becomes `"1219"`, `"10200"` with `k = 1` becomes `"200"`, and `"10"` with `k = 2` becomes `"0"`.
+
+**Asks for.** The smallest number after removing `k` digits.
+
+**Offers.** Digits in a fixed order, where a digit further left matters more than every digit after it.
+
+Nothing in the statement says "next greater" or "previous smaller", so the stack is not in the wording. It comes from the goal. The final number has `n - k` digits, so there are `n - k` positions to fill, and each one should hold the smallest digit it can. Filling them from the left matters most, since a smaller digit in an earlier position beats anything after it, `1999` is smaller than `2000`.
+
+One way to fill the positions is to pick, for each one, the smallest digit within reach. A position can only reach so far ahead, since enough digits have to be left to fill the positions after it. In `"1432219"` with `k = 3` there are four positions, and the first can choose from `1 4 3 2`, so it takes `1`. That works, but it scans the same digits again for every position.
+
+The stack reaches the same result in one pass. It builds the answer as it reads, and corrects it when a better digit arrives. If the new digit is smaller than the digit on top, and removals are left, the top was a worse choice for its position. It is popped, one removal is used, and the new top is checked the same way. Otherwise the new digit is pushed. Each pop gives an earlier position a smaller digit.
+
+```
+digit  action                      k left  stack
+1      push                        3       1
+4      push                        3       1 4
+3      4 is bigger, pop it         2       1
+       push 3                      2       1 3
+2      3 is bigger, pop it         1       1
+       push 2                      1       1 2
+2      equal, push                 1       1 2 2
+1      2 is bigger, pop it         0       1 2
+       no removals left, push      0       1 2 1
+9      push                        0       1 2 1 9
+result "1219"
+```
+
+The stack never ends up too short. Each pop uses one removal, and pops stop when `k` reaches `0`, so at most `k` digits go and at least `n - k` remain. The reach limit from the first idea is built into the counter.
+
+It can end up too long. If removals are left over at the end, as in `"12345"` with `k = 2`, where no digit is ever smaller than the one before it, the stack holds more than `n - k` digits. The extra ones come off the end. If removals were left over, no pop was ever stopped for lack of removals, so the stack never goes down from bottom to top, and its largest digits are at the end. `"12345"` keeps its first three, `"123"`.
+
+The last step is leading zeros. `"10200"` with `k = 1` pops the `1` when the `0` arrives and leaves `"0200"`, which is stripped to `"200"`. If nothing is left after stripping, the answer is `"0"`.
+
+```javascript
+{{#include ./examples/remove-k-digits.js}}
+```
