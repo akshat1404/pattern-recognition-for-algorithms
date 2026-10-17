@@ -116,3 +116,34 @@ An empty stack at the end gives `"/" + ""`, which is `"/"`, so the root needs no
 ```javascript
 {{#include ./examples/simplify-path.js}}
 ```
+
+## Monotonic Stack
+
+A monotonic stack is a stack whose values, from bottom to top, always run in one direction, all falling or all rising. Nothing sorts it. Before a new value is pushed, every value on top that would break the order is popped, so the order holds when it lands. And it does not hold every element, only the ones that can still be someone's answer. The popped ones are gone for good.
+
+[Online Stock Span](https://leetcode.com/problems/online-stock-span/description/) gives prices one day at a time through a call `next(price)`. Each call returns that day's span, the number of consecutive days, counting back from today and including today, whose price was at or below today's price. For prices `[100, 80, 60, 70, 60, 75, 85]`, the spans are `[1, 1, 1, 2, 1, 4, 6]`. The `75` covers itself, `60`, `70`, and `60`, and stops at `80`.
+
+**Asks for.** For each day, how far back it reaches before a bigger price stops it, the previous greater element.
+
+**Offers.** Prices that arrive one at a time, with nothing known about the days to come.
+
+Compare each new price with the last element of the stack, and pop until that element is greater than the new price. Whatever is left on top is the previous greater day, where the span stops. Popping is safe. When `75` arrives, the days `60`, `70`, and `60` are covered, and any later day that reaches back past `75` reaches past them too. No later day will ever stop at them, so they never need to be looked at again.
+
+The stack holds indices, the day numbers, and the span comes from them. Today's span runs from the day after the previous greater day up to today, so it is `today - top`. If the stack is empty, no earlier day was greater, and the span reaches all the way back to day `0`, which is `today + 1`. Since prices arrive through calls instead of as an array, the prices seen so far are kept in an array of their own, so the stack's indices can be looked up.
+
+```
+day  price  pops            top left  span        stack (prices)
+0    100                    none      0 + 1 = 1   100
+1    80                     0         1 - 0 = 1   100 80
+2    60                     1         2 - 1 = 1   100 80 60
+3    70     day 2 (60)      1         3 - 1 = 2   100 80 70
+4    60                     3         4 - 3 = 1   100 80 70 60
+5    75     days 4, 3       1         5 - 1 = 4   100 80 75
+6    85     days 5, 1       0         6 - 0 = 6   100 85
+```
+
+Every row of the stack is falling from bottom to top, and no sort ever ran.
+
+```javascript
+{{#include ./examples/online-stock-span.js}}
+```
