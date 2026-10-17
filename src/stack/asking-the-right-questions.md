@@ -2,7 +2,7 @@
 
 ## Seeing it in a statement
 
-Every problem statement has two parts. What it asks for, the shape of the answer. What it offers, the structure in the input we can lean on. The pattern is where the two meet. For a stack, what the input offers is always the same thing underneath. Some elements cannot be answered when they are read. Their answer depends on something that has not arrived yet, so they wait. When that something arrives, it answers the most recent waiting element first.
+Every problem statement has two parts. What it asks for, the shape of the answer. What it offers, the structure in the input we can lean on. The pattern is where the two meet. For a stack, what the input offers is always the same thing underneath. Some elements cannot be decided with only what has been read so far. Their answer depends on something that comes later, so they wait on the stack. When that something arrives, it decides the most recent waiting element first.
 
 | Asks for | Offers | Use |
 |---|---|---|
@@ -12,7 +12,7 @@ Every problem statement has two parts. What it asks for, the shape of the answer
 | For each element, the nearest element after it (or before it) that is greater or smaller | Elements that wait until something greater or smaller arrives | Stack of waiting elements, kept in order |
 | For each element, how far it extends before a smaller (or greater) element stops it | A range that ends at the nearest smaller (or greater) element on each side | Stack of waiting elements, kept in order |
 
-If the oldest waiting element is answered first, not the newest, it is a queue. If elements have to leave from both ends, as in Sliding Window Maximum, it is a deque, covered in [Sliding Window](../sliding-window/asking-the-right-questions.md).
+If the oldest waiting element is decided first, not the newest, it is a queue. If elements have to leave from both ends, as in Sliding Window Maximum, it is a deque, covered in [Sliding Window](../sliding-window/asking-the-right-questions.md).
 
 Five problems follow, each read from its statement to the pattern. No code here, the code lives in Implementation and Examples.
 
@@ -24,7 +24,7 @@ Five problems follow, each read from its statement to the pattern. No code here,
 
 **Offers.** Openers that wait for their closer, where the opener that must close next is always the latest one still open.
 
-**Why it fits.** Read the string left to right. No opener can be answered yet, since its answer depends on a closer that has not arrived, so it waits. When a closer arrives, it can only match one opener, the most recent one still open, since anything opened after that would have to close first. In `"([)]"` the `)` arrives while `[` is the latest open bracket, so the match fails right there. The waiting openers are answered newest first, which is exactly what a stack gives. At the end, the string is valid only if nothing is left waiting.
+**Why it fits.** Read the string left to right. No opener can be decided yet, since its answer depends on a closer that comes later, so it waits. When a closer arrives, it can only match one opener, the most recent one still open, since anything opened after that would have to close first. In `"([)]"` the `)` arrives while `[` is the latest open bracket, so the match fails right there. The waiting openers are decided newest first, which is exactly what a stack gives. At the end, the string is valid only if nothing is left waiting.
 
 ## 2. Decode String
 
@@ -34,7 +34,7 @@ Five problems follow, each read from its statement to the pattern. No code here,
 
 **Offers.** An inner part that must be finished before the part around it can continue.
 
-**Why it fits.** When a `[` arrives, the text built so far and the repeat count in front of the bracket cannot be used yet, they wait until the matching `]`. Inside, another `[` can start, and that inner part has to finish first. So the outer parts pile up, each waiting on the one inside it. When a `]` arrives, it closes the innermost part, which was the latest one started, and its result is joined onto the part saved just before it. The newest waiting part is answered first, so a stack holds the saved outer state.
+**Why it fits.** When a `[` arrives, the text built so far and the repeat count in front of the bracket cannot be used yet, they wait until the matching `]`. Inside, another `[` can start, and that inner part has to finish first. So the outer parts pile up, each waiting on the one inside it. When a `]` arrives, it closes the innermost part, which was the latest one started, and its result is joined onto the part saved just before it. The newest waiting part is decided first, so a stack holds the saved outer state.
 
 ## 3. Asteroid Collision
 
@@ -52,11 +52,11 @@ Five problems follow, each read from its statement to the pattern. No code here,
 
 **Asks for.** For each element, the next greater element to its right.
 
-**Offers.** Days that wait for a warmer day, where a new warm day answers the colder waiting days starting from the most recent.
+**Offers.** Days that wait for a warmer day, where a new warm day decides the colder waiting days starting from the most recent.
 
-**Why it fits.** The plain approach looks forward from every day for a warmer one. Instead, read left to right and let days wait. In the example, `75` waits, then `71` waits, then `69` waits. When `72` arrives, it is warmer than `69`, the most recent waiting day, so `69` gets its answer, `1`. Then it is warmer than `71`, which gets `2`. It is not warmer than `75`, so `75` keeps waiting, and `72` joins the waiting days.
+**Why it fits.** The plain approach looks forward from every day for a warmer one. Instead, read left to right and let days wait. In the example, `75` waits, then `71` waits, then `69` waits. When `72` arrives, it is warmer than `69`, the most recent waiting day, so `69` is decided, with an answer of `1`. Then it is warmer than `71`, which is decided with `2`. It is not warmer than `75`, so `75` keeps waiting, and `72` joins the waiting days.
 
-The waiting days are always in falling order of temperature, from the oldest to the newest, because a warmer arrival answers every colder day before it waits. So the newest waiting day is always the coldest, and it is the first one any new day can answer. The stack stays in order without ever being sorted, which is why this form is called a monotonic stack.
+The waiting days are always in falling order of temperature, from the oldest to the newest, because a warmer arrival decides every colder day before it waits. So the newest waiting day is always the coldest, and it is the first one any new day can decide. The stack stays in order without ever being sorted, which is why this form is called a monotonic stack.
 
 ## 5. Largest Rectangle in Histogram
 
@@ -72,4 +72,4 @@ Read left to right and let bars wait for their right end. When a shorter bar arr
 
 ## What the five share
 
-In every one, some elements cannot be answered when they are read, because their answer depends on something that has not arrived yet. An opener waits for its closer, an outer part waits for its inner part, a right-moving asteroid waits for a collision, a day waits for a warmer day, a bar waits for a shorter one. And in every one, a new arrival answers the waiting elements newest first, stopping at the first one it cannot answer. Once answered, an element is never needed again. That newest-first order is what a stack provides. When the oldest waiting element is the one to answer first, the problem calls for a queue instead.
+In every one, some elements cannot be decided with only what has been read so far, because their answer depends on something that comes later. An opener waits for its closer, an outer part waits for its inner part, a right-moving asteroid waits for a collision, a day waits for a warmer day, a bar waits for a shorter one. And in every one, a new arrival decides the waiting elements newest first, stopping at the first one it cannot decide. Once decided, an element is never needed again. That newest-first order is what a stack provides. When the oldest waiting element is the one to decide first, the problem calls for a queue instead.
