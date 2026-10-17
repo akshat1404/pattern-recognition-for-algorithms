@@ -29,9 +29,31 @@ function kthSmallest(matrix, k) {
     return answer;
 }
 
-// Walk from the bottom-left corner. A cell at or below value means the
-// whole column above it is too, so count it and step right. Otherwise
-// step up.
+// First version: count row by row. A row whose last element fits counts
+// whole, a row whose first element is too big ends the count, and only
+// the rows in between are walked. Up to n * n steps.
+function countAtMostByRows(matrix, value) {
+    const n = matrix.length;
+    let count = 0;
+
+    for (let row = 0; row < n; row++) {
+        if (matrix[row][0] > value) break;
+        if (matrix[row][n - 1] <= value) {
+            count += n;
+            continue;
+        }
+        for (let col = 0; col < n && matrix[row][col] <= value; col++) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+// Faster version, used above: walk from the bottom-left corner, where
+// right means bigger and up means smaller. A cell at or below value means
+// the whole column above it is too, so count it and step right. Otherwise
+// step up. At most 2n steps.
 function countAtMost(matrix, value) {
     const n = matrix.length;
     let row = n - 1;
@@ -50,4 +72,4 @@ function countAtMost(matrix, value) {
     return count;
 }
 
-module.exports = { kthSmallest };
+module.exports = { kthSmallest, countAtMost, countAtMostByRows };

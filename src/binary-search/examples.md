@@ -224,7 +224,11 @@ The check asks how many elements are at or below `mid`. If the count is at least
 
 The answer always ends up being an element of the matrix, even though most guesses are not. The search finds the smallest value whose count reaches `k`. If that value were not in the matrix, the value just below it would have exactly the same count, so it would pass too, and the first value would not be the smallest after all.
 
-Counting does not need to look at every cell. Start at the bottom-left corner. If the cell is at or below `mid`, every cell above it in that column is smaller still, so the whole column up to there counts, and the walk steps right. If the cell is above `mid`, the walk steps up. Each step leaves a row or a column behind, so a count takes at most `2n` steps.
+The first way to count is row by row, starting at `[0, 0]`. Each row is sorted, so two shortcuts apply. If a row's last element is at or below `mid`, the whole row counts, all `n` of it, without looking at the rest. If a row's first element is already above `mid`, nothing in it counts, and since the columns are sorted too, every row below starts even bigger, so the count is finished. Only the rows that `mid` cuts through the middle need walking, from the left until the first value above `mid`.
+
+That is correct, but when `mid` cuts through every row, it still walks close to every cell, about `n²` steps per check. The walking can be shared between rows. Where a row stops counting can only move left as we go down, because each row is bigger than the one above it, column by column. So there is no need to restart each row from the left.
+
+Start at the bottom-left corner instead. If the cell is at or below `mid`, every cell above it in that column is smaller still, so the whole column up to there counts, and the walk steps right. If the cell is above `mid`, the walk steps up. From this corner, right always means bigger and up always means smaller, so every cell gives a clear direction, which the top-left corner does not, since both right and down mean bigger. Each step leaves a row or a column behind, so a count takes at most `2n` steps.
 
 ```
 low  high  mid  count at or below mid  action
