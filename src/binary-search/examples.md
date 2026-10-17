@@ -201,3 +201,42 @@ On days `9` and `11` the `12` splits the flowers into a run of four and a run of
 ```javascript
 {{#include ./examples/minimum-days-to-make-bouquets.js}}
 ```
+
+### Kth Smallest Element in a Sorted Matrix
+
+[Kth Smallest Element in a Sorted Matrix](https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/description/) gives an `n × n` matrix where every row and every column is sorted ascending, and a number `k`. It asks for the `k`th smallest element in sorted order, counting duplicates. For the matrix below and `k = 8`, the answer is `13`, since all the values sorted are `1, 5, 9, 10, 11, 12, 13, 13, 15`.
+
+```
+[[ 1,  5,  9],
+ [10, 11, 13],
+ [12, 13, 15]]
+```
+
+**Asks for.** A value, the `k`th smallest.
+
+**Offers.** Sorted rows and sorted columns, and a count of the elements at or below any guessed value that is easy to work out.
+
+The matrix is not one sorted list, which rules out searching by position. In reading order it is `1, 5, 9, 10, 11, 13, 12, 13, 15`, and `13` comes before `12`. With `k = 6`, the 6th smallest is `12`, but the 6th position in reading order holds `13`. Search a 2D Matrix could search positions only because each row starts after the previous row ends, and this matrix makes no such promise.
+
+So the search runs over values instead. The smallest value is the top-left corner and the largest is the bottom-right corner, which gives `low = matrix[0][0]` and `high = matrix[n - 1][n - 1]`. `mid` is a value, often one that does not appear in the matrix at all, never a position.
+
+The check asks how many elements are at or below `mid`. If the count is at least `k`, `mid` is big enough, so it is recorded and the search goes left for something smaller. If the count is less than `k`, the search goes right. The answers flip once, since raising `mid` can only raise the count.
+
+The answer always ends up being an element of the matrix, even though most guesses are not. The search finds the smallest value whose count reaches `k`. If that value were not in the matrix, the value just below it would have exactly the same count, so it would pass too, and the first value would not be the smallest after all.
+
+Counting does not need to look at every cell. Start at the bottom-left corner. If the cell is at or below `mid`, every cell above it in that column is smaller still, so the whole column up to there counts, and the walk steps right. If the cell is above `mid`, the walk steps up. Each step leaves a row or a column behind, so a count takes at most `2n` steps.
+
+```
+low  high  mid  count at or below mid  action
+1    15    8    2                      too few, search right
+9    15    12   6                      too few, search right
+13   15    14   8                      enough, record 14, search left
+13   13    13   8                      enough, record 13, search left
+13   12    stop, the answer is 13
+```
+
+`8` and `14` were both guessed and neither is in the matrix. `14` passed, but `13` passed with the same count, so the search kept going left until it landed on `13`, which is.
+
+```javascript
+{{#include ./examples/kth-smallest-in-sorted-matrix.js}}
+```
