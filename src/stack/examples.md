@@ -184,3 +184,55 @@ The last step is leading zeros. `"10200"` with `k = 1` pops the `1` when the `0`
 ```javascript
 {{#include ./examples/remove-k-digits.js}}
 ```
+
+[Sum of Subarray Minimums](https://leetcode.com/problems/sum-of-subarray-minimums/description/) gives an array `arr` and asks for the minimum of every contiguous subarray, all added up, returned modulo `10^9 + 7`. For `[3, 1, 2, 4]` the answer is `17`.
+
+**Asks for.** A sum over every subarray, about `n² / 2` of them.
+
+**Offers.** A minimum that, once a smaller element arrives, stops mattering for every subarray that reaches past that smaller element.
+
+There are several ways to group the same subarrays, and each one leads further. The first groups them by length.
+
+```
+length 1: [3] [1] [2] [4]          mins 3 1 2 4   = 10
+length 2: [3,1] [1,2] [2,4]        mins 1 1 2     = 4
+length 3: [3,1,2] [1,2,4]          mins 1 1       = 2
+length 4: [3,1,2,4]                min 1          = 1
+total 17
+```
+
+The second groups them by where they start, which lets one running minimum serve a whole row instead of recomputing each subarray.
+
+```
+start at 3: [3] [3,1] [3,1,2] [3,1,2,4]   mins 3 1 1 1   = 6
+start at 1: [1] [1,2] [1,2,4]             mins 1 1 1     = 3
+start at 2: [2] [2,4]                     mins 2 2       = 4
+start at 4: [4]                           min 4          = 4
+total 17
+```
+
+Both still visit every subarray. The third view walks left to right and asks what each new element changes. The first element is `3`. Then `1` arrives, and `1` is smaller than `3`, so in any subarray from here on that contains both, `1` is the minimum, never `3`. The `3` is still the minimum of `[3]`, but for every subarray ending later that reaches past `1`, it no longer matters, and it can be dropped. Then `2` arrives. It does not beat `1`, but it is the minimum of the short subarrays that start after `1`, the ones where `1` is missed, so it stays.
+
+That points at grouping by where subarrays end. Let `endSum[j]` be the sum of minimums of all subarrays ending at `j`, and the answer is all the `endSum` values added up. When `arr[j]` arrives, pop every element on the stack at or above it, those are the "`1` beats `3`" cases, and the element left on top is the previous smaller one, at index `p`. That splits the subarrays ending at `j` in two.
+
+The ones that start after `p` contain only elements at or above `arr[j]`, so their minimum is `arr[j]`, and there are `j - p` of them. The ones that start at or before `p` contain `arr[p]`, which is smaller than everything between `p` and `j`, so adding those elements changes nothing, and their minimums are exactly the minimums of the subarrays ending at `p`. Those are already summed in `endSum[p]`.
+
+```
+endSum[j] = endSum[p] + arr[j] × (j - p)
+```
+
+If the stack is empty, there is no smaller element before `j`, `p` is `-1`, and the first term is `0`.
+
+```
+j  arr  pops  p   endSum                  subarrays ending at j      total
+0  3          -1  3 × 1 = 3               [3]                        3
+1  1    3     -1  1 × 2 = 2               [3,1] [1]                  5
+2  2          1   endSum[1] + 2 × 1 = 4   [3,1,2] [1,2] [2]          9
+3  4          2   endSum[2] + 4 × 1 = 8   [3,1,2,4] [1,2,4] [2,4] [4] 17
+```
+
+At `j = 3`, `endSum[2] = 4` already covers `[3,1,2,4]`, `[1,2,4]`, and `[2,4]`, with minimums `1`, `1`, and `2`, and `4 × 1` adds `[4]`. The stack rises from bottom to top, and only the previous smaller element is ever needed. Under the problem's limits, at most `3 × 10^4` elements each at most `3 × 10^4`, adding `arr[j] × (j - p)` keeps every number below `2 × 10^9` before the modulo, so plain numbers are safe.
+
+```javascript
+{{#include ./examples/sum-of-subarray-minimums.js}}
+```
