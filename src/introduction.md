@@ -10,4 +10,4 @@ Implementation answers how the code looks once the pattern is known. These are t
 
 Examples works through problems one at a time, with the reasoning and the code together. Some reframe the problem first, and some are not on NeetCode 250 at all, since a pattern's difficulty range is wider than any one list.
 
-Hashing, Two Pointers, Sliding Window, and Binary Search are written so far. More patterns follow the same shape as they get written.
+Hashing, Two Pointers, Sliding Window, Binary Search, and Stack are written so far. More patterns follow the same shape as they get written.
