@@ -2,7 +2,7 @@
 
 Every other page in this guide assumes a pattern has already been picked, and digs into when that specific pattern fits and how its code looks. This page is the step before that, reading a problem cold and narrowing down which pattern to even consider, before opening any single chapter.
 
-It can only ever reflect the chapters that already exist. Right now that's Hashing, Two Pointers, Sliding Window, and Binary Search. This page gets revisited and expanded every time a new pattern is added, sometimes a new pattern will split an earlier question further than it's split today.
+It can only ever reflect the chapters that already exist. Right now that's Hashing, Two Pointers, Sliding Window, Binary Search, and Stack. This page gets revisited and expanded every time a new pattern is added, sometimes a new pattern will split an earlier question further than it's split today.
 
 ## Question 1: does the problem only care about values, not position?
 
@@ -36,6 +36,14 @@ This holds whenever the data is sorted, or whenever some condition on a candidat
 
 If yes, that's [Binary Search](./binary-search/asking-the-right-questions.md).
 
+If no guess settles a whole side, move to the next question.
+
+## Question 5: does some element's answer depend on something that comes later, and does the latest waiting element get decided first?
+
+Read the input left to right and ask, for each element, whether it can be decided with only what has been read so far. An opening bracket cannot, it needs its closer. A day waiting for a warmer day cannot, the warmer day is ahead. A bar in a histogram cannot know where its rectangle ends until a shorter bar arrives. Those elements wait.
+
+Then check the order they get decided in. If an arriving element always decides the most recent waiting one first, stopping at the first one it cannot decide, a closer matching the latest open bracket, a warm day answering the coldest waiting day, that is [Stack](./stack/asking-the-right-questions.md). The wording cues are nested or matched items, cancellations, and "next greater", "previous smaller", "how far until", or "how far back". If the oldest waiting element is decided first instead, it is a queue, and if elements leave from both ends, as in Sliding Window Maximum, it is a deque.
+
 ## Still open
 
-Everything past here, an aggregate over a range that isn't monotonic, a decision that depends on subproblems rather than a single pass, doesn't have a question here yet. That's what the chapters after Binary Search will need to fill in.
+Everything past here, a decision that depends on subproblems rather than a single pass, doesn't have a question here yet. That's what the chapters after Stack will need to fill in.
