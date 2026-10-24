@@ -41,6 +41,10 @@ Every width is at least `1`, so each row's sums only go up, and a position appea
 
 **Looks like.** A scan across the wall's width, checking every possible line position. The widths can be huge, so the positions to check are only the ones where some edge actually sits, and a map holds exactly those.
 
+```javascript
+{{#include ./practice/brick-wall.js}}
+```
+
 </details>
 
 ## 2. Car Fleet
