@@ -27,3 +27,5 @@
   - [Asking the Right Questions](./stack/asking-the-right-questions.md)
   - [Implementation](./stack/implementation.md)
   - [Examples](./stack/examples.md)
+
+[Practice: Name the Pattern](./practice.md)
