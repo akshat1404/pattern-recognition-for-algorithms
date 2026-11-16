@@ -28,4 +28,9 @@
   - [Implementation](./stack/implementation.md)
   - [Examples](./stack/examples.md)
 
+- [Linked List]()
+  - [Asking the Right Questions](./linked-list/asking-the-right-questions.md)
+  - [Implementation](./linked-list/implementation.md)
+  - [Examples](./linked-list/examples.md)
+
 [Practice: Name the Pattern](./practice.md)
