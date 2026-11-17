@@ -91,3 +91,29 @@ The run of `1`s included the head, and the dummy is what made that case look lik
 ```javascript
 {{#include ./examples/remove-duplicates-from-sorted-list-ii.js}}
 ```
+
+[Add Two Numbers](https://leetcode.com/problems/add-two-numbers/description/) gives two non-negative numbers stored as linked lists of digits, with the ones digit first, and asks for their sum as a list in the same form. `[2, 4, 3]` is `342` and `[5, 6, 4]` is `465`, so the answer is `[7, 0, 8]`, which is `807`. `[9, 9, 9, 9]` plus `[9, 9]` is `[8, 9, 0, 0, 1]`, `9999 + 99 = 10098`.
+
+**Asks for.** A new list, built one node at a time.
+
+**Offers.** Digits stored ones digit first, which is the order column addition works in.
+
+Adding by hand starts at the ones column and moves left, carrying a `1` whenever a column reaches `10`. The lists hand over the digits in exactly that order, so the addition can walk both lists together from the head, with no reversing. Each step adds one digit from each list and the carry, writes `sum % 10` as the next node, and carries `Math.floor(sum / 10)` into the next step.
+
+Unlike the other problems in this chapter, this one builds new nodes instead of rewiring old ones. The dummy node still applies, since the first node of the answer only exists once the first column is added. Building after a placeholder, with `tail` always on the last node built, means every digit is attached the same way.
+
+The lists can have different lengths. When one runs out, it counts as `0` for the rest. And the loop does not stop just because both lists ran out, a carry may still be left, as in `9999 + 99`, where the final carry becomes a new last digit.
+
+```
+a    b    carry in  sum  digit  carry out
+9    9    0         18   8      1
+9    9    1         19   9      1
+9    -    1         10   0      1
+9    -    1         10   0      1
+-    -    1         1    1      0
+result [8, 9, 0, 0, 1]
+```
+
+```javascript
+{{#include ./examples/add-two-numbers.js}}
+```
