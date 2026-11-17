@@ -2,7 +2,7 @@
 
 Every other page in this guide assumes a pattern has already been picked, and digs into when that specific pattern fits and how its code looks. This page is the step before that, reading a problem cold and narrowing down which pattern to even consider, before opening any single chapter.
 
-It can only ever reflect the chapters that already exist. Right now that's Hashing, Two Pointers, Sliding Window, Binary Search, and Stack. This page gets revisited and expanded every time a new pattern is added, sometimes a new pattern will split an earlier question further than it's split today.
+It can only ever reflect the chapters that already exist. Right now that's Hashing, Two Pointers, Sliding Window, Binary Search, Stack, and Linked List. This page gets revisited and expanded every time a new pattern is added, sometimes a new pattern will split an earlier question further than it's split today.
 
 ## Question 1: does the problem only care about values, not position?
 
@@ -44,6 +44,14 @@ Read the input left to right and ask, for each element, whether it can be decide
 
 Then check the order they get decided in. If an arriving element always decides the most recent waiting one first, stopping at the first one it cannot decide, a closer matching the latest open bracket, a warm day answering the coldest waiting day, that is [Stack](./stack/asking-the-right-questions.md). The wording cues are nested or matched items, cancellations, and "next greater", "previous smaller", "how far until", or "how far back". If the oldest waiting element is decided first instead, it is a queue, and if elements leave from both ends, as in Sliding Window Maximum, it is a deque.
 
+If no element has to wait on something later, move to the next question.
+
+## Question 6: is the answer the same nodes connected differently, or does it need constant-time reordering?
+
+When the input is a linked list, the statement usually says so, and the question is which technique it needs. If the answer is the same nodes in a new arrangement, reversed, regrouped, merged, rotated, with some removed, that is [Linked List](./linked-list/asking-the-right-questions.md) rewiring, changing where `.next` points. If the problem only needs a position inside the list, the middle, a cycle, a node a fixed distance from the end, and never redirects a pointer, it goes back to Question 3, fast and slow pointers.
+
+The harder case is a list that is never mentioned. If a problem needs an element to move from anywhere to one end in constant time, as in a cache that tracks which key was used longest ago, or a current position that moves back and forth with everything ahead cut off on a new step, as in browser history, the structure underneath is a linked list, often paired with a hash map that points into it.
+
 ## Still open
 
-Everything past here, a decision that depends on subproblems rather than a single pass, doesn't have a question here yet. That's what the chapters after Stack will need to fill in.
+Everything past here, a decision that depends on subproblems rather than a single pass, doesn't have a question here yet. That's what the chapters after Linked List will need to fill in.
