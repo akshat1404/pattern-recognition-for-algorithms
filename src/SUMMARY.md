@@ -33,4 +33,9 @@
   - [Implementation](./linked-list/implementation.md)
   - [Examples](./linked-list/examples.md)
 
+- [Heap]()
+  - [Asking the Right Questions](./heap/asking-the-right-questions.md)
+  - [Implementation](./heap/implementation.md)
+  - [Examples](./heap/examples.md)
+
 [Practice: Name the Pattern](./practice.md)
