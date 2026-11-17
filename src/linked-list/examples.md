@@ -62,3 +62,32 @@ result [3, 2, 1, 4, 5]
 ```javascript
 {{#include ./examples/reverse-nodes-in-k-group.js}}
 ```
+
+## Dummy Node
+
+[Remove Duplicates from Sorted List II](https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/description/) gives the head of a sorted linked list and asks for every node whose value appears more than once to be removed, keeping only the values that appear exactly once. `[1, 2, 3, 3, 4, 4, 5]` becomes `[1, 2, 5]`, and `[1, 1, 1, 2, 3]` becomes `[2, 3]`.
+
+**Asks for.** Nodes removed by a rule.
+
+**Offers.** A sorted list, so equal values sit next to each other, and a head that may be removed, as the second example shows.
+
+Since the list is sorted, every value that repeats appears as one run of neighbors, so deciding whether a value repeats only needs a look at the next node. Removing a node means making the node before it skip it, so the walk stands on the last node that is being kept, called `prev`, and looks ahead at `prev.next`. The head can be part of a repeated run, so a dummy node goes in front of it, which gives every node, the head included, a node before it.
+
+At each step there are two cases. If the node after `prev` has the same value as the one after that, the value repeats, so the walk moves forward past every node holding that value, and `prev.next` skips straight to the first node after the run. `prev` does not move, since the node now after it has not been checked yet and may start another run. If the value does not repeat, that node is kept, and `prev` moves onto it.
+
+Take `[1, 1, 1, 2, 3]`.
+
+```
+prev   next value  repeats?  action                     list
+dummy  1           yes       skip all the 1s            dummy -> 2 -> 3
+dummy  2           no        keep it, prev moves to 2   dummy -> 2 -> 3
+2      3           no        keep it, prev moves to 3   dummy -> 2 -> 3
+3      none, stop
+result [2, 3]
+```
+
+The run of `1`s included the head, and the dummy is what made that case look like any other.
+
+```javascript
+{{#include ./examples/remove-duplicates-from-sorted-list-ii.js}}
+```
