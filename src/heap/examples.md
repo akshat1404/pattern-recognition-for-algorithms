@@ -125,3 +125,35 @@ answer 4
 ```javascript
 {{#include ./examples/ipo.js}}
 ```
+
+## Fronts of Sorted Sources
+
+[Find K Pairs with Smallest Sums](https://leetcode.com/problems/find-k-pairs-with-smallest-sums/description/) gives two arrays sorted in ascending order, `nums1` and `nums2`, and a number `k`. A pair takes one number from each array. It asks for the `k` pairs with the smallest sums. For `nums1 = [1, 7, 11]`, `nums2 = [2, 4, 6]`, and `k = 3`, the answer is `[[1, 2], [1, 4], [1, 6]]`.
+
+**Asks for.** The next smallest pair, `k` times.
+
+**Offers.** Two sorted arrays, which turn the pairs into rows that are each sorted already.
+
+The gate passes, listing every pair, sorting by sum, and taking `k` works. But there are `n1 × n2` pairs, and only `k` are wanted. The sorted inputs give more structure than that. Picture one row for each number in `nums1`, pairing it with every number of `nums2` in order.
+
+```
+row 0:  1+2  1+4  1+6     sums 3  5  7
+row 1:  7+2  7+4  7+6     sums 9  11 13
+row 2:  11+2 11+4 11+6    sums 13 15 17
+```
+
+Each row is sorted, since `nums2` is. So at any moment, the next smallest pair has to be the front of some row, everything behind a front is at least as big. That is the shape of Merge k Sorted Lists, with rows in place of lists. A heap of the row fronts gives the smallest, and taking a row's front puts that row's next pair in. Each heap entry is a pair of indices `[i, j]`, row `i` and position `j`, so the next pair in the row is `[i, j + 1]`.
+
+Only the first `k` rows can matter, since even the front of row `k` has at least `k` smaller pairs ahead of it, the fronts of the rows before it. So the heap starts with at most `k` rows.
+
+```
+heap (sum)                  take     push
+3 [0,0], 9 [1,0], 13 [2,0]  [1, 2]   [0,1] sum 5
+5 [0,1], 9, 13              [1, 4]   [0,2] sum 7
+7 [0,2], 9, 13              [1, 6]   row 0 is done
+answer [[1, 2], [1, 4], [1, 6]]
+```
+
+```javascript
+{{#include ./examples/find-k-pairs-with-smallest-sums.js}}
+```
