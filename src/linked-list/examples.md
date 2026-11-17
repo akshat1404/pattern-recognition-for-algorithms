@@ -145,3 +145,39 @@ Every node is moved, none is copied. The only new node is each merge's dummy, wh
 ```javascript
 {{#include ./examples/sort-list.js}}
 ```
+
+## Hidden List
+
+[LRU Cache](https://leetcode.com/problems/lru-cache/description/) asks for a cache with a fixed capacity and two operations, `get(key)`, which returns the stored value or `-1`, and `put(key, value)`, which stores or updates it. Both count as a use of the key. When a new key would take the cache over capacity, the key used longest ago is removed. Both operations have to run in constant time on average.
+
+With capacity `2`:
+
+```
+put(1, 1)   cache 1
+put(2, 2)   cache 2 1
+get(1)  1   cache 1 2      1 is now the most recent
+put(3, 3)   cache 3 1      over capacity, 2 was used longest ago, removed
+get(2)  -1
+put(4, 4)   cache 4 3      over capacity, 1 removed
+get(1)  -1
+get(3)  3   cache 3 4
+get(4)  4   cache 4 3
+```
+
+Each `cache` line lists keys from most recent to oldest.
+
+**Asks for.** Lookup by key and reordering by use, both in constant time.
+
+**Offers.** A sequence where any key can jump to the front, and the oldest key leaves from the back. The statement never says "list".
+
+The questions page covered why neither a map nor an array is enough on its own. A map finds a key but keeps no order, and an array keeps the order but cannot move a key from the middle to the front without shifting everything in between. A doubly linked list can, as long as the node is already in hand, and the map is what puts it in hand. The map's values are the list's nodes.
+
+Each operation is then a few pointer changes. `get` looks the key up in the map, unhooks its node with `remove`, and puts it back with `addToFront`. `put` on an existing key does the same after updating the value. `put` on a new key makes a node, stores it in the map, adds it to the front, and, if the cache is now over capacity, removes the node just before the back placeholder, the oldest one. That node also has to leave the map, which is why each node keeps its own key, so the map entry can be found from the node.
+
+The two placeholder nodes, one at each end, are the doubly linked version of the dummy node. Every real node always has a node before it and a node after it, so `remove` and `addToFront` never need a special case for the first, last, or only node.
+
+```javascript
+{{#include ./examples/lru-cache.js}}
+```
+
+A JavaScript `Map` keeps its keys in insertion order, and deleting a key and setting it again moves it to the end. That gives a shorter solution that does the same job, but the ordering lives inside `Map`. The list version shows the structure that makes it work, and it is the one that carries over to languages whose maps keep no order.
