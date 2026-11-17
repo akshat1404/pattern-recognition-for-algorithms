@@ -32,3 +32,26 @@ answer 5
 ```javascript
 {{#include ./examples/kth-largest-element-in-an-array.js}}
 ```
+
+[Top K Frequent Words](https://leetcode.com/problems/top-k-frequent-words/description/) gives a list of words and a number `k`, and asks for the `k` most frequent words, ordered from most to least frequent, with words of equal frequency ordered alphabetically. For `["i", "love", "leetcode", "i", "love", "coding"]` with `k = 2`, the answer is `["i", "love"]`, both appear twice and `"i"` comes first alphabetically. For `["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"]` with `k = 4`, the answer is `["the", "is", "sunny", "day"]`.
+
+**Asks for.** The top `k` by a two-part rank, count first and then alphabetical order.
+
+**Offers.** Words that can be counted, and a ranking that only needs its top `k` places.
+
+Counting is the Frequency bucket from Hashing, a map from each word to its count. What is left is the top `k` of those counts, the same shape as Kth Largest, with a richer comparison.
+
+The heap keeps the `k` best words seen so far, with the worst of them on top, since the top is the one to throw out. Worst means the lower count, and for equal counts, the word that comes later alphabetically, since an earlier word ranks higher. So the compare function puts a lower count first, and for equal counts, the alphabetically larger word first. Getting that second rule backwards is the usual mistake here, and it only shows up on ties.
+
+Popping the heap at the end gives the `k` best from worst to best, since the worst is always on top. Reversing that list gives the order the problem asks for.
+
+```
+counts  the 4, is 3, sunny 2, day 1
+heap of size 4 keeps all four, worst on top
+pops    day, sunny, is, the
+reverse the, is, sunny, day
+```
+
+```javascript
+{{#include ./examples/top-k-frequent-words.js}}
+```
