@@ -117,3 +117,31 @@ result [8, 9, 0, 0, 1]
 ```javascript
 {{#include ./examples/add-two-numbers.js}}
 ```
+
+## Split and Rejoin
+
+[Sort List](https://leetcode.com/problems/sort-list/description/) gives the head of a linked list and asks for it sorted in ascending order, ideally in `O(n log n)` time. `[4, 2, 1, 3]` becomes `[1, 2, 3, 4]`, and `[-1, 5, 3, 4, 0]` becomes `[-1, 0, 3, 4, 5]`.
+
+**Asks for.** The same nodes in sorted order.
+
+**Offers.** A list that can be cut in two, and two sorted lists that can be merged by moving pointers.
+
+The sorting methods that work well on arrays mostly lean on jumping to an index, picking a pivot, swapping two far-apart positions. A list cannot jump, and that rules those out. Merge sort is the one that fits, since its two moves are both things a list does well. Splitting a list in two takes one cut, and merging two sorted lists is the dummy-node merge from Implementation, which only ever looks at the front of each list.
+
+So the work is split, sort each half, merge. Splitting needs the middle, which is the slow and fast pointer move from Two Pointers. `slow` steps one node at a time and `fast` two, and when `fast` reaches the end, `slow` is in the middle. Starting `fast` one node ahead of `slow` makes `slow` stop at the last node of the first half, even for a two-node list, so the cut is `second = slow.next` followed by `slow.next = null`. Without that start, a two-node list would never split, and the sort would call itself on the same list forever.
+
+Each half is sorted the same way, down to lists of zero or one node, which are already sorted. Then the halves are merged on the way back up.
+
+```
+[4, 2, 1, 3]
+split   [4, 2]      [1, 3]
+split   [4] [2]     [1] [3]
+merge   [2, 4]      [1, 3]
+merge   [1, 2, 3, 4]
+```
+
+Every node is moved, none is copied. The only new node is each merge's dummy, which is never part of the answer.
+
+```javascript
+{{#include ./examples/sort-list.js}}
+```
