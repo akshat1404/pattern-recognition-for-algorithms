@@ -144,7 +144,7 @@ row 2:  11+2 11+4 11+6    sums 13 15 17
 
 Each row is sorted, since `nums2` is. So at any moment, the next smallest pair has to be the front of some row, everything behind a front is at least as big. That is the shape of Merge k Sorted Lists, with rows in place of lists. A heap of the row fronts gives the smallest, and taking a row's front puts that row's next pair in. Each heap entry is a pair of indices `[i, j]`, row `i` and position `j`, so the next pair in the row is `[i, j + 1]`.
 
-Only the first `k` rows can matter, since even the front of row `k` has at least `k` smaller pairs ahead of it, the fronts of the rows before it. So the heap starts with at most `k` rows.
+Only the first `k` rows can matter, since even the front of row `k` has at least `k` pairs no bigger than it, the fronts of the rows before it. So the heap starts with at most `k` rows.
 
 ```
 heap (sum)                  take     push
