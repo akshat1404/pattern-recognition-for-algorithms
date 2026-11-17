@@ -104,3 +104,24 @@ order [0, 2, 3, 1]
 ```javascript
 {{#include ./examples/single-threaded-cpu.js}}
 ```
+
+[IPO](https://leetcode.com/problems/ipo/description/) starts with capital `w` and allows at most `k` projects. Project `i` needs at least `capital[i]` to start, and when finished, adds `profits[i]` to the capital. Starting a project does not spend capital, it only requires it. It asks for the most capital possible after at most `k` projects. For `k = 2`, `w = 0`, `profits = [1, 2, 3]`, and `capital = [0, 1, 1]`, the answer is `4`.
+
+**Asks for.** The best project to take next, `k` times.
+
+**Offers.** Projects that become affordable as capital grows, and capital that only ever grows.
+
+Capital never goes down, so a project that is affordable stays affordable. That makes the greedy choice safe, among the projects that can be started now, take the most profitable. A smaller profit now can never unlock something a larger profit would not, since a larger profit leaves at least as much capital.
+
+The structure is the same as Single-Threaded CPU. Sorting the projects by the capital they need gives the order in which they become affordable, and that order never changes, so it is sorted once. The affordable projects form a set that grows after every project, and the most profitable one is needed each time, so their profits go in a max-heap. Before each choice, every project whose requirement is now met moves into the heap. If the heap is empty, nothing can be started, and the answer is the capital so far.
+
+```
+step  capital  newly affordable          heap        take  capital after
+1     0        project 0 (profit 1)      1           1     1
+2     1        projects 1, 2 (2 and 3)   3 2         3     4
+answer 4
+```
+
+```javascript
+{{#include ./examples/ipo.js}}
+```
