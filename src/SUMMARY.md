@@ -38,4 +38,9 @@
   - [Implementation](./heap/implementation.md)
   - [Examples](./heap/examples.md)
 
+- [Queue]()
+  - [Asking the Right Questions](./queue/asking-the-right-questions.md)
+  - [Implementation](./queue/implementation.md)
+  - [Examples](./queue/examples.md)
+
 [Practice: Name the Pattern](./practice.md)
