@@ -2,7 +2,7 @@
 
 Every other page in this guide assumes a pattern has already been picked, and digs into when that specific pattern fits and how its code looks. This page is the step before that, reading a problem cold and narrowing down which pattern to even consider, before opening any single chapter.
 
-It can only ever reflect the chapters that already exist. Right now that's Hashing, Two Pointers, Sliding Window, Binary Search, Stack, and Linked List. This page gets revisited and expanded every time a new pattern is added, sometimes a new pattern will split an earlier question further than it's split today.
+It can only ever reflect the chapters that already exist. Right now that's Hashing, Two Pointers, Sliding Window, Binary Search, Stack, Linked List, and Heap. This page gets revisited and expanded every time a new pattern is added, sometimes a new pattern will split an earlier question further than it's split today.
 
 ## Question 1: does the problem only care about values, not position?
 
@@ -52,6 +52,14 @@ When the input is a linked list, the statement usually says so, and the question
 
 The harder case is a list that is never mentioned. If a problem needs an element to move from anywhere to one end in constant time, as in a cache that tracks which key was used longest ago, or a current position that moves back and forth with everything ahead cut off on a new step, as in browser history, the structure underneath is a linked list, often paired with a hash map that points into it.
 
+If the problem is not about rearranging nodes or reordering in constant time, move to the next question.
+
+## Question 7: would sorting give the answer, but only the top part is needed, or the data keeps changing?
+
+Start with the gate. A heap only knows order, so if sorting the data, again after every change if it changes, would not give the answer, a heap will not either. Problems where the answer depends on position, the nearest greater element, the maximum of every window, fail here, and belong to the Stack and Sliding Window questions above.
+
+If sorting would give the answer, the choice is about cost. When nothing changes and the full order is needed, sort once. When only the top `k` are needed, the `k` largest, smallest, closest, or most frequent, or when the data keeps changing and its smallest or largest is needed after every change, a stream with a running median, a greedy process that takes the best choice and puts back what is left, several sorted sources merged by their fronts, that is [Heap](./heap/asking-the-right-questions.md). The wording cues are "`k`th largest", "top `k`", "after each addition", "always pick the smallest or largest next", and "merge `k` sorted".
+
 ## Still open
 
-Everything past here, a decision that depends on subproblems rather than a single pass, doesn't have a question here yet. That's what the chapters after Linked List will need to fill in.
+Everything past here, a decision that depends on subproblems rather than a single pass, doesn't have a question here yet. That's what the chapters after Heap will need to fill in.
