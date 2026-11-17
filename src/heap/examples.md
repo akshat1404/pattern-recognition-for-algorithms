@@ -55,3 +55,26 @@ reverse the, is, sunny, day
 ```javascript
 {{#include ./examples/top-k-frequent-words.js}}
 ```
+
+## Repeated Extreme
+
+[Last Stone Weight](https://leetcode.com/problems/last-stone-weight/description/) gives the weights of some stones. Each turn, the two heaviest stones are smashed together. If they weigh the same, both are destroyed. Otherwise the lighter one is destroyed and the heavier one loses the lighter one's weight. It asks for the weight of the last stone left, or `0` if none is left. For `[2, 7, 4, 1, 8, 1]` the answer is `1`.
+
+**Asks for.** The two heaviest stones, again on every turn.
+
+**Offers.** A collection that changes after every turn, two stones leave and sometimes one comes back lighter.
+
+The gate passes, sorting the stones before every turn and taking the two largest would work. But the collection changes on every turn, so sorting each time costs `n log n` per turn. This is the data-changes row of the cost table. A max-heap gives the heaviest in `log n`, and a leftover stone goes back in at `log n` too.
+
+```
+heap (heaviest first)    smash    result
+8 7 4 2 1 1              8, 7     1 goes back
+4 2 1 1 1                4, 2     2 goes back
+2 1 1 1                  2, 1     1 goes back
+1 1 1                    1, 1     both destroyed
+1                        one stone left, answer 1
+```
+
+```javascript
+{{#include ./examples/last-stone-weight.js}}
+```
