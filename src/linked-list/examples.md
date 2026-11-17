@@ -181,3 +181,31 @@ The two placeholder nodes, one at each end, are the doubly linked version of the
 ```
 
 A JavaScript `Map` keeps its keys in insertion order, and deleting a key and setting it again moves it to the end. That gives a shorter solution that does the same job, but the ordering lives inside `Map`. The list version shows the structure that makes it work, and it is the one that carries over to languages whose maps keep no order.
+
+[Design Browser History](https://leetcode.com/problems/design-browser-history/description/) asks for a browser history that starts on a homepage and supports three operations. `visit(url)` opens a new page from the current one and clears all forward history. `back(steps)` moves back up to `steps` pages and `forward(steps)` moves forward up to `steps` pages, each stopping early if it runs out of history, and both return the url of the page they end on.
+
+```
+start on leetcode.com
+visit google.com, facebook.com, youtube.com
+back(1)     facebook.com
+back(1)     google.com
+forward(1)  facebook.com
+visit linkedin.com              youtube.com is gone, it was ahead of facebook.com
+forward(2)  linkedin.com        nothing ahead, stays
+back(2)     google.com
+back(7)     leetcode.com        only two pages behind, stops at the start
+```
+
+**Asks for.** Moving back and forward through visited pages, and cutting off everything ahead on a new visit.
+
+**Offers.** A sequence of pages with a current position, where a visit throws away everything after the current page. The statement never says "list".
+
+Back and forward are steps to the previous and next page, which is what a doubly linked list gives, each page pointing both ways, with one pointer marking the current page. `back` steps along `prev` and `forward` along `next`, each stopping when it runs out of pages or steps.
+
+A visit is where the list fits most naturally. The new page attaches right after the current one, `current.next = page`, and that single pointer change drops every page that used to be ahead. Nothing has to be deleted one by one, those pages are simply no longer reachable. In the trace, visiting `linkedin.com` from `facebook.com` points `facebook.com`'s `next` at the new page, and `youtube.com` is gone.
+
+An array with an index works too. `visit` writes the new page at the position after the current one and records that position as the new end, so nothing past it counts, and `back` and `forward` move the index directly instead of one step at a time. That version is faster for big jumps, since a step count of a thousand is one subtraction rather than a thousand moves. The list version is the more direct reading of the statement, and it is the shape to recognize, a current position in a sequence, moving both ways, with everything ahead cut off by one change.
+
+```javascript
+{{#include ./examples/design-browser-history.js}}
+```
