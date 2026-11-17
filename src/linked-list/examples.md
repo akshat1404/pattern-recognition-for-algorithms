@@ -35,3 +35,30 @@ dummy  1      2       dummy -> 2 -> 1 -> 3 -> 4
 ```javascript
 {{#include ./examples/swap-nodes-in-pairs.js}}
 ```
+
+[Reverse Nodes in k-Group](https://leetcode.com/problems/reverse-nodes-in-k-group/description/) gives the head of a linked list and a number `k`, and asks for the nodes to be reversed `k` at a time, returning the new head. If the nodes left at the end are fewer than `k`, they stay in their original order. The nodes themselves have to move. `[1, 2, 3, 4, 5]` with `k = 2` becomes `[2, 1, 4, 3, 5]`, and with `k = 3` it becomes `[3, 2, 1, 4, 5]`.
+
+**Asks for.** The same nodes, with each full group of `k` reversed.
+
+**Offers.** Groups that can each be reversed with the plain reversal loop, and a head that changes.
+
+Swap Nodes in Pairs is this problem with `k = 2`, but three hand-written pointer changes do not stretch to any `k`. What does stretch is treating each group as a short list of its own, reversing it with the loop from Implementation, and reconnecting it at both ends. Each group goes through three steps.
+
+The first step is checking that a full group exists. From `groupPrev`, the node before the group, step forward `k` times. If the list runs out first, fewer than `k` nodes are left, and the work is done. Otherwise the step lands on `kth`, the last node of the group, and `groupNext = kth.next` is the first node after it.
+
+The second step reverses the group. It is the plain reversal loop, with one change. Instead of starting `prev` at `null`, it starts at `groupNext`. The first node of the group is the first one turned around, so it ends up pointing to `groupNext`, which connects the back of the reversed group to the rest of the list with no extra step. The loop stops when it reaches `groupNext`.
+
+The third step connects the front. The group's old first node is now its last, and `kth` is now its first. `groupPrev.next` becomes `kth`, and the old first node becomes the next group's `groupPrev`, since it now sits right before the next group. The dummy node gives the first group a `groupPrev`, which is what lets the head change without a special case.
+
+Take `[1, 2, 3, 4, 5]` with `k = 3`.
+
+```
+groupPrev  kth  groupNext  after reversing and reconnecting
+dummy      3    4          dummy -> 3 -> 2 -> 1 -> 4 -> 5
+1          none, only 4 and 5 left, stop
+result [3, 2, 1, 4, 5]
+```
+
+```javascript
+{{#include ./examples/reverse-nodes-in-k-group.js}}
+```
