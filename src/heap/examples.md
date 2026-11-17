@@ -78,3 +78,29 @@ heap (heaviest first)    smash    result
 ```javascript
 {{#include ./examples/last-stone-weight.js}}
 ```
+
+## Sort Plus Heap
+
+[Single-Threaded CPU](https://leetcode.com/problems/single-threaded-cpu/description/) gives a list of tasks, where `tasks[i] = [enqueueTime, processingTime]`. A CPU runs one task at a time, start to finish. When it is free, it chooses among the tasks that have already arrived the one with the shortest processing time, breaking ties by the smaller index. If no task has arrived, it waits for the next one. It asks for the order the tasks are run in. For `[[1, 2], [2, 4], [3, 2], [4, 1]]` the answer is `[0, 2, 3, 1]`.
+
+**Asks for.** The next task to run, chosen again every time the CPU is free.
+
+**Offers.** Tasks that become available over time, and a rule for picking among the available ones.
+
+Two different orders are in play. Tasks become available in order of arrival time, which never changes, so sorting the task indices by arrival time once is enough. Among the available tasks, the next one to run is the shortest, and that set changes every time a task arrives or finishes. That is the data-changes row of the cost table, so the available tasks go in a heap, shortest first, with the index breaking ties.
+
+The loop keeps a clock. Before each choice, every task that has arrived by the current time moves from the sorted list into the heap. The top of the heap runs, and the clock moves forward by its processing time. If the heap is empty and the next task has not arrived yet, the CPU is idle, so the clock jumps straight to that task's arrival time instead of ticking forward one step at a time.
+
+```
+time  arrive into heap     heap (shortest first)   run   time after
+0     none, idle, jump     -                       -     1
+1     task 0               0 (2)                   0     3
+3     tasks 1, 2           2 (2), 1 (4)            2     5
+5     task 3               3 (1), 1 (4)            3     6
+6     none                 1 (4)                   1     10
+order [0, 2, 3, 1]
+```
+
+```javascript
+{{#include ./examples/single-threaded-cpu.js}}
+```
