@@ -2,7 +2,7 @@
 
 Every other page in this guide assumes a pattern has already been picked, and digs into when that specific pattern fits and how its code looks. This page is the step before that, reading a problem cold and narrowing down which pattern to even consider, before opening any single chapter.
 
-It can only ever reflect the chapters that already exist. Right now that's Hashing, Two Pointers, Sliding Window, Binary Search, Stack, Linked List, and Heap. This page gets revisited and expanded every time a new pattern is added, sometimes a new pattern will split an earlier question further than it's split today.
+It can only ever reflect the chapters that already exist. Right now that's Hashing, Two Pointers, Sliding Window, Binary Search, Stack, Linked List, Heap, and Queue. This page gets revisited and expanded every time a new pattern is added, sometimes a new pattern will split an earlier question further than it's split today.
 
 ## Question 1: does the problem only care about values, not position?
 
@@ -38,13 +38,19 @@ If yes, that's [Binary Search](./binary-search/asking-the-right-questions.md).
 
 If no guess settles a whole side, move to the next question.
 
-## Question 5: does some element's answer depend on something that comes later, and does the latest waiting element get decided first?
+## Question 5: do elements wait to be handled, and which waiting one is handled next?
 
-Read the input left to right and ask, for each element, whether it can be decided with only what has been read so far. An opening bracket cannot, it needs its closer. A day waiting for a warmer day cannot, the warmer day is ahead. A bar in a histogram cannot know where its rectangle ends until a shorter bar arrives. Those elements wait.
+Some problems hold elements back. An opening bracket waits for its closer. A day waits for a warmer day. A senator waits for their next turn. A request waits until it is too old to count. An orange that just rotted waits to spread to its neighbors. When elements wait like this, the pattern is decided by one thing, which waiting element is handled next. Picture two of them waiting, `A`, which arrived first, and `B`, which arrived later, and ask which goes next.
 
-Then check the order they get decided in. If an arriving element always decides the most recent waiting one first, stopping at the first one it cannot decide, a closer matching the latest open bracket, a warm day answering the coldest waiting day, that is [Stack](./stack/asking-the-right-questions.md). The wording cues are nested or matched items, cancellations, and "next greater", "previous smaller", "how far until", or "how far back". If the oldest waiting element is decided first instead, it is a queue, and if elements leave from both ends, as in Sliding Window Maximum, it is a deque.
+**Always `B`, the newest.** An arriving element decides the most recent waiting one first, stopping at the first one it cannot decide, a closer matching the latest open bracket, a warm day answering the coldest waiting day. That is [Stack](./stack/asking-the-right-questions.md). The wording cues are nested or matched items, cancellations, and "next greater", "previous smaller", "how far until", or "how far back".
 
-If no element has to wait on something later, move to the next question.
+**Always `A`, the one that has waited longest.** Elements act in turn and go to the back for their next turn, items expire oldest first, or something spreads one step at a time, where whatever was reached earlier is closer and has to spread first. That is [Queue](./queue/asking-the-right-questions.md). The wording cues are "in order", "takes turns", "round", "moves to the bottom", "in the last `t` milliseconds", "every minute", and "fewest steps".
+
+**Old ones leave from the front by age, and beaten ones leave from the back.** That is a deque, a queue that can also remove from the back, as in Sliding Window Maximum and in prefix-sum problems where a sliding window has failed.
+
+**The best by value, whenever it arrived.** That is a heap, covered by the sorting gate in Question 7.
+
+If nothing waits, move to the next question.
 
 ## Question 6: is the answer the same nodes connected differently, or does it need constant-time reordering?
 
