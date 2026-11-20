@@ -108,7 +108,7 @@ start  every 0 (five cells)            0
 2      (2,1)                           2
 ```
 
-`(2,1)` is two steps from any `0`, since all four of its neighbors are `1`s or the edge except `(1,1)` and the bottom-row cells, and those were only reached in round `1`. Each cell joins the queue once, so the whole grid costs one pass.
+`(2,1)` has no `0` next to it. Its neighbors, `(1,1)`, `(2,0)`, and `(2,2)`, are all `1`s reached in round `1`, so it is reached in round `2`. Each cell joins the queue once, so the whole grid costs one pass.
 
 ```javascript
 {{#include ./examples/01-matrix.js}}
