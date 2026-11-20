@@ -113,3 +113,33 @@ start  every 0 (five cells)            0
 ```javascript
 {{#include ./examples/01-matrix.js}}
 ```
+
+[Shortest Path in Binary Matrix](https://leetcode.com/problems/shortest-path-in-binary-matrix/description/) gives an `n × n` grid of `0`s and `1`s and asks for the length of the shortest clear path from the top-left cell to the bottom-right cell. A clear path only uses `0` cells and moves to any of the eight neighbors, including diagonals. Its length is the number of cells on it, start and end included. If there is no clear path, the answer is `-1`. `[[0, 1], [1, 0]]` gives `2`, by one diagonal step, and the grid below gives `4`.
+
+```
+0 0 0
+1 1 0
+1 1 0
+```
+
+**Asks for.** The fewest cells on a path from one corner to the other.
+
+**Offers.** A grid where each step reaches up to eight neighbors, and a single start.
+
+This is spreading from one start instead of many. Each round reaches the cells one step further from the top-left, so the round in which the bottom-right cell is first reached is the length of a shortest path. The queue keeps the rounds in order, exactly as in 01 Matrix. The start has length `1`, since the length counts cells, and every cell added to the queue has the length of the cell it came from plus one.
+
+```
+round  cells reached     length
+start  (0,0)             1
+1      (0,1)             2
+2      (0,2), (1,2)      3
+3      (2,2)             4
+```
+
+`(1,2)` is reached from `(0,1)` by a diagonal step, which is why it arrives in the same round as `(0,2)`. Then `(2,2)`, the bottom-right, is reached from `(1,2)` with length `4`.
+
+One detail matters for speed. A cell is marked as reached when it joins the queue, not when it leaves. Several cells in the same round can share a neighbor, and if marking waited until the neighbor left the queue, it could be added once by each of them. Marking on joining keeps every cell in the queue at most once. If either corner is a `1`, there is no clear path at all, and the answer is `-1` before any search.
+
+```javascript
+{{#include ./examples/shortest-path-in-binary-matrix.js}}
+```
