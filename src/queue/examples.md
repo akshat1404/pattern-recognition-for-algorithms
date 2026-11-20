@@ -82,3 +82,34 @@ At `3001` the window starts at `1`, so the request at `1` still counts. At `3002
 ```javascript
 {{#include ./examples/number-of-recent-calls.js}}
 ```
+
+## Spreading
+
+[01 Matrix](https://leetcode.com/problems/01-matrix/description/) gives a grid of `0`s and `1`s and asks for a grid of the same size where each cell holds its distance to the nearest `0`, moving up, down, left, or right one cell at a time. For the grid on the left, the answer is the grid on the right.
+
+```
+0 0 0        0 0 0
+0 1 0   ->   0 1 0
+1 1 1        1 2 1
+```
+
+**Asks for.** The fewest steps from each cell to the nearest `0`.
+
+**Offers.** A grid where each step reaches the four neighbors, and many cells that count as a start.
+
+The first idea is to search outward from each `1` until a `0` is found. That repeats a search for every cell, and most of those searches cover the same ground. Turning the question around removes the repetition. Instead of every `1` looking for its nearest `0`, every `0` spreads outward at the same time, one step per round. The first round reaches every cell at distance `1`, the second every cell at distance `2`, and the first time a cell is reached, that round is its distance.
+
+This is Rotting Oranges with zeros in place of rotten oranges. A queue keeps the rounds in order without counting them. Start it with every `0`, all at distance `0`. Taking a cell from the front and adding its unreached neighbors to the back, with distance one more, puts every cell of distance `d + 1` behind all cells of distance `d`. A cell is marked the moment its distance is set, so it never joins the queue twice.
+
+```
+round  cells reached                   distance
+start  every 0 (five cells)            0
+1      (1,1), (2,0), (2,2)             1
+2      (2,1)                           2
+```
+
+`(2,1)` is two steps from any `0`, since all four of its neighbors are `1`s or the edge except `(1,1)` and the bottom-row cells, and those were only reached in round `1`. Each cell joins the queue once, so the whole grid costs one pass.
+
+```javascript
+{{#include ./examples/01-matrix.js}}
+```
