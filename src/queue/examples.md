@@ -58,3 +58,27 @@ There is also an answer with no structure at all, the Josephus recurrence. Numbe
 ```javascript
 {{#include ./examples/find-the-winner-of-the-circular-game.js}}
 ```
+
+## Expiry
+
+[Number of Recent Calls](https://leetcode.com/problems/number-of-recent-calls/description/) asks for a counter with one operation, `ping(t)`, which records a request at time `t` in milliseconds and returns how many requests happened in the last `3000` milliseconds, from `t - 3000` to `t`, this one included. Each call's `t` is larger than the one before. The calls `ping(1)`, `ping(100)`, `ping(3001)`, `ping(3002)` return `1`, `2`, `3`, `3`.
+
+**Asks for.** A count over only the recent requests.
+
+**Offers.** Requests that arrive in time order, and so stop counting in that same order.
+
+The queue question settles it. Among the requests still counted, the next to stop counting is always the oldest, since times only go up and the window's left edge `t - 3000` only moves forward. So each new request joins the back, and before counting, requests leave from the front for as long as the front is older than `t - 3000`. What is left is exactly the requests in the window, and the answer is how many there are.
+
+```
+ping   window          leave from front   queue after          answer
+1      -2999 to 1      none               1                    1
+100    -2900 to 100    none               1 100                2
+3001   1 to 3001       none               1 100 3001           3
+3002   2 to 3002       1                  100 3001 3002        3
+```
+
+At `3001` the window starts at `1`, so the request at `1` still counts. At `3002` it starts at `2`, and that request is the first to leave. As in the other examples, a `head` index marks the front, so dropping an expired request is moving `head` forward, and the count is the distance from `head` to the end.
+
+```javascript
+{{#include ./examples/number-of-recent-calls.js}}
+```
