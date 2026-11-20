@@ -31,3 +31,30 @@ There is also an answer with no queue at all. Before person `k` finishes, each p
 ```javascript
 {{#include ./examples/time-needed-to-buy-tickets.js}}
 ```
+
+[Find the Winner of the Circular Game](https://leetcode.com/problems/find-the-winner-of-the-circular-game/description/) seats `n` friends in a circle, numbered `1` to `n` clockwise. Starting at friend `1`, count `k` friends clockwise, including the one counting starts on, wrapping around the circle. The last friend counted leaves, and counting starts again from the friend just clockwise of the one who left. The last friend remaining wins. It asks for the winner's number. For `n = 5` and `k = 2` the answer is `3`, friends leave in the order `2`, `4`, `1`, `5`. For `n = 6` and `k = 5` it is `1`.
+
+**Asks for.** The last one standing after repeated removals.
+
+**Offers.** A circle that is counted around again and again.
+
+A circle has no front, but counting around it can be read as a line. Put the friends in a queue, starting with friend `1` at the front. Counting past a friend means that friend is not leaving this time and will come around again, after everyone else, which is the back of the queue. So counting `k` friends is `k - 1` moves from the front to the back, and then the friend at the front is the `k`th one counted, and leaves.
+
+After someone leaves, the friend now at the front is the one just clockwise of them, which is exactly where the next count starts. No extra step is needed. The loop stops when one friend is left.
+
+```
+queue          move to back   leaves   queue after
+1 2 3 4 5      1              2        3 4 5 1
+3 4 5 1        3              4        5 1 3
+5 1 3          5              1        3 5
+3 5            3              5        3
+winner 3
+```
+
+The same game can be played on an array, marking each friend who leaves, for example with `'_'`, and skipping marked slots while counting. That works, but marked slots never go away. Near the end, most of the array is marked, and every count walks past them, so the cost grows well beyond the queue's. The queue never visits a friend who has left, because they are gone.
+
+There is also an answer with no structure at all, the Josephus recurrence. Number the friends from `0`. With one friend, the winner is position `0`. Adding a friend shifts the winner's position by `k`, wrapping around the new circle size, so `winner = (winner + k) % m` for each size `m` from `2` to `n`, with `1` added at the end for numbering from `1`. For `n = 5` and `k = 2`, the position goes `0`, `0`, `2`, `0`, `2`, and the winner is friend `3`. It runs in `n` steps, against `n × k` for the queue, and the queue is how to see the game before the formula is known.
+
+```javascript
+{{#include ./examples/find-the-winner-of-the-circular-game.js}}
+```
