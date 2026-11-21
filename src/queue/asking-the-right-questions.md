@@ -61,7 +61,7 @@ The cue is "rounds" together with "in order". Senators come back again and again
 
 **Why it fits.** Minute `1` rots the neighbors of the oranges rotten at the start. Minute `2` rots the neighbors of those, and so on. Every orange rotted in minute `d` has to spread before any orange rotted in minute `d + 1` does, otherwise the count of minutes comes out wrong. A queue keeps that order on its own. Start it with every rotten orange, all of minute `0`. Taking an orange from the front and putting its fresh neighbors at the back means every orange of minute `d + 1` sits behind all of minute `d`. Handling the queue one minute's worth at a time counts the minutes. If fresh oranges remain when the queue is empty, they were never reachable, and the answer is `-1`.
 
-This is breadth-first search, and the cue for it is "every minute" or "each step" together with "neighbors" and "fewest". Starting from all the rotten oranges together, instead of one at a time, is what makes the minutes come out right when several sources spread at once.
+This is breadth-first search, BFS, and the cue for it is "every minute" or "each step" together with "neighbors" and "fewest". Starting the queue with all the rotten oranges together, instead of one at a time, is called multi-source BFS. It is what makes the minutes come out right when several sources spread at once, since each fresh orange is reached first by the nearest rotten one.
 
 ## 4. Reveal Cards In Increasing Order
 
