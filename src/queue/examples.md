@@ -88,27 +88,46 @@ At `3001` the window starts at `1`, so the request at `1` still counts. At `3002
 [01 Matrix](https://leetcode.com/problems/01-matrix/description/) gives a grid of `0`s and `1`s and asks for a grid of the same size where each cell holds its distance to the nearest `0`, moving up, down, left, or right one cell at a time. For the grid on the left, the answer is the grid on the right.
 
 ```
-0 0 0        0 0 0
-0 1 0   ->   0 1 0
-1 1 1        1 2 1
+0 1 1 1        0 1 2 2
+1 1 1 1   ->   1 2 2 1
+1 1 1 0        2 2 1 0
 ```
+
+The top-right cell is three steps from the top-left `0` but only two from the bottom-right `0`, so its answer is `2`.
 
 **Asks for.** The fewest steps from each cell to the nearest `0`.
 
 **Offers.** A grid where each step reaches the four neighbors, and many cells that count as a start.
 
-The first idea is to search outward from each `1` until a `0` is found. That repeats a search for every cell, and most of those searches cover the same ground. Turning the question around removes the repetition. Instead of every `1` looking for its nearest `0`, every `0` spreads outward at the same time, one step per round. The first round reaches every cell at distance `1`, the second every cell at distance `2`, and the first time a cell is reached, that round is its distance.
-
-This is Rotting Oranges with zeros in place of rotten oranges. A queue keeps the rounds in order without counting them. Start it with every `0`, all at distance `0`. Taking a cell from the front and adding its unreached neighbors to the back, with distance one more, puts every cell of distance `d + 1` behind all cells of distance `d`. A cell is marked the moment its distance is set, so it never joins the queue twice.
+The first idea is to search outward from each `1` until a `0` is found. That works, but every cell runs its own search, and most of those searches cover the same ground. Turning the question around removes the repetition. Instead of every `1` looking for its nearest `0`, every `0` spreads outward at the same time, one step per round. In each round, every unlabeled cell next to a cell labeled in the round before gets that label plus one.
 
 ```
-round  cells reached                   distance
-start  every 0 (five cells)            0
-1      (1,1), (2,0), (2,2)             1
-2      (2,1)                           2
+round 0, the zeros    round 1, next to a 0    round 2, next to a 1
+0 ? ? ?               0 1 ? ?                 0 1 2 2
+? ? ? ?               1 ? ? 1                 1 2 2 1
+? ? ? 0               ? ? 1 0                 2 2 1 0
 ```
 
-`(2,1)` has no `0` next to it. Its neighbors, `(1,1)`, `(2,0)`, and `(2,2)`, are all `1`s reached in round `1`, so it is reached in round `2`. Each cell joins the queue once, so the whole grid costs one pass.
+The first label a cell gets is its answer, and it never changes. Both zeros spread at the same speed, so a cell is reached first by the spread from whichever `0` is closest. The top-right cell is reached from the bottom-right `0` in round `2`, while the top-left `0` would need round `3`, and by then the cell is already labeled.
+
+The queue keeps the rounds in order without counting them. It starts with every `0`, all at distance `0`, before any spreading happens. Then a cell is taken from the front, and each of its unlabeled neighbors gets its distance plus one and joins the back. New cells always join behind the ones already waiting, so every cell of round `d` sits ahead of every cell of round `d + 1`.
+
+```
+queue at the start     (0,0) (2,3)                            the 0s
+after those two        (0,1) (1,0) (1,3) (2,2)                the 1s
+after the 1s           (0,2) (1,1) (2,0) (0,3) (1,2) (2,1)    the 2s
+```
+
+A cell is labeled the moment it joins the queue, so it never joins twice, and the whole grid costs one pass.
+
+Starting the queue with every source at once is multi-source BFS, covered in Implementation, and this is the same algorithm as Rotting Oranges from the questions page. Only the details differ.
+
+| | Rotting Oranges | 01 Matrix |
+|---|---|---|
+| Sources | Every rotten orange | Every `0` |
+| Spreads into | Fresh oranges, empty cells block it | Every cell, nothing blocks it |
+| Answer | The last round, one number | Each cell's own round, a whole grid |
+| Unreachable cells | Possible, answer `-1` | Impossible, every cell is reached |
 
 ```javascript
 {{#include ./examples/01-matrix.js}}
