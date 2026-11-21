@@ -114,8 +114,8 @@ The queue keeps the rounds in order without counting them. It starts with every 
 
 ```
 queue at the start     (0,0) (2,3)                            the 0s
-after those two        (0,1) (1,0) (1,3) (2,2)                the 1s
-after the 1s           (0,2) (1,1) (2,0) (0,3) (1,2) (2,1)    the 2s
+after those two        (1,0) (0,1) (1,3) (2,2)                the 1s
+after the 1s           (2,0) (1,1) (0,2) (0,3) (1,2) (2,1)    the 2s
 ```
 
 A cell is labeled the moment it joins the queue, so it never joins twice, and the whole grid costs one pass.
