@@ -88,3 +88,22 @@ The candidates for `i` leave from both ends. From the front, once a start `i` ha
 ## What the five share
 
 In every one, the order things are handled in is decided by when they arrived, not by their values. Requests expire oldest first, senators act in turn order and come back behind everyone else, oranges spread minute by minute, positions are revealed in the order the deck rotates, prefix sums leave the front by age. The statement rarely says "queue". It says "in order", "takes turns", "round", "moves to the bottom", "every minute", "in the last `t` milliseconds". When the order is the newest first, the problem belongs to a stack, and when it is the best first, to a heap.
+
+## Standard queue patterns
+
+Most queue problems are one of a handful of named shapes. Each has its own cue in the statement.
+
+| Pattern | Cue in the statement | Classic problems | Where |
+|---|---|---|---|
+| Round-robin simulation | "takes turns", "goes to the back", "every `k`th one leaves" | Time Needed to Buy Tickets, Dota2 Senate, Find the Winner of the Circular Game | Examples |
+| Time window, expiry | "in the last `t` milliseconds", "the most recent `k`" | Number of Recent Calls, Design Hit Counter, Logger Rate Limiter | Examples |
+| Single-source BFS | "fewest steps from one place to another", on a grid or graph where every step costs the same | Shortest Path in Binary Matrix, Nearest Exit from Entrance in Maze | Examples |
+| Multi-source BFS | "nearest of many", "spreads from all of them at once", "every minute" | Rotting Oranges, 01 Matrix, As Far from Land as Possible | Examples |
+| BFS on states | "fewest moves" or "fewest changes", where each position is a state, such as a combination or a word, not a cell | Open the Lock, Word Ladder, Minimum Genetic Mutation | Examples |
+| Level-order traversal | "level by level", "at each depth", in a tree | Binary Tree Level Order Traversal, Binary Tree Right Side View | Trees, not written yet |
+| Topological sort | "prerequisites", "order the tasks so each comes after what it depends on" | Course Schedule, Course Schedule II | Graphs, not written yet |
+| 0-1 BFS | Fewest total cost, where every move costs `0` or `1` | Minimum Cost to Make at Least One Valid Path in a Grid | A deque version of BFS |
+| Monotonic deque | The best value over a range whose both ends move | Sliding Window Maximum, Jump Game VI, Shortest Subarray with Sum at Least K | Sliding Window, Examples |
+| Design | "implement a queue using", "circular buffer" | Implement Queue using Stacks, Design Circular Queue | Implementation basics |
+
+The BFS rows share one loop and differ only in what a step is and where the queue starts. A step can be a move to a neighboring cell, a turn of one lock wheel, or a change of one letter in a word, and the queue can start with one source or all of them. Recognizing BFS on states is the hardest of these, since the statement has no grid in it. The cue is "fewest" moves between two configurations, with each move changing the configuration a little.
