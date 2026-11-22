@@ -179,7 +179,7 @@ round  combinations reached                                         count
 1      1000 9000 0100 0900 0010 0090 0001 0009                      8
 ```
 
-With `target = "0009"`, the target appears in round `1`, so the answer is `1`. In the second example, the direct route to `"0202"` takes four turns, but every four-turn route passes through a deadend, `0201`, `0102`, `0101`, or `2002`, depending on the order of the turns. BFS does not need to know that. It keeps spreading around the blocked combinations and first reaches `"0202"` in round `6`. There are only `10,000` combinations, so even a full search is small.
+With `target = "0009"`, the target appears in round `1`, so the answer is `1`. In the second example, the direct route to `"0202"` takes four turns, but every four-turn route passes through a deadend, `0201`, `0101`, or `0102`, depending on the order of the turns. BFS does not need to know that. It keeps spreading around the blocked combinations and first reaches `"0202"` in round `6`. There are only `10,000` combinations, so even a full search is small.
 
 ```javascript
 {{#include ./examples/open-the-lock.js}}
