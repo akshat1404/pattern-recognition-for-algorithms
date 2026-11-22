@@ -7,34 +7,43 @@
 // Return -1 if there is no path.
 //
 // Spread outward from the start one step at a time. The first time the
-// bottom-right cell is reached, it is reached by a shortest path. Cells
-// are marked when they join the queue, so none joins twice.
+// bottom-right cell is taken from the queue, it was reached by a shortest
+// path. A reached cell is set to 1, so it is treated as a wall and never
+// joins the queue twice.
 
 function shortestPathBinaryMatrix(grid) {
     const n = grid.length;
     if (grid[0][0] === 1 || grid[n - 1][n - 1] === 1) return -1;
 
-    const length = grid.map(row => row.map(() => 0));
-    length[0][0] = 1;
-    const queue = [[0, 0]];
+    // How far one move shifts the row and the column, for all 8 neighbors.
+    const directions = [
+        [-1, -1], [-1, 0], [-1, 1],
+        [0, -1],           [0, 1],
+        [1, -1],  [1, 0],  [1, 1],
+    ];
+
+    // Each entry is [row, col, cells on the path so far].
+    const queue = [[0, 0, 1]];
+    grid[0][0] = 1;
     let head = 0;
 
     while (head < queue.length) {
-        const [r, c] = queue[head];
+        const [row, col, length] = queue[head];
         head++;
 
-        if (r === n - 1 && c === n - 1) return length[r][c];
+        if (row === n - 1 && col === n - 1) return length;
 
-        for (let dr = -1; dr <= 1; dr++) {
-            for (let dc = -1; dc <= 1; dc++) {
-                const nr = r + dr;
-                const nc = c + dc;
-                if (nr < 0 || nr >= n || nc < 0 || nc >= n) continue;
-                if (grid[nr][nc] === 1 || length[nr][nc] !== 0) continue;
+        for (const [rowStep, colStep] of directions) {
+            const nextRow = row + rowStep;
+            const nextCol = col + colStep;
 
-                length[nr][nc] = length[r][c] + 1;
-                queue.push([nr, nc]);
-            }
+            // Outside the grid.
+            if (nextRow < 0 || nextRow >= n || nextCol < 0 || nextCol >= n) continue;
+            // A wall, or a cell already reached.
+            if (grid[nextRow][nextCol] === 1) continue;
+
+            grid[nextRow][nextCol] = 1;
+            queue.push([nextRow, nextCol, length + 1]);
         }
     }
 

@@ -157,7 +157,7 @@ start  (0,0)             1
 
 `(1,2)` is reached from `(0,1)` by a diagonal step, which is why it arrives in the same round as `(0,2)`. Then `(2,2)`, the bottom-right, is reached from `(1,2)` with length `4`.
 
-One detail matters for speed. A cell is marked as reached when it joins the queue, not when it leaves. Several cells in the same round can share a neighbor, and if marking waited until the neighbor left the queue, it could be added once by each of them. Marking on joining keeps every cell in the queue at most once. If either corner is a `1`, there is no clear path at all, and the answer is `-1` before any search.
+One detail matters for speed. A cell is marked as reached when it joins the queue, not when it leaves. Several cells in the same round can share a neighbor, and if marking waited until the neighbor left the queue, it could be added once by each of them. Marking on joining keeps every cell in the queue at most once. The code marks a cell by setting it to `1`, so a reached cell looks like a wall from then on, and each queue entry carries its own length next to its row and column. If either corner is a `1`, there is no clear path at all, and the answer is `-1` before any search.
 
 ```javascript
 {{#include ./examples/shortest-path-in-binary-matrix.js}}
