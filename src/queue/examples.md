@@ -184,3 +184,34 @@ With `target = "0009"`, the target appears in round `1`, so the answer is `1`. I
 ```javascript
 {{#include ./examples/open-the-lock.js}}
 ```
+
+## Deque
+
+[Jump Game VI](https://leetcode.com/problems/jump-game-vi/description/) gives an array `nums` and a number `k`. Starting at index `0`, each jump goes forward from index `i` to any index from `i + 1` to `i + k`. The score is the sum of `nums` at every index landed on, the first and last included. It asks for the highest score possible on reaching the last index. For `[1, -1, -2, 4, -7, 3]` with `k = 2` the answer is `7`, landing on `1`, `-1`, `4`, and `3`. For `[10, -5, -2, 4, 0, 3]` with `k = 3` it is `17`, landing on `10`, `4`, and `3`.
+
+**Asks for.** The best score at the end, built from the best scores of the indices before it.
+
+**Offers.** A choice at each index among only the previous `k` indices, a range whose both ends move forward together.
+
+Let `best[i]` be the highest score that reaches index `i`. Any path to `i` arrives from one of the `k` indices before it, so `best[i]` is `nums[i]` plus the largest `best` among those `k`. Working that out by checking all `k` each time costs `n × k`, too slow when both are large.
+
+The `k` indices before `i` form a window that slides forward one step at a time, and what each step needs is its maximum. That is Sliding Window Maximum over the `best` values, and the same deque keeps it. The deque holds indices whose `best` values fall from front to back. At each `i`, the front leaves if it has fallen out of reach, more than `k` behind. Then the front is the largest `best` in reach, and `best[i]` is `nums[i]` plus it. Before `i` joins the back, every index at the back with a `best` no larger than `best[i]` leaves, since `i` is later, so it stays in reach longer, and at least as good, so those indices can never be the best choice again.
+
+Old indices leaving the front by age and beaten indices leaving the back is what makes this a deque, not a queue.
+
+```
+i  nums  front leaves?  best[i]       back leaves   deque after (best)
+0  1                    1                           0 (1)
+1  -1    no             -1 + 1 = 0    none          0 (1), 1 (0)
+2  -2    no             -2 + 1 = -1   none          0 (1), 1 (0), 2 (-1)
+3  4     0 is too far   4 + 0 = 4     2, 1          3 (4)
+4  -7    no             -7 + 4 = -3   none          3 (4), 4 (-3)
+5  3     no             3 + 4 = 7     4, 3          5 (7)
+answer best[5] = 7
+```
+
+Every index joins the deque once and leaves it at most once, so the whole pass costs `n`.
+
+```javascript
+{{#include ./examples/jump-game-vi.js}}
+```
