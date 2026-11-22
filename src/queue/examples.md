@@ -162,3 +162,25 @@ One detail matters for speed. A cell is marked as reached when it joins the queu
 ```javascript
 {{#include ./examples/shortest-path-in-binary-matrix.js}}
 ```
+
+[Open the Lock](https://leetcode.com/problems/open-the-lock/description/) gives a lock with four wheels, each showing a digit from `0` to `9` that wraps around, so `9` turns up to `0` and `0` turns down to `9`. The lock starts at `"0000"`, and one turn moves one wheel one slot up or down. Some combinations, listed in `deadends`, jam the lock, so the lock can never show them. It asks for the fewest turns to reach `target`, or `-1` if it cannot be reached. With `deadends = ["8888"]` and `target = "0009"` the answer is `1`, a single turn of the last wheel down. With `deadends = ["0201", "0101", "0102", "1212", "2002"]` and `target = "0202"` it is `6`.
+
+**Asks for.** The fewest moves from one combination to another.
+
+**Offers.** Combinations where each move changes one digit by one, which makes each combination a state with eight neighbors.
+
+There is no grid in the statement, which is what makes this hard to recognize. But the shape is the same as Shortest Path in Binary Matrix. Each combination is a cell, two combinations one turn apart are neighbors, and the deadends are blocked cells. Every combination has eight neighbors, two turns for each of four wheels. "Fewest moves between two configurations, each move changing the configuration a little" is the cue for BFS on states.
+
+BFS from `"0000"` reaches combinations in order of how many turns they take. Round `1` reaches the eight combinations one turn away, round `2` everything two turns away, and so on, so the first time `target` is reached, it is reached in the fewest turns. A set holds every combination already reached, and the deadends go into it at the start, so they are treated as already visited and never entered. If `"0000"` is itself a deadend, the lock cannot move at all.
+
+```
+round  combinations reached                                         count
+0      0000                                                         1
+1      1000 9000 0100 0900 0010 0090 0001 0009                      8
+```
+
+With `target = "0009"`, the target appears in round `1`, so the answer is `1`. In the second example, the direct route to `"0202"` takes four turns, but every four-turn route passes through a deadend, `0201`, `0102`, `0101`, or `2002`, depending on the order of the turns. BFS does not need to know that. It keeps spreading around the blocked combinations and first reaches `"0202"` in round `6`. There are only `10,000` combinations, so even a full search is small.
+
+```javascript
+{{#include ./examples/open-the-lock.js}}
+```
