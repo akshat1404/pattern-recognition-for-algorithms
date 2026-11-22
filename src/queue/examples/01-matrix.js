@@ -11,15 +11,15 @@
 function updateMatrix(mat) {
     const rows = mat.length;
     const cols = mat[0].length;
-    const dist = mat.map(row => row.map(() => -1));
+    const dist = Array.from({ length: rows }, () => new Array(cols).fill(-1));
     const queue = [];
     let head = 0;
 
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            if (mat[r][c] === 0) {
-                dist[r][c] = 0;
-                queue.push([r, c]);
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            if (mat[row][col] === 0) {
+                dist[row][col] = 0;
+                queue.push([row, col]);
             }
         }
     }
@@ -27,17 +27,17 @@ function updateMatrix(mat) {
     const steps = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 
     while (head < queue.length) {
-        const [r, c] = queue[head];
+        const [row, col] = queue[head];
         head++;
 
-        for (const [dr, dc] of steps) {
-            const nr = r + dr;
-            const nc = c + dc;
-            if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
-            if (dist[nr][nc] !== -1) continue;
+        for (const [rowStep, colStep] of steps) {
+            const nextRow = row + rowStep;
+            const nextCol = col + colStep;
+            if (nextRow < 0 || nextRow >= rows || nextCol < 0 || nextCol >= cols) continue;
+            if (dist[nextRow][nextCol] !== -1) continue;
 
-            dist[nr][nc] = dist[r][c] + 1;
-            queue.push([nr, nc]);
+            dist[nextRow][nextCol] = dist[row][col] + 1;
+            queue.push([nextRow, nextCol]);
         }
     }
 

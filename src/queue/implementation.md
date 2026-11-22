@@ -63,24 +63,24 @@ function bfs(rows, cols, starts, canEnter) {
     const queue = [];
     let head = 0;
 
-    for (const [r, c] of starts) {
-        steps[r][c] = 0;
-        queue.push([r, c]);
+    for (const [row, col] of starts) {
+        steps[row][col] = 0;
+        queue.push([row, col]);
     }
 
     const moves = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 
     while (head < queue.length) {
-        const [r, c] = queue[head++];
+        const [row, col] = queue[head++];
 
-        for (const [dr, dc] of moves) {
-            const nr = r + dr;
-            const nc = c + dc;
-            if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
-            if (steps[nr][nc] !== -1 || !canEnter(nr, nc)) continue;
+        for (const [rowStep, colStep] of moves) {
+            const nextRow = row + rowStep;
+            const nextCol = col + colStep;
+            if (nextRow < 0 || nextRow >= rows || nextCol < 0 || nextCol >= cols) continue;
+            if (steps[nextRow][nextCol] !== -1 || !canEnter(nextRow, nextCol)) continue;
 
-            steps[nr][nc] = steps[r][c] + 1;
-            queue.push([nr, nc]);
+            steps[nextRow][nextCol] = steps[row][col] + 1;
+            queue.push([nextRow, nextCol]);
         }
     }
 
