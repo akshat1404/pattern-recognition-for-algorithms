@@ -34,6 +34,8 @@ If the problem doesn't reduce to two positions moving with no aggregate needed, 
 
 This holds whenever the data is sorted, or whenever some condition on a candidate answer is monotonic, false up to a point and true from there on, or the reverse. Checking one guess and finding it too small or too big tells you every guess on the wrong side is settled too, no need to look at them individually. That's not limited to searching a sorted array for a value, it also covers guessing an answer, a capacity, a speed, a distance, and checking whether that guess is feasible.
 
+A range of possible answers is not enough on its own. Guessing pays off only when checking a guess is easier than computing the answer. If the only way to check a guess is to compute the real answer first, the guess adds nothing, and the problem needs a direct algorithm instead.
+
 If yes, that's [Binary Search](./binary-search/asking-the-right-questions.md).
 
 If no guess settles a whole side, move to the next question.
