@@ -52,3 +52,30 @@ Every width is at least `1`, so each row's sums only go up, and a position appea
 [Car Fleet](https://leetcode.com/problems/car-fleet/description/) gives `n` cars on a one-lane road, all driving toward a destination at mile `target`. `position[i]` is car `i`'s starting mile and `speed[i]` its speed in miles per hour, and no two cars start at the same mile. A car can never pass the car ahead of it. When a faster car catches up to a slower one, it slows down and the two drive together from then on at the slower speed, as a fleet. A car that catches up exactly at the destination still joins that fleet. A single car on its own also counts as a fleet. Return the number of fleets that arrive at the destination.
 
 For `target = 12`, `position = [10, 8, 0, 5, 3]`, and `speed = [2, 4, 1, 1, 3]`, the answer is `3`. The cars at `10` and `8` meet at mile `12` and arrive together. The car at `0` arrives alone. The cars at `5` and `3` meet at mile `6` and arrive together.
+
+## 3. Max Consecutive Ones III
+
+[Max Consecutive Ones III](https://leetcode.com/problems/max-consecutive-ones-iii/description/) gives an array `nums` of `0`s and `1`s and a number `k`. You may change at most `k` of the `0`s into `1`s. Return the length of the longest run of consecutive `1`s you can end up with.
+
+For `nums = [1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0]` and `k = 2`, the answer is `6`. Changing the `0`s at indices `5` and `10` gives `[1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1]`, which ends in six `1`s in a row. For `nums = [0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1]` and `k = 3`, the answer is `10`.
+
+<details>
+<summary>Reveal</summary>
+
+**Pattern.** [Sliding Window](./sliding-window/asking-the-right-questions.md), a window with a limit on what it holds.
+
+**Asks for.** The longest contiguous run, a maximum over a stretch of the array.
+
+**Offers.** A rule for which stretches are allowed. A stretch can be turned into all `1`s exactly when it holds at most `k` zeros, since every zero inside it has to be changed.
+
+**Why it fits.** The question stops being about changing anything. It becomes the longest window with at most `k` zeros in it. The count of zeros moves in one direction with the window. Growing it on the right can only keep the count or raise it, and dropping an element from the left can only keep it or lower it. So when the window holds too many zeros, moving the left edge forward is always the fix, and it moves forward until the window is allowed again. Every allowed window is a candidate, and the longest one is the answer.
+
+In the first example with `k = 2`, the window grows over `1, 1, 1, 0, 0` and stays allowed. The third zero at index `5` makes three, so the left edge moves past index `3`, the first zero. The longest allowed window turns out to be indices `5` to `10`, six elements with two zeros.
+
+**Looks like.** A problem about choosing which zeros to change, which suggests trying combinations. Reading it as a limit on the window removes the choice, since any window with at most `k` zeros can be filled.
+
+```javascript
+{{#include ./practice/max-consecutive-ones-iii.js}}
+```
+
+</details>
