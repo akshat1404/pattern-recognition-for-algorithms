@@ -17,6 +17,8 @@ If one check only rules out the element it touched and not a whole side, it is n
 
 **A guess that is easy to check.** When checking a guessed answer is easy and finding the answer directly is hard, the problem is a guessing problem, and binary search is guessing done well. Every guess that turns out wrong removes half of the remaining range, so a good guess is reached in a few steps.
 
+A range alone is not enough. Every count has a range, from `1` to `n`, but guessing pays off only when checking a guess is easier than computing the answer. In Car Fleet the number of fleets lies between `1` and the number of cars, yet the only way to check a guess of `3` is to work out which cars merge, which is the actual count. Once that is known, the guess adds nothing. The test is whether the statement leaves something to choose, a speed, a capacity, a distance, with the answer depending on that choice. If the input fixes the answer completely, there is nothing to guess between, and the problem needs a direct algorithm.
+
 **A maximum hidden in plain sight.** Some statements ask for a minimum and never say "maximum", yet are a minimum of a maximum. "The minimum days to wait" before flowers can be used means waiting for the last of them to bloom, the largest bloom day among the flowers chosen. The answer is the choice whose largest is smallest.
 
 Five problems follow, each read from its statement to the pattern. No code here, the code lives in Implementation and Examples.
