@@ -40,17 +40,19 @@ If yes, that's [Binary Search](./binary-search/asking-the-right-questions.md).
 
 If no guess settles a whole side, move to the next question.
 
-## Question 5: do elements wait to be handled, and which waiting one is handled next?
+## Question 5: do elements wait to be handled, and which one in the waiting list is settled first?
 
-Some problems hold elements back. An opening bracket waits for its closer. A day waits for a warmer day. A senator waits for their next turn. A request waits until it is too old to count. An orange that just rotted waits to spread to its neighbors. When elements wait like this, the pattern is decided by one thing, which waiting element is handled next. Picture two of them waiting, `A`, which arrived first, and `B`, which arrived later, and ask which goes next.
+Some problems hold elements back. An opening bracket waits for its closer. A day waits for a warmer day. A senator waits for their next turn. A request waits until it is too old to count. An orange that just rotted waits to spread to its neighbors. An element waits when it has been read but cannot be finished yet, so it goes into a waiting list until something later settles it. The pattern is decided by one thing. When a new element arrives, which one in the waiting list does it settle first?
 
-**Always `B`, the newest.** An arriving element decides the most recent waiting one first, stopping at the first one it cannot decide, a closer matching the latest open bracket, a warm day answering the coldest waiting day. That is [Stack](./stack/asking-the-right-questions.md). The wording cues are nested or matched items, cancellations, and "next greater", "previous smaller", "how far until", or "how far back".
+Take `( [ ]`. After `(` and `[` are read, both sit in the waiting list, since neither has its closer. Then `]` arrives and settles `[`, the one added to the list most recently. Now take pings at times `1`, `100`, and `3001`, all in the waiting list. Then `ping(3002)` arrives and drops `1`, the one added to the list earliest.
 
-**Always `A`, the one that has waited longest.** Elements act in turn and go to the back for their next turn, items expire oldest first, or something spreads one step at a time, where whatever was reached earlier is closer and has to spread first. That is [Queue](./queue/asking-the-right-questions.md). The wording cues are "in order", "takes turns", "round", "moves to the bottom", "in the last `t` milliseconds", "every minute", and "fewest steps".
+**The most recent one in the waiting list.** An arriving element settles the latest waiting one first, and keeps going until it reaches one it cannot settle, a closer matching the latest open bracket, a warm day answering the coldest waiting day. The waiting list is a [Stack](./stack/asking-the-right-questions.md). The wording cues are nested or matched items, cancellations, and "next greater", "previous smaller", "how far until", or "how far back".
 
-**Old ones leave from the front by age, and beaten ones leave from the back.** That is a deque, a queue that can also remove from the back, as in Sliding Window Maximum and in prefix-sum problems where a sliding window has failed.
+**The earliest one in the waiting list.** Elements act in turn and go to the back of the list for their next turn, items expire oldest first, or something spreads one step at a time, where whatever was reached earlier is closer and has to spread first. The waiting list is a [Queue](./queue/asking-the-right-questions.md). The wording cues are "in order", "takes turns", "round", "moves to the bottom", "in the last `t` milliseconds", "every minute", and "fewest steps".
 
-**The best by value, whenever it arrived.** That is a heap, covered by the sorting gate in Question 7.
+**The earliest ones leave the front of the waiting list by age, and beaten ones leave its back.** The waiting list is a deque, a queue that can also remove from the back, as in Sliding Window Maximum and in prefix-sum problems where a sliding window has failed.
+
+**The best one in the waiting list by value, whenever it was added.** The waiting list is a heap, covered by the sorting gate in Question 7.
 
 If nothing waits, move to the next question.
 
