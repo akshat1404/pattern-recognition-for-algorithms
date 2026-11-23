@@ -53,6 +53,34 @@ Every width is at least `1`, so each row's sums only go up, and a position appea
 
 For `target = 12`, `position = [10, 8, 0, 5, 3]`, and `speed = [2, 4, 1, 1, 3]`, the answer is `3`. The cars at `10` and `8` meet at mile `12` and arrive together. The car at `0` arrives alone. The cars at `5` and `3` meet at mile `6` and arrive together.
 
+<details>
+<summary>Reveal</summary>
+
+**Pattern.** [Stack](./stack/asking-the-right-questions.md), a monotonic stack over the cars in road order.
+
+**Asks for.** A count of groups, the fleets, decided by which cars catch which.
+
+**Offers.** An order that never changes, since no car can pass another, and one number per car that decides who catches whom, the time it would take to reach the target alone, `(target - position) / speed`.
+
+**Why it fits.** Speed alone does not decide whether a car catches the one ahead. The road ends at the target, and a car that arrives stops counting, so the catch has to happen by then. A car joins the car ahead exactly when its time alone is no more than that car's time. Sorted by position, the times are these.
+
+```
+position   0   3   5   8  10
+time      12   3   7   1   1
+```
+
+Walk from mile `0` toward the target. A car cannot be decided when it is read, since it joins a fleet only if some car ahead of it turns out to be slower, and the cars ahead have not been read yet. So it waits. When a slower car shows up, it settles the cars waiting behind it, the most recent one first, and keeps settling while the waiting car's time is no more than its own. Car `3`, with time `3`, waits behind car `0`. Car `5`, with time `7`, arrives and settles car `3`, which catches it, then stops at car `0`, whose time of `12` is larger. The newest waiting car is always settled first, which is a stack, and the cars left on it at the end, `12`, `7`, `1`, are the three fleets.
+
+**Looks like.** Binary Search, because the answer is a count between `1` and `n` and the positions can be sorted. But checking a guess of `3` fleets means working out which cars merge, which is the count itself, so the guess adds nothing. Sorting is part of the answer, guessing is not.
+
+Walking the other way, from the car nearest the target back to mile `0`, every car ahead is already decided when a car is read. Only the time of the fleet directly ahead matters, so one number replaces the stack. Both versions are below.
+
+```javascript
+{{#include ./practice/car-fleet.js}}
+```
+
+</details>
+
 ## 3. Max Consecutive Ones III
 
 [Max Consecutive Ones III](https://leetcode.com/problems/max-consecutive-ones-iii/description/) gives an array `nums` of `0`s and `1`s and a number `k`. You may change at most `k` of the `0`s into `1`s. Return the length of the longest run of consecutive `1`s you can end up with.
