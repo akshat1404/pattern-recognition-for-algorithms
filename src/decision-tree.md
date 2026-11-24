@@ -8,6 +8,8 @@ It can only ever reflect the chapters that already exist. Right now that's Hashi
 
 If the only thing that matters is whether a value exists, how many times it occurs, or what other value completes it, and order or position never enters the question, that points to [Hashing](./hashing/asking-the-right-questions.md).
 
+Values only is not enough on its own. A hash map answers exact lookups, whether a value is there, how often it occurs. If the question is how many values reach a threshold, at least some amount or at most some amount, the values are needed in order, which a map does not keep. That is a range of values, not one value, and it moves on to the next questions, usually to Binary Search on the sorted values.
+
 If position, order, or a contiguous run of elements matters, move to the next question.
 
 ## Question 2: is it about a contiguous run, with a min or max being asked over that run?
