@@ -107,3 +107,39 @@ In the first example with `k = 2`, the window grows over `1, 1, 1, 0, 0` and sta
 ```
 
 </details>
+
+## 4. Successful Pairs of Spells and Potions
+
+[Successful Pairs of Spells and Potions](https://leetcode.com/problems/successful-pairs-of-spells-and-potions/description/) gives two arrays of positive integers, `spells` of length `n` and `potions` of length `m`, and a number `success`. `spells[i]` is the strength of spell `i` and `potions[j]` the strength of potion `j`. A spell and a potion make a successful pair when the product of their strengths is at least `success`. Return an array of length `n` where entry `i` is the number of potions that make a successful pair with spell `i`. Both arrays can hold up to `100,000` values.
+
+For `spells = [5, 1, 3]`, `potions = [1, 2, 3, 4, 5]`, and `success = 7`, the answer is `[4, 0, 3]`. Spell `5` succeeds with every potion except `1`, spell `1` with none, and spell `3` with `3`, `4`, and `5`. For `spells = [3, 1, 2]`, `potions = [8, 5, 8]`, and `success = 16`, the answer is `[2, 0, 2]`.
+
+<details>
+<summary>Reveal</summary>
+
+**Pattern.** [Binary Search](./binary-search/asking-the-right-questions.md), on the sorted potions, once per spell.
+
+**Asks for.** A count for each spell, how many values in the second array reach a threshold.
+
+**Offers.** A condition, `spell × potion >= success`, that only depends on the potions' values, never on where they sit, so the potions can be sorted freely.
+
+**Why it fits.** Stripped down, the problem is two arrays, and for each value `x` in the first, a count of the values `y` in the second with `x × y >= success`. For a fixed spell, a stronger potion only makes the product bigger. Once the potions are sorted, the check is no for the weak ones and yes from some point to the end, and it flips exactly once.
+
+```
+spell 3, success 7
+potion   1  2  3  4  5
+3 × p    3  6  9 12 15
+>= 7?    no no yes yes yes
+```
+
+A yes at index `2` settles indices `3` and `4` without checking them, and a no at index `1` settles index `0`. Binary search finds the first yes, and the count is every potion from there to the end, `5 - 2 = 3`. Checking one potion is a single multiplication, far easier than counting all of them, so the guess pays off.
+
+**Looks like.** Hashing, since only values matter and a potion's position never enters the question. But a hash map answers exact lookups, whether a value is there and how often, and this asks how many values are at least a threshold. A threshold needs the values in order, which a map does not keep. Checking every pair also works, but with up to `100,000` of each, that is `10` billion products.
+
+Two Pointers works too. Sort the spells as well, keeping their original indices. A stronger spell needs a weaker potion, so as the spells go up, the first successful potion only moves left, and one pointer walking down the potions serves every spell.
+
+```javascript
+{{#include ./practice/successful-pairs-of-spells-and-potions.js}}
+```
+
+</details>
