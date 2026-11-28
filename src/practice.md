@@ -181,3 +181,39 @@ Binary Search also works. Whether building `k` can be reached flips from yes to 
 ```
 
 </details>
+
+## 6. Boats to Save People
+
+[Boats to Save People](https://leetcode.com/problems/boats-to-save-people/description/) gives an array `people`, where `people[i]` is the weight of person `i`, and a number `limit`. Every boat can carry at most two people at the same time, as long as their total weight is at most `limit`. No person weighs more than `limit`, so everyone fits in a boat alone. Return the fewest boats needed to carry every person.
+
+For `people = [3, 2, 2, 1]` and `limit = 3`, the answer is `3`, with boats `(1, 2)`, `(2)`, and `(3)`. For `people = [3, 5, 3, 4]` and `limit = 5`, the answer is `4`, since no two people fit together. For `people = [1, 2]` and `limit = 3`, it is `1`.
+
+<details>
+<summary>Reveal</summary>
+
+**Pattern.** [Two Pointers](./two-pointers/asking-the-right-questions.md), from both ends of the sorted weights.
+
+**Asks for.** The fewest boats, which means as many boats as possible should carry two people.
+
+**Offers.** At most two people per boat, a condition on their sum, `a + b <= limit`, and weights whose order in the array does not matter, so they can be sorted.
+
+**Why it fits.** Look at the heaviest person left. If even the lightest person left cannot ride with them, nobody can, so the heaviest goes alone. If the lightest can ride with them, sending the two together never hurts. The lightest is the easiest partner for anyone, and using them on the hardest person to pair leaves the middle weights for each other. After every boat, the heaviest left and the lightest left sit at the two ends of what remains of the sorted array, so two pointers move inward and each step looks only at the two people under them.
+
+```
+people = [1, 2, 2, 3], limit = 3
+
+low  high   pair     fits?   boat
+1    3      1 + 3    no      (3)
+1    2      1 + 2    yes     (1, 2)
+2    2      same     one left (2)
+```
+
+That makes `3` boats.
+
+**Looks like.** Hashing, since only weights matter and a pair has to meet a sum. But the condition is a sum of at most `limit`, a threshold, not an exact value that a map could look up. It can also look like a packing problem where any number of people share a boat, which would be far harder. The limit of two per boat is what makes every boat a pair from the two ends.
+
+```javascript
+{{#include ./practice/boats-to-save-people.js}}
+```
+
+</details>
