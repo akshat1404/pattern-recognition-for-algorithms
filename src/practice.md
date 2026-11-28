@@ -143,3 +143,41 @@ Two Pointers works too. Sort the spells as well, keeping their original indices.
 ```
 
 </details>
+
+## 5. Furthest Building You Can Reach
+
+[Furthest Building You Can Reach](https://leetcode.com/problems/furthest-building-you-can-reach/description/) gives an array `heights`, where `heights[i]` is the height of building `i`, along with a number of `bricks` and a number of `ladders`. You start on building `0` and move to the next building, one at a time. Moving down or staying level costs nothing. Moving up from building `i` to building `i + 1` needs either one ladder, whatever the climb, or exactly `heights[i + 1] - heights[i]` bricks. Bricks and ladders are used up once spent. Return the index of the furthest building you can reach.
+
+For `heights = [4, 2, 7, 6, 9, 14, 12]`, `bricks = 5`, and `ladders = 1`, the answer is `4`. The climb from `2` to `7` uses `5` bricks, the drop to `6` is free, and the climb from `6` to `9` uses the ladder. The climb from `9` to `14` cannot be paid for. For `heights = [4, 12, 2, 7, 3, 18, 20, 3, 19]`, `bricks = 10`, and `ladders = 2`, the answer is `7`.
+
+<details>
+<summary>Reveal</summary>
+
+**Pattern.** [Heap](./heap/asking-the-right-questions.md), a min-heap that keeps the largest climbs seen so far, one per ladder.
+
+**Asks for.** The furthest building reached, which ends at the first climb that cannot be paid for.
+
+**Offers.** Climbs that arrive one at a time, and a ladder that covers any climb, whatever its height, while bricks pay by height.
+
+**Why it fits.** A ladder saves the most bricks on the biggest climb, so with `x` ladders, the ladders belong on the `x` largest climbs passed so far, and bricks pay for the rest. Sorting the climbs would say which those are, but the climbs keep arriving, and the walk has to decide at every step whether it can go on. That is the `x` largest of a growing list, a min-heap of size `x`. Each climb goes on a ladder. When there are more climbs on ladders than ladders, the smallest of them, the top of the heap, switches to bricks. The first time the bricks run out, the walk stops there.
+
+```
+heights = [4, 2, 7, 6, 9, 14, 12], bricks = 5, ladders = 1
+
+step     climb   on ladders   switched to bricks   bricks left
+2 → 7      5       [5]              none                5
+6 → 9      3       [5]               3                  2
+9 → 14     5       [5]               5                 -3, stop at building 4
+```
+
+The climb that switches is picked by its value, not by when it arrived, which is what separates this from a stack or a queue.
+
+**Looks like.** A walk where each climb is decided on the spot, which suggests spending bricks first and ladders when bricks run out. That fails, since bricks spent early on a big climb cannot be taken back. Keeping every climb on a ladder until a cheaper one is known is what lets the heap correct earlier choices.
+
+Binary Search also works. Whether building `k` can be reached flips from yes to no exactly once, and a guess is checked by sorting the climbs up to `k`, giving the ladders to the largest, and adding up the rest. Every check redoes that sorting from scratch, and the heap does the same work once, in a single walk.
+
+```javascript
+{{#include ./practice/furthest-building-you-can-reach.js}}
+```
+
+</details>
