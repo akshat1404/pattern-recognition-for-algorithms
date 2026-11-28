@@ -38,6 +38,8 @@ This holds whenever the data is sorted, or whenever some condition on a candidat
 
 A range of possible answers is not enough on its own. Guessing pays off only when checking a guess is easier than computing the answer. If the only way to check a guess is to compute the real answer first, the guess adds nothing, and the problem needs a direct algorithm instead.
 
+A guess that passes this test still deserves one more look at what the check does. If every check sorts what it has seen and takes the largest or smallest few, as in Furthest Building You Can Reach, where each guess gives the ladders to the biggest climbs so far, the same top-`k` work is redone from scratch on every guess. A heap does that work once, in a single walk, and Question 7 covers it. Binary search still gives a correct answer there, only a slower one.
+
 If yes, that's [Binary Search](./binary-search/asking-the-right-questions.md).
 
 If no guess settles a whole side, move to the next question.
